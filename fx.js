@@ -187,7 +187,8 @@
     host.prepend(cv);
     const ctx = cv.getContext('2d');
     const color = token('--color-ink-sub');
-    const INPUT_FROM = .04, INPUT_TO = .6;    // where a phrase may enter (share of the width)
+    const INPUT_FROM = .04, INPUT_TO = .5;    // where a phrase may enter (share of the width)
+    const GAP = 12;                            // samples kept quiet between phrases
     const STEP = 2;                            // px per sample
     const SPEED = 60;                          // px per second, left -> right
     const RATE = SPEED / STEP;                 // samples per second
@@ -196,27 +197,22 @@
     let mode = 'pause', left = RATE * .6, level = 0, env = 0, syl = 0, sylRate = 4.5, sign = 1;
 
     const quiet = () => (Math.random() - .5) * .6;   // the line is never perfectly still
+    // the entry point wanders slowly. It always moves slower than the flow (1 sample per tick),
+    // so it can never catch up with older sound: newer sound is always to the left (timeline order)
+    let hp = 0, dh = 0;
     const tick = () => {
+      const lo = line.length * INPUT_FROM, cap = line.length * INPUT_TO;
+      dh = Math.max(-.4, Math.min(.4, dh + (Math.random() - .5) * .06));
+      hp += dh;
+      if (hp < lo) { hp = lo; dh = Math.abs(dh); } else if (hp > cap) { hp = cap; dh = -Math.abs(dh); }
       if (--left <= 0) {
         if (mode === 'pause') {
-          // a phrase enters at a random point. It is never placed on a drawn part of the line,
-          // and while an older waveform flows through the entry point, nothing is written there,
-          // so a waveform never changes once it has been drawn
-          const lo = Math.floor(line.length * INPUT_FROM), hi = Math.floor(line.length * INPUT_TO);
-          let h = -1;
-          for (let k = 0; k < 8 && h < 0; k++) {
-            const c = lo + Math.floor(Math.random() * (hi - lo));
-            if (!mark.slice(Math.max(0, c - 8), c + 9).includes(1)) h = c;
-          }
-          if (h >= 0) {
-            mode = 'talk'; left = RATE * (.6 + Math.random() * 1.6);
-            level = .35 + Math.random() * .65; sylRate = 3.5 + Math.random() * 2.5;
-            head = h;
-          } else { left = RATE * .25; }       // no clear spot yet: keep quiet a little longer
-        } else {                              // pauses: mostly short, sometimes long, so the line clears
-          mode = 'pause'; head = -1;
-          left = RATE * (Math.random() < .35 ? 3.5 + Math.random() * 3.5 : .9 + Math.random() * 2.2);
-        }
+          const firstDrawn = mark.indexOf(1);
+          if (firstDrawn < 0 || firstDrawn - Math.floor(hp) > GAP) {
+            mode = 'talk'; left = RATE * (.8 + Math.random() * 1.8);
+            level = .55 + Math.random() * .45; sylRate = 3.5 + Math.random() * 2.5;
+          } else { left = RATE * .2; }        // keep a short quiet gap after the last phrase
+        } else { mode = 'pause'; left = RATE * (.5 + Math.random() * 1.1); }
       }
       let target = 0;
       if (mode === 'talk') {
@@ -227,8 +223,9 @@
       // flow: everything moves one step right, a quiet sample enters at the left edge
       line.pop(); line.unshift(quiet());
       mark.pop(); mark.unshift(0);
-      // input: while talking, the voice is written once at this phrase's entry point
-      if (head >= 0 && env > .005 && !mark[head]) {
+      // input: the voice is written once at the entry point; drawn samples are never rewritten
+      head = Math.floor(hp);
+      if (mode === 'talk' && env > .005 && !mark[head]) {
         sign = -sign;
         line[head] = env * amp * sign * (.45 + Math.random() * .55) + quiet();
         mark[head] = 1;
@@ -249,7 +246,8 @@
       amp = stacked ? 22 : 56;
       line = Array.from({ length: Math.ceil(W / STEP) + 2 }, quiet);
       mark = line.map(() => 0);
-      head = -1; mode = 'pause'; left = RATE * .6; env = 0;
+      head = -1; mode = 'pause'; left = RATE * .3; env = 0;
+      hp = line.length * (INPUT_FROM + Math.random() * (INPUT_TO - INPUT_FROM)); dh = 0;
     };
 
     const draw = () => {

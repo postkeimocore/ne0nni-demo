@@ -64,8 +64,6 @@ ul, ol { list-style: none; }
 .t-lead { font: 500 var(--fs-lead)/var(--lh-lead) var(--font-mincho); letter-spacing: var(--ls-ja-display); }
 .t-body { font: 400 var(--fs-body)/var(--lh-body) var(--font-gothic); letter-spacing: var(--ls-ja-body); max-width: 40em; }
 .t-small { font: 400 var(--fs-small)/var(--lh-small) var(--font-gothic); letter-spacing: var(--ls-ja-body); }
-.t-sub { color: var(--color-ink-sub); }
-.is-night .t-sub { color: var(--color-night-sub); }
 
 /* ---------- brand marks ---------- */
 .logo {
@@ -144,7 +142,7 @@ ul, ol { list-style: none; }
 }
 .pill:hover, .pill.is-hover { background: var(--color-ink); color: var(--color-paper); }
 .pill:active, .pill.is-active { transform: scale(.98); }
-.pill:disabled, .pill.is-disabled { border-color: var(--color-field); color: var(--color-ink-sub); background: var(--color-paper); cursor: not-allowed; transform: none; }
+.pill:disabled, .pill.is-disabled { border-style: dashed; border-color: var(--color-ink); color: var(--color-ink); background: var(--color-paper); cursor: not-allowed; transform: none; }
 .pill.is-focus { outline: 2px solid var(--color-ink); outline-offset: 4px; }
 
 /* ---------- data list (gear / track) ---------- */
@@ -153,7 +151,6 @@ ul, ol { list-style: none; }
 .data-item__thumb { width: var(--thumb); height: var(--thumb); object-fit: cover; }
 .data-item__thumb--type { display: grid; place-items: center; background: var(--color-mist); }
 .data-item dl { display: grid; grid-template-columns: max-content 1fr; column-gap: var(--space-3); row-gap: var(--space-1); }
-.data-item dt { color: var(--color-ink-sub); }
 
 /* ---------- stacked reveal (GLOBAL WORK) ---------- */
 .stack { position: relative; isolation: isolate; }
@@ -230,8 +227,7 @@ ul, ol { list-style: none; }
 .filter__btn:hover { border-color: var(--color-ink); }
 .filter__btn[aria-pressed="true"] { background: var(--color-ink); color: var(--color-paper); border-color: var(--color-ink); }
 .filter__btn[aria-pressed="true"]::before { content: ""; width: 8px; height: 8px; background: currentColor; border-radius: 50%; }
-.filter__count { font-weight: 400; color: var(--color-ink-sub); }
-.filter__btn[aria-pressed="true"] .filter__count { color: var(--color-night-sub); }
+.filter__count { font-weight: 400; }
 
 /* ---------- night section ---------- */
 .is-night { background: var(--color-ink); color: var(--color-paper); }
