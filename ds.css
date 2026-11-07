@@ -279,7 +279,14 @@ ul, ol { list-style: none; }
 .is-night .sns-icon { color: var(--color-paper); }
 .is-night .sns-icon:hover { background: var(--color-paper); color: var(--color-ink); }
 
-/* ---------- light: glints / glow / wave (4-7, 4-8) ---------- */
+/* ---------- light: grain / glints / glow / wave (4-7, 4-8) ---------- */
+/* fine static grain, part of each surface's background, never over the images */
+body, .site-header, .l-mist, .posts {
+  background-image: var(--grain-light);
+  background-size: 256px 256px;
+  background-attachment: fixed;
+}
+.is-night { background-image: var(--grain-dark); background-size: 256px 256px; background-attachment: fixed; }
 .wave { position: absolute; left: 0; top: 0; width: 100%; z-index: 0; pointer-events: none; }
 .glints { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; }
 .glints--page { position: fixed; z-index: -1; }

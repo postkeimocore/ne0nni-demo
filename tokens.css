@@ -19,6 +19,8 @@
   --glow-violet: rgba(120, 136, 216, .30);
   --glow-cyan: rgba(184, 240, 240, .16);
   --display-opsz: 24;              /* Bodoni Moda optical size, fixed */
+  --grain-light: url(assets/grain-light.png);  /* fine dark specks on paper / mist */
+  --grain-dark: url(assets/grain-dark.png);    /* fine light specks on the night section */
 
   /* grid checker (debug overlay only) */
   --checker-col: rgba(255, 0, 128, .08);

@@ -115,7 +115,7 @@
         return {
           x: Math.random() * W, y: Math.random() * H,
           kind,
-          s: kind === 'sparkle' ? 5 + Math.random() * 6 : 4 + Math.random() * 3,   // radius px
+          s: kind === 'sparkle' ? 3 + Math.random() * 3 : 2.5 + Math.random() * 1.5,   // radius px
           c: pickW(palettes[mode]),
           ph: Math.random() * Math.PI * 2,
           sp: .45 + Math.random() * 1.1,
@@ -127,7 +127,7 @@
     const draw = (t) => {
       ctx.clearRect(0, 0, W, H);
       for (const p of parts) {
-        const a = reduce ? .8 : Math.max(0, Math.sin(t / 1000 * p.sp + p.ph)) ** 2;
+        const a = (reduce ? .8 : Math.max(0, Math.sin(t / 1000 * p.sp + p.ph)) ** 2) * .75;
         if (a < .04) continue;
         ctx.globalAlpha = a;
         ctx.fillStyle = p.c; ctx.strokeStyle = p.c;
@@ -165,7 +165,7 @@
   pageCv.className = 'glints glints--page';
   pageCv.setAttribute('aria-hidden', 'true');
   document.body.prepend(pageCv);
-  field(pageCv, 'day', () => [window.innerWidth, window.innerHeight], 16000).start();
+  field(pageCv, 'day', () => [window.innerWidth, window.innerHeight], 42000).start();
 
   // sections with their own background (mist, night) get their own field
   document.querySelectorAll('[data-glints]').forEach((host) => {
@@ -174,11 +174,12 @@
     cv.className = 'glints';
     cv.setAttribute('aria-hidden', 'true');
     host.prepend(cv);
-    const f = field(cv, mode, () => [host.clientWidth, host.clientHeight], mode === 'night' ? 11000 : 16000);
+    const f = field(cv, mode, () => [host.clientWidth, host.clientHeight], mode === 'night' ? 24000 : 42000);
     if (!reduce) new IntersectionObserver(([e]) => f.setVisible(e.isIntersecting)).observe(host);
   });
 
-  // ---------- hero sound wave: a flat line that sometimes swells, like a heart monitor ----------
+  // ---------- hero sound wave: flat from the left edge, a live voice signal starts
+  //            at the middle of the logo's first "N" and flows to the right ----------
   document.querySelectorAll('[data-wave]').forEach((host) => {
     const cv = document.createElement('canvas');
     cv.className = 'wave';
@@ -186,31 +187,28 @@
     host.prepend(cv);
     const ctx = cv.getContext('2d');
     const color = token('--color-ink-sub');
+    const HEAD = .13;                          // middle of the first "N" (share of the logo width)
     const STEP = 2;                            // px per sample
-    const SPEED = 60;                          // px per second
-    let W = 0, H = 0, y0 = 0, samples = [], raf = 0, lastT = 0, acc = 0, visible = true;
-    let idle = 0, burst = null, gain = 1;
+    const SPEED = 60;                          // px per second, left -> right
+    const RATE = SPEED / STEP;                 // samples per second
+    let W = 0, H = 0, x0 = 0, y0 = 0, amp = 56, hist = [], raf = 0, lastT = 0, acc = 0, visible = true;
+    // voice state: talking / pausing, syllable envelope
+    let mode = 'pause', left = RATE * .8, level = 0, env = 0, syl = 0, sylRate = 4.5, sign = 1;
 
     const next = () => {
-      let v = (Math.random() - .5) * .8;      // the near-flat line
-      if (burst) {
-        const k = burst.i / burst.len;
-        if (burst.kind === 'beat') {          // heart-monitor beat: dip, spike, dip
-          const shape = [0, .06, 0, -.14, 1, -.42, -.08, 0, .1, .14, .06, 0];
-          const f = k * (shape.length - 1), i0 = Math.floor(f), i1 = Math.min(shape.length - 1, i0 + 1);
-          v += (shape[i0] + (shape[i1] - shape[i0]) * (f - i0)) * burst.amp;
-        } else {                              // sound swell: oscillation under an envelope
-          v += Math.sin(burst.i * burst.f) * Math.sin(Math.PI * k) ** 1.5 * burst.amp;
-        }
-        if (++burst.i >= burst.len) { burst = null; idle = 60 + Math.random() * 180; }
-        v *= gain;
-      } else if (--idle <= 0) {
-        const beat = Math.random() < .45;
-        burst = beat
-          ? { kind: 'beat', i: 0, len: 22 + Math.random() * 10, amp: 28 + Math.random() * 40 }
-          : { kind: 'swell', i: 0, len: 40 + Math.random() * 70, amp: 10 + Math.random() * 34, f: .45 + Math.random() * .5 };
+      if (--left <= 0) {
+        if (mode === 'pause') { mode = 'talk'; left = RATE * (.6 + Math.random() * 1.6); level = .35 + Math.random() * .65; sylRate = 3.5 + Math.random() * 2.5; }
+        else { mode = 'pause'; left = RATE * (.35 + Math.random() * 1.2); }
       }
-      return v;
+      let target = 0;
+      if (mode === 'talk') {
+        syl += (2 * Math.PI * sylRate) / RATE * (.8 + Math.random() * .4);
+        target = level * Math.abs(Math.sin(syl)) ** .7;
+      }
+      env += (target - env) * .35;
+      sign = -sign;
+      const v = env * amp * sign * (.45 + Math.random() * .55);
+      return v + (Math.random() - .5) * .6;    // the line is never perfectly still
     };
 
     const build = () => {
@@ -223,26 +221,27 @@
       cv.style.height = `${H}px`;
       cv.width = W * dpr; cv.height = H * dpr;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      y0 = Math.round(stacked ? first + 24 : H * .74) + .5;
-      gain = stacked ? .42 : 1;
-      idle = 40;
-      samples = Array.from({ length: Math.ceil(W / STEP) + 2 }, () => next());
+      y0 = Math.round(stacked ? first + 24 : H * .84) + .5;
+      amp = stacked ? 22 : 56;
+      const logo = host.querySelector('.cover__logo');
+      const lr = logo.getBoundingClientRect(), hr = host.getBoundingClientRect();
+      x0 = Math.round(lr.left - hr.left + lr.width * HEAD);
+      hist = Array.from({ length: Math.ceil((W - x0) / STEP) + 2 }, () => 0);
     };
 
     const draw = () => {
       ctx.clearRect(0, 0, W, H);
       ctx.beginPath();
-      for (let i = 0; i < samples.length; i++) {
-        const x = i * STEP - acc, y = y0 - samples[i];
-        i ? ctx.lineTo(x, y) : ctx.moveTo(x, y);
-      }
+      ctx.moveTo(0, y0);
+      ctx.lineTo(x0, y0);                      // no input yet: a straight line
+      for (let i = 0; i < hist.length; i++) ctx.lineTo(x0 + i * STEP + acc, y0 - hist[i]);
       ctx.strokeStyle = color; ctx.lineWidth = 1; ctx.lineJoin = 'round';
       ctx.globalAlpha = .9;
       ctx.stroke();
-      // fade both ends
+      // fade the right end only
       ctx.globalCompositeOperation = 'destination-in';
       const g = ctx.createLinearGradient(0, 0, W, 0);
-      g.addColorStop(0, 'rgba(0,0,0,0)'); g.addColorStop(.08, '#000'); g.addColorStop(.92, '#000'); g.addColorStop(1, 'rgba(0,0,0,0)');
+      g.addColorStop(0, '#000'); g.addColorStop(.86, '#000'); g.addColorStop(1, 'rgba(0,0,0,0)');
       ctx.globalAlpha = 1; ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
       ctx.globalCompositeOperation = 'source-over';
     };
@@ -252,17 +251,15 @@
       const dt = lastT ? Math.min(64, t - lastT) : 16;
       lastT = t;
       acc += SPEED * dt / 1000;
-      while (acc >= STEP) { acc -= STEP; samples.shift(); samples.push(next()); }
+      while (acc >= STEP) { acc -= STEP; hist.pop(); hist.unshift(next()); }
       draw();
     };
     const start = () => { if (!raf && visible && !document.hidden && !reduce) { lastT = 0; raf = requestAnimationFrame(loop); } };
     const stop = () => { cancelAnimationFrame(raf); raf = 0; };
 
     build();
-    if (reduce) {                             // one still beat in the middle
-      samples = samples.map(() => 0);
-      const mid = Math.floor(samples.length * .62);
-      [0, -6, -10, 5, 44, -22, -10, 3].forEach((v, i) => { samples[mid + i] = v * gain; });
+    if (reduce) {                             // a still phrase just after the input point
+      for (let i = 0; i < hist.length; i++) hist[i] = next();
       draw();
     } else {
       new IntersectionObserver(([e]) => { visible = e.isIntersecting; visible ? start() : stop(); }).observe(host);
