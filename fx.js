@@ -187,45 +187,54 @@
     host.prepend(cv);
     const ctx = cv.getContext('2d');
     const color = token('--color-ink-sub');
-    const INPUT_FROM = .04, INPUT_TO = .5;    // where a phrase may enter (share of the width)
+    const INPUT_FROM = .04;                    // where a phrase may enter (share of the width)
+    const INPUT_TO_WIDE = .3, INPUT_TO_STACKED = .45;   // PC: stay under the logo, clear of the illustration
     const GAP = 12;                            // samples kept quiet between phrases
+    const MAX_WAIT = .7;                       // seconds a phrase may wait for its spot
     const STEP = 2;                            // px per sample
-    const SPEED = 60;                          // px per second, left -> right
-    const RATE = SPEED / STEP;                 // samples per second
-    let W = 0, H = 0, y0 = 0, amp = 56, line = [], mark = [], head = -1, raf = 0, lastT = 0, acc = 0, visible = true;
+    let SPEED = 130, RATE = SPEED / STEP;      // flow left -> right; set from the width in build()
+    let W = 0, H = 0, y0 = 0, amp = 56, inputTo = .3, line = [], mark = [], head = -1, raf = 0, lastT = 0, acc = 0, visible = true;
     // voice state: talking / pausing, syllable envelope
     let mode = 'pause', left = RATE * .6, level = 0, env = 0, syl = 0, sylRate = 4.5, sign = 1;
 
     const quiet = () => (Math.random() - .5) * .6;   // the line is never perfectly still
-    // the entry point wanders slowly. It always moves slower than the flow (1 sample per tick),
-    // so it can never catch up with older sound: newer sound is always to the left (timeline order)
-    let hp = 0, dh = 0;
+    // each phrase picks its own random entry point (no momentum, so no slow drift).
+    // Timeline order: it may only enter left of every waveform still on the line, so if the
+    // spot is not free yet it waits a moment; if waiting would take too long, it picks again
+    // among the free spots. Drawn samples are never rewritten.
+    let target = -1, waited = 0, tries = 0;
+    const startTalk = (h) => {
+      mode = 'talk'; head = h; target = -1; tries = 0;
+      left = RATE * (.5 + Math.random() * .9);
+      level = .55 + Math.random() * .45; sylRate = 3.5 + Math.random() * 2.5;
+    };
     const tick = () => {
-      const lo = line.length * INPUT_FROM, cap = line.length * INPUT_TO;
-      dh = Math.max(-.4, Math.min(.4, dh + (Math.random() - .5) * .06));
-      hp += dh;
-      if (hp < lo) { hp = lo; dh = Math.abs(dh); } else if (hp > cap) { hp = cap; dh = -Math.abs(dh); }
+      const lo = Math.floor(line.length * INPUT_FROM), cap = Math.floor(line.length * inputTo);
       if (--left <= 0) {
         if (mode === 'pause') {
+          if (target < 0) { target = lo + Math.floor(Math.random() * (cap - lo)); waited = 0; }
           const firstDrawn = mark.indexOf(1);
-          if (firstDrawn < 0 || firstDrawn - Math.floor(hp) > GAP) {
-            mode = 'talk'; left = RATE * (.8 + Math.random() * 1.8);
-            level = .55 + Math.random() * .45; sylRate = 3.5 + Math.random() * 2.5;
-          } else { left = RATE * .2; }        // keep a short quiet gap after the last phrase
-        } else { mode = 'pause'; left = RATE * (.5 + Math.random() * 1.1); }
+          const limit = firstDrawn < 0 ? Infinity : firstDrawn - GAP;
+          if (target <= limit) startTalk(target);
+          else if (waited >= RATE * MAX_WAIT) {
+            // waited long enough: pick once more anywhere; after that, take a free spot on the left
+            if (tries >= 1 && limit > lo) startTalk(lo + Math.floor(Math.random() * (limit - lo)));
+            else { tries++; target = lo + Math.floor(Math.random() * (cap - lo)); waited = 0; left = 1; }
+          }
+          else { waited++; left = 1; }        // spot not free yet: check again next step
+        } else { mode = 'pause'; head = -1; left = RATE * (.3 + Math.random() * .7); }
       }
-      let target = 0;
+      let env_t = 0;
       if (mode === 'talk') {
         syl += (2 * Math.PI * sylRate) / RATE * (.8 + Math.random() * .4);
-        target = level * Math.abs(Math.sin(syl)) ** .7;
+        env_t = level * Math.abs(Math.sin(syl)) ** .7;
       }
-      env += (target - env) * .35;
+      env += (env_t - env) * .35;
       // flow: everything moves one step right, a quiet sample enters at the left edge
       line.pop(); line.unshift(quiet());
       mark.pop(); mark.unshift(0);
       // input: the voice is written once at the entry point; drawn samples are never rewritten
-      head = Math.floor(hp);
-      if (mode === 'talk' && env > .005 && !mark[head]) {
+      if (mode === 'talk' && head >= 0 && env > .005 && !mark[head]) {
         sign = -sign;
         line[head] = env * amp * sign * (.45 + Math.random() * .55) + quiet();
         mark[head] = 1;
@@ -239,15 +248,17 @@
       // stacked (SP / TB portrait): the wave runs in the empty row right under the illustration
       const stacked = host.clientHeight - first > 120;
       W = host.clientWidth; H = stacked ? first + 48 : first;
+      SPEED = Math.max(40, Math.min(130, W * .09)); RATE = SPEED / STEP;   // same share of the width per second
       cv.style.height = `${H}px`;
       cv.width = W * dpr; cv.height = H * dpr;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       y0 = Math.round(stacked ? first + 24 : H * .84) + .5;
       amp = stacked ? 22 : 56;
+      inputTo = stacked ? INPUT_TO_STACKED : INPUT_TO_WIDE;
       line = Array.from({ length: Math.ceil(W / STEP) + 2 }, quiet);
       mark = line.map(() => 0);
       head = -1; mode = 'pause'; left = RATE * .3; env = 0;
-      hp = line.length * (INPUT_FROM + Math.random() * (INPUT_TO - INPUT_FROM)); dh = 0;
+      target = -1; waited = 0; tries = 0;
     };
 
     const draw = () => {
