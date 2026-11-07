@@ -246,8 +246,10 @@ ul, ol { list-style: none; }
   font: inherit;
 }
 .textarea { min-height: 192px; resize: vertical; }
-.input:focus-visible, .textarea:focus-visible { outline: 2px solid var(--color-ink); outline-offset: 0; border-color: var(--color-ink); }
-.input.is-error { border-color: var(--color-ink); border-width: 2px; }
+/* typing state: the 1px border turns ink. No extra outline, so the line stays thin */
+.input:focus, .textarea:focus, .input:focus-visible, .textarea:focus-visible { outline: none; border-color: var(--color-ink); }
+/* error: ink border at 1px plus the message and mark below (never color alone) */
+.input.is-error, .textarea.is-error { border-color: var(--color-ink); }
 .field__error { display: flex; gap: var(--space-2); align-items: center; }
 .field__error::before { content: "!"; display: inline-grid; place-items: center; width: 16px; height: 16px; border: 1px solid currentColor; border-radius: 50%; font: 600 12px/1 var(--font-grotesk); }
 .chips { display: flex; flex-wrap: wrap; gap: var(--space-2); border: 0; margin: 0; padding: 0; }
