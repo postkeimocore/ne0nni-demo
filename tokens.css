@@ -13,13 +13,12 @@
   --color-night-sub: #A3A3AD;
 
   /* light (decoration only, taken from the artwork) */
-  --color-glint-violet: #7888D8;   /* jacket of No.002 */
   --color-glint-violet-lt: #B8C0F8; /* lit jacket highlight */
   --color-glint-cyan: #B8F0F0;     /* phone-screen glow of No.001 */
   --glow-mist: rgba(159, 162, 198, .22);
   --glow-violet: rgba(120, 136, 216, .30);
   --glow-cyan: rgba(184, 240, 240, .16);
-  --grain: url(assets/grain-bg.png);
+  --display-opsz: 24;              /* Bodoni Moda optical size, fixed */
 
   /* grid checker (debug overlay only) */
   --checker-col: rgba(255, 0, 128, .08);
@@ -43,7 +42,6 @@
   --ls-label: 0.08em;
   --ls-ja-body: 0.04em;
   --ls-ja-display: 0.08em;
-  --ls-spread: 0.6em;
 
   /* space (8px grid, 4px for fine adjustment) */
   --space-1: 4px;

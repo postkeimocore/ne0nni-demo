@@ -1,16 +1,14 @@
-// NE0NNi effects: cursor asterisks + glints.
-// The grain is a static background (ds.css). Glints sit behind the content,
-// so neither ever covers the illustrations. Spec: ../design-system.md 4-6, 4-7
+// NE0NNi effects: cursor asterisks, glints, hero sound wave.
+// Glints and the wave sit behind the content, so they never cover the illustrations.
+// Spec: ../design-system.md 4-6, 4-7, 4-8
 (() => {
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const fine = window.matchMedia('(pointer: fine)').matches;
   const root = getComputedStyle(document.documentElement);
   const token = (n) => root.getPropertyValue(n).trim();
   const AST_D = 'M1151.19,64.9c.52,2.65.14,5.45-1.28,7.74-1.89,3.06-5.13,4.86-9.01,4.83-2.4.2-4.65-.42-6.51-1.64-3.52-2.32-5.11-6.69-4.22-10.82l2.8-12.93-13.43,9.77c-1.18.86-2.52,1.53-3.96,1.82-4.74.97-9.32-1.61-11.25-6.19-2.34-5.82.74-11.99,6.9-13.78l13.03-4.09-13.03-4.87c-2.68-1-4.88-3.05-5.83-5.74-1.06-2.99-.56-6.27,1.56-9.15,2.82-3.94,7.89-5.84,12.41-3.95.69.29,1.32.69,1.93,1.13l12.63,9.19-2.38-11.88c-.17-.85-.28-1.71-.26-2.58.17-5.65,4.48-9.75,10.15-10.18q.37-.03.74-.03c6.79-.1,11.76,6.44,10.27,13.06l-2.74,12.21,11.97-8.21c4.84-3.93,11.18-3.5,14.97,1.24,2.27,2.71,2.99,6.05,2.18,9.1-.84,3.14-3.37,5.54-6.46,6.52l-13.94,4.39,12.98,5.37c5.59,2.31,7.57,9.44,3.69,14.09q-.21.24-.43.48c-3.4,4.17-9.32,5.19-13.66,2.13l-12.34-9.8L1151.19,64.9Z';
-  const AST = new Path2D(AST_D);            // logo asterisk, viewBox 1103.5 1.5 75.6 76
-  const AST_C = [1141.3, 39.5], AST_S = 76;
 
-  // ---------- cursor asterisks ----------
+  // ---------- cursor asterisks (logo asterisk) ----------
   if (fine && !reduce) {
     const NS = 'http://www.w3.org/2000/svg';
     const defs = document.createElementNS(NS, 'svg');
@@ -25,7 +23,7 @@
     layer.setAttribute('aria-hidden', 'true');
     document.body.appendChild(layer);
 
-    const SIZES = [16, 24, 40, 80];          // design-system asterisk sizes
+    const SIZES = [16, 24, 40, 80];
     const SPEED = [0.5, 1.2, 2.4];           // px/ms thresholds between sizes
     let last = null, v = 0, travel = 0, n = 0;
 
@@ -64,12 +62,45 @@
     }, { passive: true });
   }
 
-  // ---------- glints: tiny twinkling asterisks over the static grain ----------
+  // ---------- glint shapes: sparkle (4-point star), spark (rays), gothic asterisk ----------
+  const SHAPES = {
+    sparkle(ctx, s) {                        // キラン
+      ctx.beginPath();
+      ctx.moveTo(0, -s);
+      ctx.quadraticCurveTo(s * .12, -s * .12, s, 0);
+      ctx.quadraticCurveTo(s * .12, s * .12, 0, s);
+      ctx.quadraticCurveTo(-s * .12, s * .12, -s, 0);
+      ctx.quadraticCurveTo(-s * .12, -s * .12, 0, -s);
+      ctx.fill();
+    },
+    spark(ctx, s) {                          // スパーク
+      ctx.lineWidth = 1; ctx.lineCap = 'round';
+      ctx.beginPath();
+      for (let k = 0; k < 8; k++) {
+        const a = k * Math.PI / 4, long = k % 2 === 0;
+        const r0 = s * .28, r1 = long ? s : s * .55;
+        ctx.moveTo(Math.cos(a) * r0, Math.sin(a) * r0);
+        ctx.lineTo(Math.cos(a) * r1, Math.sin(a) * r1);
+      }
+      ctx.stroke();
+    },
+    gothic(ctx, s) {                         // ゴシック体のアスタリスク
+      ctx.lineWidth = Math.max(1, s * .24); ctx.lineCap = 'butt';
+      ctx.beginPath();
+      for (let k = 0; k < 3; k++) {
+        const a = Math.PI / 2 + k * Math.PI / 3;
+        ctx.moveTo(Math.cos(a) * s, Math.sin(a) * s);
+        ctx.lineTo(-Math.cos(a) * s, -Math.sin(a) * s);
+      }
+      ctx.stroke();
+    },
+  };
+  const KINDS = [['sparkle', 4], ['spark', 3], ['gothic', 3]];
+  const pickW = (list) => { const tot = list.reduce((a, [, w]) => a + w, 0); let r = Math.random() * tot; for (const [v, w] of list) { if ((r -= w) < 0) return v; } return list[0][0]; };
   const palettes = {
-    day: [[token('--color-glint-violet'), 1]],
+    day: [[token('--color-ink-sub'), 1]],
     night: [[token('--color-paper'), 4], [token('--color-glint-cyan'), 3], [token('--color-glint-violet-lt'), 3]],
   };
-  const pick = (pal) => { const tot = pal.reduce((a, [, w]) => a + w, 0); let r = Math.random() * tot; for (const [c, w] of pal) { if ((r -= w) < 0) return c; } return pal[0][0]; };
 
   const field = (cv, mode, sizeOf, density) => {
     const ctx = cv.getContext('2d');
@@ -80,16 +111,16 @@
       cv.width = W * dpr; cv.height = H * dpr;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       parts = Array.from({ length: Math.round((W * H) / density) }, () => {
-        const big = Math.random() < .55;
+        const kind = pickW(KINDS);
         return {
           x: Math.random() * W, y: Math.random() * H,
-          s: big ? 4 + Math.random() * 4 : 1.2 + Math.random() * 1.4,   // px
-          ast: big,
-          c: pick(palettes[mode]),
+          kind,
+          s: kind === 'sparkle' ? 5 + Math.random() * 6 : 4 + Math.random() * 3,   // radius px
+          c: pickW(palettes[mode]),
           ph: Math.random() * Math.PI * 2,
-          sp: .5 + Math.random() * 1.3,
-          rot: Math.random() * Math.PI,
-          vx: (Math.random() - .5) * .04, vy: (Math.random() - .5) * .04,
+          sp: .45 + Math.random() * 1.1,
+          rot: kind === 'gothic' ? Math.random() * Math.PI : 0,
+          vx: (Math.random() - .5) * .03, vy: (Math.random() - .5) * .03,
         };
       });
     };
@@ -97,19 +128,14 @@
       ctx.clearRect(0, 0, W, H);
       for (const p of parts) {
         const a = reduce ? .8 : Math.max(0, Math.sin(t / 1000 * p.sp + p.ph)) ** 2;
-        if (a < .03) continue;
+        if (a < .04) continue;
         ctx.globalAlpha = a;
-        ctx.fillStyle = p.c;
-        if (p.ast) {
-          const k = (p.s * (.55 + .45 * a)) / AST_S;
-          ctx.save();
-          ctx.translate(p.x, p.y); ctx.rotate(p.rot + t / 4000 * p.sp); ctx.scale(k, k);
-          ctx.translate(-AST_C[0], -AST_C[1]);
-          ctx.fill(AST);
-          ctx.restore();
-        } else {
-          ctx.beginPath(); ctx.arc(p.x, p.y, p.s / 2, 0, Math.PI * 2); ctx.fill();
-        }
+        ctx.fillStyle = p.c; ctx.strokeStyle = p.c;
+        ctx.save();
+        ctx.translate(p.x, p.y);
+        if (p.rot) ctx.rotate(p.rot);
+        SHAPES[p.kind](ctx, p.s * (.5 + .5 * a));
+        ctx.restore();
       }
       ctx.globalAlpha = 1;
     };
@@ -119,8 +145,8 @@
       lastT = t;
       for (const p of parts) {
         p.x += p.vx; p.y += p.vy;
-        if (p.x < -8) p.x = W + 8; else if (p.x > W + 8) p.x = -8;
-        if (p.y < -8) p.y = H + 8; else if (p.y > H + 8) p.y = -8;
+        if (p.x < -12) p.x = W + 12; else if (p.x > W + 12) p.x = -12;
+        if (p.y < -12) p.y = H + 12; else if (p.y > H + 12) p.y = -12;
       }
       draw(t);
     };
@@ -134,21 +160,115 @@
     return { start, stop, setVisible: (vis) => { visible = vis; vis ? start() : stop(); } };
   };
 
-  // page-wide field: fixed behind all content (shows wherever the page background shows)
+  // page-wide field: fixed behind all content
   const pageCv = document.createElement('canvas');
   pageCv.className = 'glints glints--page';
   pageCv.setAttribute('aria-hidden', 'true');
   document.body.prepend(pageCv);
-  field(pageCv, 'day', () => [window.innerWidth, window.innerHeight], 9000).start();
+  field(pageCv, 'day', () => [window.innerWidth, window.innerHeight], 16000).start();
 
-  // sections with their own background (mist, night) get their own field behind their content
+  // sections with their own background (mist, night) get their own field
   document.querySelectorAll('[data-glints]').forEach((host) => {
     const mode = host.dataset.glints === 'night' ? 'night' : 'day';
     const cv = document.createElement('canvas');
     cv.className = 'glints';
     cv.setAttribute('aria-hidden', 'true');
     host.prepend(cv);
-    const f = field(cv, mode, () => [host.clientWidth, host.clientHeight], mode === 'night' ? 7000 : 9000);
+    const f = field(cv, mode, () => [host.clientWidth, host.clientHeight], mode === 'night' ? 11000 : 16000);
     if (!reduce) new IntersectionObserver(([e]) => f.setVisible(e.isIntersecting)).observe(host);
+  });
+
+  // ---------- hero sound wave: a flat line that sometimes swells, like a heart monitor ----------
+  document.querySelectorAll('[data-wave]').forEach((host) => {
+    const cv = document.createElement('canvas');
+    cv.className = 'wave';
+    cv.setAttribute('aria-hidden', 'true');
+    host.prepend(cv);
+    const ctx = cv.getContext('2d');
+    const color = token('--color-ink-sub');
+    const STEP = 2;                            // px per sample
+    const SPEED = 60;                          // px per second
+    let W = 0, H = 0, y0 = 0, samples = [], raf = 0, lastT = 0, acc = 0, visible = true;
+    let idle = 0, burst = null, gain = 1;
+
+    const next = () => {
+      let v = (Math.random() - .5) * .8;      // the near-flat line
+      if (burst) {
+        const k = burst.i / burst.len;
+        if (burst.kind === 'beat') {          // heart-monitor beat: dip, spike, dip
+          const shape = [0, .06, 0, -.14, 1, -.42, -.08, 0, .1, .14, .06, 0];
+          const f = k * (shape.length - 1), i0 = Math.floor(f), i1 = Math.min(shape.length - 1, i0 + 1);
+          v += (shape[i0] + (shape[i1] - shape[i0]) * (f - i0)) * burst.amp;
+        } else {                              // sound swell: oscillation under an envelope
+          v += Math.sin(burst.i * burst.f) * Math.sin(Math.PI * k) ** 1.5 * burst.amp;
+        }
+        if (++burst.i >= burst.len) { burst = null; idle = 60 + Math.random() * 180; }
+        v *= gain;
+      } else if (--idle <= 0) {
+        const beat = Math.random() < .45;
+        burst = beat
+          ? { kind: 'beat', i: 0, len: 22 + Math.random() * 10, amp: 28 + Math.random() * 40 }
+          : { kind: 'swell', i: 0, len: 40 + Math.random() * 70, amp: 10 + Math.random() * 34, f: .45 + Math.random() * .5 };
+      }
+      return v;
+    };
+
+    const build = () => {
+      const dpr = Math.min(2, window.devicePixelRatio || 1);
+      const header = document.querySelector('.site-header');
+      const first = Math.min(host.clientHeight, window.innerHeight - (header ? header.offsetHeight : 0));
+      // stacked (SP / TB portrait): the wave runs in the empty row right under the illustration
+      const stacked = host.clientHeight - first > 120;
+      W = host.clientWidth; H = stacked ? first + 48 : first;
+      cv.style.height = `${H}px`;
+      cv.width = W * dpr; cv.height = H * dpr;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      y0 = Math.round(stacked ? first + 24 : H * .74) + .5;
+      gain = stacked ? .42 : 1;
+      idle = 40;
+      samples = Array.from({ length: Math.ceil(W / STEP) + 2 }, () => next());
+    };
+
+    const draw = () => {
+      ctx.clearRect(0, 0, W, H);
+      ctx.beginPath();
+      for (let i = 0; i < samples.length; i++) {
+        const x = i * STEP - acc, y = y0 - samples[i];
+        i ? ctx.lineTo(x, y) : ctx.moveTo(x, y);
+      }
+      ctx.strokeStyle = color; ctx.lineWidth = 1; ctx.lineJoin = 'round';
+      ctx.globalAlpha = .9;
+      ctx.stroke();
+      // fade both ends
+      ctx.globalCompositeOperation = 'destination-in';
+      const g = ctx.createLinearGradient(0, 0, W, 0);
+      g.addColorStop(0, 'rgba(0,0,0,0)'); g.addColorStop(.08, '#000'); g.addColorStop(.92, '#000'); g.addColorStop(1, 'rgba(0,0,0,0)');
+      ctx.globalAlpha = 1; ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+      ctx.globalCompositeOperation = 'source-over';
+    };
+
+    const loop = (t) => {
+      raf = requestAnimationFrame(loop);
+      const dt = lastT ? Math.min(64, t - lastT) : 16;
+      lastT = t;
+      acc += SPEED * dt / 1000;
+      while (acc >= STEP) { acc -= STEP; samples.shift(); samples.push(next()); }
+      draw();
+    };
+    const start = () => { if (!raf && visible && !document.hidden && !reduce) { lastT = 0; raf = requestAnimationFrame(loop); } };
+    const stop = () => { cancelAnimationFrame(raf); raf = 0; };
+
+    build();
+    if (reduce) {                             // one still beat in the middle
+      samples = samples.map(() => 0);
+      const mid = Math.floor(samples.length * .62);
+      [0, -6, -10, 5, 44, -22, -10, 3].forEach((v, i) => { samples[mid + i] = v * gain; });
+      draw();
+    } else {
+      new IntersectionObserver(([e]) => { visible = e.isIntersecting; visible ? start() : stop(); }).observe(host);
+      document.addEventListener('visibilitychange', () => (document.hidden ? stop() : start()));
+    }
+    let rt = 0;
+    window.addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(() => { build(); if (reduce) draw(); }, 200); });
   });
 })();

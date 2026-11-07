@@ -45,6 +45,9 @@ ul, ol { list-style: none; }
   font-family: var(--font-display);
   font-style: italic;
   font-variant-numeric: lining-nums;
+  /* Bodoni Moda at a text optical size: same shapes, hairlines stay visible at large sizes */
+  font-optical-sizing: none;
+  font-variation-settings: "opsz" var(--display-opsz);
 }
 .t-display-1 { font-size: var(--fs-display-1); line-height: var(--lh-display-1); font-weight: 600; letter-spacing: var(--ls-display-tight); }
 .t-display-2 { font-size: var(--fs-display-2); line-height: var(--lh-display-2); font-weight: 600; letter-spacing: var(--ls-display-tight); }
@@ -276,13 +279,8 @@ ul, ol { list-style: none; }
 .is-night .sns-icon { color: var(--color-paper); }
 .is-night .sns-icon:hover { background: var(--color-paper); color: var(--color-ink); }
 
-/* ---------- light: grain / glints / glow (4-7) ---------- */
-/* static grain is part of every surface's background, so it never covers images */
-body, .site-header, .l-mist, .is-night, .posts {
-  background-image: var(--grain);
-  background-size: 256px 256px;
-  background-attachment: fixed;
-}
+/* ---------- light: glints / glow / wave (4-7, 4-8) ---------- */
+.wave { position: absolute; left: 0; top: 0; width: 100%; z-index: 0; pointer-events: none; }
 .glints { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; }
 .glints--page { position: fixed; z-index: -1; }
 [data-glints] { position: relative; isolation: isolate; }

@@ -33,13 +33,14 @@
   .cover__ast-c { position: absolute; right: var(--grid-margin); top: 40svh; }
   .kern { letter-spacing: var(--k); }
   .sc { white-space: nowrap; align-self: center; }
-  .sc-kana { font-family: var(--font-gothic); letter-spacing: var(--ls-spread); }
-  .sc-1 { grid-column: 1; grid-row: 3; }
-  .sc-2 { grid-column: 2 / span 3; grid-row: 4; }
-  .sc-3 { grid-column: 3; grid-row: 5; }
-  .sc-4 { grid-column: 4; grid-row: 6; }
-  .sc-5 { grid-column: 1 / span 3; grid-row: 7; }
-  .cover__ast-a { grid-column: 4; grid-row: 7 / span 2; align-self: center; }
+  .sc-ja { font-family: var(--font-gothic); }
+  /* row 3 stays empty: the sound wave runs there under the illustration */
+  .sc-1 { grid-column: 1; grid-row: 4; }
+  .sc-2 { grid-column: 2 / span 3; grid-row: 5; }
+  .sc-3 { grid-column: 3; grid-row: 6; }
+  .sc-4 { grid-column: 4; grid-row: 7; }
+  .sc-5 { grid-column: 1 / span 3; grid-row: 8; }
+  .cover__ast-a { grid-column: 4; grid-row: 8 / span 2; align-self: center; }
   .cover__meta { display: flex; justify-content: space-between; margin-top: var(--space-4); }
 
   @media (min-width: 768px) and (orientation: landscape), (min-width: 1200px) {
@@ -178,15 +179,15 @@
 <main id="top">
 
 <!-- COVER: hero concept -->
-<section class="cover l-container" aria-label="カバー">
+<section class="cover l-container" aria-label="カバー" data-wave>
   <div class="cover__grid l-grid">
     <span class="logo cover__logo" role="img" aria-label="NE0NNi" data-masthead></span>
     <span class="ast is-twinkle cover__ast-a" style="--size:80px" aria-hidden="true"></span>
     <span class="ast is-twinkle cover__ast-c" style="--size:40px;--delay:-2.2s" aria-hidden="true"></span>
     <span class="sc sc-1 t-number">No.002</span>
     <span class="sc sc-2 t-grotesk-data">HEADPHONES GIRL</span>
-    <span class="sc sc-3 t-number">illustration</span>
-    <span class="sc sc-4 t-grotesk-data sc-kana" lang="ja">ネオンニ</span>
+    <span class="sc sc-3 t-grotesk-data">illustration</span>
+    <span class="sc sc-4 t-grotesk-data sc-ja" lang="ja">ネオンニ</span>
     <span class="sc sc-5 t-grotesk-data">Girls &amp; night sounds.</span>
   </div>
   <img class="cover__cut" src="assets/art/002-cut.webp" alt="屋上の手すりにもたれる、首にオレンジのヘッドホンをかけた女の子" width="1600" height="1960">
