@@ -191,7 +191,7 @@
     const STEP = 2;                            // px per sample
     const SPEED = 60;                          // px per second, left -> right
     const RATE = SPEED / STEP;                 // samples per second
-    let W = 0, H = 0, y0 = 0, amp = 56, line = [], head = -1, raf = 0, lastT = 0, acc = 0, visible = true;
+    let W = 0, H = 0, y0 = 0, amp = 56, line = [], mark = [], head = -1, raf = 0, lastT = 0, acc = 0, visible = true;
     // voice state: talking / pausing, syllable envelope
     let mode = 'pause', left = RATE * .6, level = 0, env = 0, syl = 0, sylRate = 4.5, sign = 1;
 
@@ -199,10 +199,24 @@
     const tick = () => {
       if (--left <= 0) {
         if (mode === 'pause') {
-          mode = 'talk'; left = RATE * (.6 + Math.random() * 1.6);
-          level = .35 + Math.random() * .65; sylRate = 3.5 + Math.random() * 2.5;
-          head = Math.floor(line.length * (INPUT_FROM + Math.random() * (INPUT_TO - INPUT_FROM)));
-        } else { mode = 'pause'; left = RATE * (.35 + Math.random() * 1.2); }
+          // a phrase enters at a random point. It is never placed on a drawn part of the line,
+          // and while an older waveform flows through the entry point, nothing is written there,
+          // so a waveform never changes once it has been drawn
+          const lo = Math.floor(line.length * INPUT_FROM), hi = Math.floor(line.length * INPUT_TO);
+          let h = -1;
+          for (let k = 0; k < 8 && h < 0; k++) {
+            const c = lo + Math.floor(Math.random() * (hi - lo));
+            if (!mark.slice(Math.max(0, c - 8), c + 9).includes(1)) h = c;
+          }
+          if (h >= 0) {
+            mode = 'talk'; left = RATE * (.6 + Math.random() * 1.6);
+            level = .35 + Math.random() * .65; sylRate = 3.5 + Math.random() * 2.5;
+            head = h;
+          } else { left = RATE * .25; }       // no clear spot yet: keep quiet a little longer
+        } else {                              // pauses: mostly short, sometimes long, so the line clears
+          mode = 'pause'; head = -1;
+          left = RATE * (Math.random() < .35 ? 3.5 + Math.random() * 3.5 : .9 + Math.random() * 2.2);
+        }
       }
       let target = 0;
       if (mode === 'talk') {
@@ -212,10 +226,12 @@
       env += (target - env) * .35;
       // flow: everything moves one step right, a quiet sample enters at the left edge
       line.pop(); line.unshift(quiet());
-      // input: while the envelope is open, the voice is written at this phrase's entry point
-      if (head >= 0 && env > .005) {
+      mark.pop(); mark.unshift(0);
+      // input: while talking, the voice is written once at this phrase's entry point
+      if (head >= 0 && env > .005 && !mark[head]) {
         sign = -sign;
         line[head] = env * amp * sign * (.45 + Math.random() * .55) + quiet();
+        mark[head] = 1;
       }
     };
 
@@ -232,7 +248,8 @@
       y0 = Math.round(stacked ? first + 24 : H * .84) + .5;
       amp = stacked ? 22 : 56;
       line = Array.from({ length: Math.ceil(W / STEP) + 2 }, quiet);
-      head = -1;
+      mark = line.map(() => 0);
+      head = -1; mode = 'pause'; left = RATE * .6; env = 0;
     };
 
     const draw = () => {
