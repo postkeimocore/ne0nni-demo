@@ -178,8 +178,9 @@
     if (!reduce) new IntersectionObserver(([e]) => f.setVisible(e.isIntersecting)).observe(host);
   });
 
-  // ---------- hero sound wave: the whole line flows left -> right; each spoken phrase
-  //            enters at a random point and its waveform travels on to the right ----------
+  // ---------- hero sound wave: a recording timeline. The line flows left -> right and the voice
+  //            always enters at the same "now" point (the middle of the logo's first N).
+  //            What changes from phrase to phrase is its length, loudness and roughness. ----------
   document.querySelectorAll('[data-wave]').forEach((host) => {
     const cv = document.createElement('canvas');
     cv.className = 'wave';
@@ -187,57 +188,47 @@
     host.prepend(cv);
     const ctx = cv.getContext('2d');
     const color = token('--color-ink-sub');
-    const INPUT_FROM = .04;                    // where a phrase may enter (share of the width)
-    const INPUT_TO_WIDE = .3, INPUT_TO_STACKED = .45;   // PC: stay under the logo, clear of the illustration
-    const GAP = 12;                            // samples kept quiet between phrases
-    const MAX_WAIT = .7;                       // seconds a phrase may wait for its spot
+    const HEAD = .13;                          // middle of the first "N" (share of the logo width)
     const STEP = 2;                            // px per sample
-    let SPEED = 130, RATE = SPEED / STEP;      // flow left -> right; set from the width in build()
-    let W = 0, H = 0, y0 = 0, amp = 56, inputTo = .3, line = [], mark = [], head = -1, raf = 0, lastT = 0, acc = 0, visible = true;
-    // voice state: talking / pausing, syllable envelope
-    let mode = 'pause', left = RATE * .6, level = 0, env = 0, syl = 0, sylRate = 4.5, sign = 1;
+    let SPEED = 130, RATE = SPEED / STEP;      // set from the width in build()
+    let W = 0, H = 0, y0 = 0, amp = 56, line = [], head = 0, raf = 0, lastT = 0, acc = 0, visible = true;
 
+    // one phrase = a length, a loudness, a roughness and a syllable rhythm, all picked anew
+    let mode = 'pause', left = 0, env = 0, syl = 0, ph = 0, sign = 1;
+    let level = 0, rough = 0, tone = 1, sylRate = 4.5, swell = 0;
     const quiet = () => (Math.random() - .5) * .6;   // the line is never perfectly still
-    // each phrase picks its own random entry point (no momentum, so no slow drift).
-    // Timeline order: it may only enter left of every waveform still on the line, so if the
-    // spot is not free yet it waits a moment; if waiting would take too long, it picks again
-    // among the free spots. Drawn samples are never rewritten.
-    let target = -1, waited = 0, tries = 0;
-    const startTalk = (h) => {
-      mode = 'talk'; head = h; target = -1; tries = 0;
-      left = RATE * (.5 + Math.random() * .9);
-      level = .55 + Math.random() * .45; sylRate = 3.5 + Math.random() * 2.5;
+    const newPhrase = () => {
+      mode = 'talk';
+      const short = Math.random() < .3;
+      left = RATE * (short ? .25 + Math.random() * .45 : .7 + Math.random() * 1.9);   // 0.25-2.6s
+      level = .25 + Math.random() * .75;                                              // quiet .. loud
+      rough = Math.random() ** .8;                                                    // smooth hum .. rough
+      tone = .5 + Math.random() * 1.1;                                                // pitch of the smooth part
+      sylRate = 2.5 + Math.random() * 4.5;                                            // syllables per second
+      swell = Math.random() < .5 ? 0 : (Math.random() < .5 ? 1 : -1);                 // flat, rising or falling
+      syl = Math.random() * Math.PI;
     };
     const tick = () => {
-      const lo = Math.floor(line.length * INPUT_FROM), cap = Math.floor(line.length * inputTo);
       if (--left <= 0) {
-        if (mode === 'pause') {
-          if (target < 0) { target = lo + Math.floor(Math.random() * (cap - lo)); waited = 0; }
-          const firstDrawn = mark.indexOf(1);
-          const limit = firstDrawn < 0 ? Infinity : firstDrawn - GAP;
-          if (target <= limit) startTalk(target);
-          else if (waited >= RATE * MAX_WAIT) {
-            // waited long enough: pick once more anywhere; after that, take a free spot on the left
-            if (tries >= 1 && limit > lo) startTalk(lo + Math.floor(Math.random() * (limit - lo)));
-            else { tries++; target = lo + Math.floor(Math.random() * (cap - lo)); waited = 0; left = 1; }
-          }
-          else { waited++; left = 1; }        // spot not free yet: check again next step
-        } else { mode = 'pause'; head = -1; left = RATE * (.3 + Math.random() * .7); }
+        if (mode === 'pause') newPhrase();
+        else { mode = 'pause'; left = RATE * (Math.random() < .2 ? 1.4 + Math.random() * 1 : .25 + Math.random() * .9); }
       }
-      let env_t = 0;
+      let target = 0;
       if (mode === 'talk') {
         syl += (2 * Math.PI * sylRate) / RATE * (.8 + Math.random() * .4);
-        env_t = level * Math.abs(Math.sin(syl)) ** .7;
+        const k = 1 - left / Math.max(1, RATE * 2.6);                // rough progress for the swell
+        const shape = swell ? Math.max(.35, swell > 0 ? .5 + k * .7 : 1.1 - k * .7) : 1;
+        target = level * shape * Math.abs(Math.sin(syl)) ** .7;
       }
-      env += (env_t - env) * .35;
+      env += (target - env) * .35;
       // flow: everything moves one step right, a quiet sample enters at the left edge
       line.pop(); line.unshift(quiet());
-      mark.pop(); mark.unshift(0);
-      // input: the voice is written once at the entry point; drawn samples are never rewritten
-      if (mode === 'talk' && head >= 0 && env > .005 && !mark[head]) {
+      if (env > .005) {
+        ph += tone * (.9 + Math.random() * .2);
         sign = -sign;
-        line[head] = env * amp * sign * (.45 + Math.random() * .55) + quiet();
-        mark[head] = 1;
+        const smooth = Math.sin(ph);
+        const grit = sign * (.45 + Math.random() * .55);
+        line[head] = env * amp * ((1 - rough) * smooth + rough * grit) + quiet();
       }
     };
 
@@ -254,11 +245,11 @@
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       y0 = Math.round(stacked ? first + 24 : H * .84) + .5;
       amp = stacked ? 22 : 56;
-      inputTo = stacked ? INPUT_TO_STACKED : INPUT_TO_WIDE;
+      const logo = host.querySelector('.cover__logo');
+      const lr = logo.getBoundingClientRect(), hr = host.getBoundingClientRect();
+      head = Math.max(1, Math.round((lr.left - hr.left + lr.width * HEAD) / STEP));
       line = Array.from({ length: Math.ceil(W / STEP) + 2 }, quiet);
-      mark = line.map(() => 0);
-      head = -1; mode = 'pause'; left = RATE * .3; env = 0;
-      target = -1; waited = 0; tries = 0;
+      mode = 'pause'; left = RATE * .3; env = 0;
     };
 
     const draw = () => {
@@ -289,16 +280,15 @@
     };
     const start = () => { if (!raf && visible && !document.hidden && !reduce) { lastT = 0; raf = requestAnimationFrame(loop); } };
     const stop = () => { cancelAnimationFrame(raf); raf = 0; };
+    const still = () => { for (let i = 0; i < RATE * 10; i++) tick(); draw(); };
 
     build();
-    if (reduce) {                             // a few seconds of the wave, frozen
-      for (let i = 0; i < RATE * 14; i++) tick();
-      draw();
-    } else {
+    if (reduce) still();                      // a few seconds of the wave, frozen
+    else {
       new IntersectionObserver(([e]) => { visible = e.isIntersecting; visible ? start() : stop(); }).observe(host);
       document.addEventListener('visibilitychange', () => (document.hidden ? stop() : start()));
     }
     let rt = 0;
-    window.addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(() => { build(); if (reduce) { for (let i = 0; i < RATE * 14; i++) tick(); draw(); } }, 200); });
+    window.addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(() => { build(); if (reduce) still(); }, 200); });
   });
 })();
