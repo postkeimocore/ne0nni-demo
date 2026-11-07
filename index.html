@@ -1,0 +1,435 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>NE0NNi Design System v0.1</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@1,6..96,500..600&family=Inter+Tight:wght@400;500;600&family=Shippori+Mincho+B1:wght@500&family=Zen+Kaku+Gothic+New:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/yakuhanjp@4.1.1/dist/css/yakuhanjp.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/yakuhanjp@4.1.1/dist/css/yakuhanmp.css">
+<link rel="stylesheet" href="tokens.css">
+<link rel="stylesheet" href="ds.css">
+<style>
+  /* page-specific layout for this sample (no color values here) */
+  /* COVER — the illustration is the hero.
+     SP / TB portrait: first view = logo + large cutout centred on the face; data below.
+     TB landscape / PC: cutout on the right, bleeding off the bottom; data on the left. */
+  .cover { position: relative; overflow: hidden; padding-bottom: var(--space-6);
+    --logo-w: calc(100vw - var(--grid-margin) * 2);
+    --logo-h: calc(var(--logo-w) / 7.446);
+    --first: calc(100svh - var(--header-h)); }
+  .cover__grid { position: relative; z-index: 1; padding-top: var(--space-4);
+    grid-template-rows: auto calc(var(--first) - var(--space-4) - var(--logo-h));
+    grid-auto-rows: var(--row); }
+  .cover__logo { grid-column: 1 / -1; grid-row: 1; align-self: start; width: 100%; }
+  .cover__cut { position: absolute; z-index: 0; max-width: none; width: auto;
+    top: calc(var(--space-4) + var(--logo-h) * .55);
+    height: calc(var(--first) - var(--space-4) - var(--logo-h) * .55);
+    left: 50%; transform: translateX(-33%); }
+  /* asterisks: one closes the data, one sparkles by the hair */
+  .cover__ast-c { position: absolute; right: var(--grid-margin); top: 40svh; }
+  .kern { letter-spacing: var(--k); }
+  .sc { white-space: nowrap; align-self: center; }
+  .sc-1 { grid-column: 1; grid-row: 3; }
+  .sc-2 { grid-column: 2 / span 3; grid-row: 4; }
+  .sc-3 { grid-column: 3; grid-row: 5; }
+  .sc-4 { grid-column: 4; grid-row: 6; }
+  .sc-5 { grid-column: 1 / span 3; grid-row: 7; }
+  .cover__ast-a { grid-column: 4; grid-row: 7 / span 2; align-self: center; }
+  .cover__meta { display: flex; justify-content: space-between; margin-top: var(--space-4); }
+
+  @media (min-width: 768px) and (orientation: landscape), (min-width: 1200px) {
+    .cover { min-height: var(--first); padding-bottom: 0; }
+    .cover__grid { grid-template-rows: none; padding-top: var(--space-5); }
+    .cover__logo { grid-row: 1 / span 2; }
+    .cover__cut { top: var(--space-5); left: auto; right: 0; transform: none; height: auto; width: min(56vw, 880px); }
+    .cover__ast-c { top: 34%; right: 4%; }
+    .sc-1 { grid-column: 1; grid-row: 5; }
+    .sc-2 { grid-column: 2 / span 2; grid-row: 6; }
+    .sc-3 { grid-column: 3; grid-row: 7; }
+    .sc-4 { grid-column: 4; grid-row: 8; }
+    .sc-5 { grid-column: 1 / span 3; grid-row: 10; }
+    .cover__ast-a { grid-column: 4; grid-row: 10 / span 2; }
+    .cover__meta { position: absolute; left: var(--grid-margin); bottom: var(--space-6); flex-direction: column; gap: var(--space-2); }
+  }
+  @media (min-width: 768px) and (max-width: 1199px) and (orientation: landscape) {
+    .cover__logo { grid-column: 1 / span 5; }
+  }
+  @media (min-width: 1200px) {
+    .cover__logo { grid-column: 1 / span 6; }
+  }
+
+  .doc-head { margin-bottom: var(--block-gap); }
+  .doc-lead { grid-column: 1 / -1; margin-top: var(--space-5); }
+  @media (min-width: 1200px) { .doc-lead { grid-column: 4 / span 6; } }
+
+  .swatches { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-5) var(--grid-gutter); }
+  .swatch__chip { aspect-ratio: 4 / 3; margin-bottom: var(--space-3); }
+  .swatch__chip.is-light { box-shadow: inset 0 0 0 1px var(--color-rule-soft); }
+  .swatch dl { display: grid; gap: var(--space-1); }
+  @media (min-width: 768px) { .swatches { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+
+  .type-row { padding-block: var(--space-5); border-top: 1px solid var(--color-rule-soft); row-gap: var(--space-3); }
+  .type-row__meta { grid-column: 1 / -1; display: grid; gap: var(--space-1); align-content: start; }
+  .type-row__sample { grid-column: 1 / -1; }
+  @media (min-width: 1200px) {
+    .type-row__meta { grid-column: 1 / span 3; }
+    .type-row__sample { grid-column: 4 / -1; }
+  }
+
+  .cols-demo { margin-top: var(--space-5); }
+  .cols-demo span { display: grid; place-items: center; height: var(--space-8); background: var(--color-mist); }
+  .cols-demo .tb, .cols-demo .pc { display: none; }
+  @media (min-width: 768px) { .cols-demo .tb { display: grid; } }
+  @media (min-width: 1200px) { .cols-demo .pc { display: grid; } }
+  .space-list { display: grid; gap: var(--space-3); margin-top: var(--block-gap); }
+  .space-row { display: grid; grid-template-columns: 96px 48px minmax(0, 1fr); align-items: center; gap: var(--space-3); }
+  .space-row i { display: block; max-width: 100%; height: var(--space-3); background: var(--color-ink); }
+  @media (min-width: 768px) { .space-row { grid-template-columns: 120px 64px minmax(0, 1fr); } }
+  .note { margin-top: var(--space-5); }
+
+  .sig { row-gap: var(--block-gap); }
+  .sig__ast { grid-column: 1 / -1; display: flex; align-items: flex-end; gap: var(--space-5); flex-wrap: wrap; }
+  .sig__text { grid-column: 1 / -1; }
+  @media (min-width: 1200px) {
+    .sig__ast { grid-column: 1 / span 7; }
+    .sig__text { grid-column: 9 / -1; align-self: end; }
+  }
+  .cable-block { position: relative; height: 720px; margin: var(--block-gap) calc(var(--grid-margin) * -1) 0; overflow-x: clip; }
+  .cable-block .l-grid { padding-inline: var(--grid-margin); }
+  .cable { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+  .cable path { fill: none; vector-effect: non-scaling-stroke; stroke-linecap: round; }
+  .cable .c-out { stroke: var(--color-ink); stroke-width: 6; }
+  .cable .c-in { stroke: var(--color-paper); stroke-width: 4; }
+  .cable__traveler { position: absolute; left: 0; top: 0; z-index: 2; }
+  .cable-block .l-grid { position: relative; z-index: 1; height: 100%; align-items: start; }
+  .cable-a { grid-column: 1 / span 2; margin-top: var(--space-8); }
+  .cable-b { grid-column: 3 / span 2; align-self: end; }
+  .cable-src { grid-column: 3 / span 2; grid-row: 1; width: 64%; justify-self: end; }
+  @media (min-width: 768px) {
+    .cable-a { grid-column: 1 / span 3; }
+    .cable-b { grid-column: 6 / span 3; }
+    .cable-src { grid-column: 6 / span 2; width: 100%; }
+  }
+  @media (min-width: 1200px) {
+    .cable-a { grid-column: 2 / span 3; }
+    .cable-b { grid-column: 9 / span 3; }
+    .cable-src { grid-column: 10 / span 2; }
+  }
+  .numbers { grid-column: 1 / -1; display: flex; gap: var(--space-6); flex-wrap: wrap; align-items: baseline; }
+
+  .work-head { margin-bottom: var(--block-gap); }
+  .work-main { row-gap: var(--space-6); }
+  .work-main .stack { grid-column: 1 / -1; aspect-ratio: 4 / 5; }
+  .work-main__info { grid-column: 1 / -1; display: grid; gap: var(--space-5); align-content: end; }
+  @media (min-width: 768px) {
+    .work-main .stack { grid-column: 1 / span 5; }
+    .work-main__info { grid-column: 6 / -1; }
+  }
+  @media (min-width: 1200px) {
+    .work-main .stack { grid-column: 2 / span 6; }
+    .work-main__info { grid-column: 9 / -1; }
+  }
+  .work-flow { row-gap: var(--block-gap); margin-top: var(--section-gap); }
+  .work-flow img { width: 100%; }
+  .w-pair-a img, .w-pair-b img { aspect-ratio: 4 / 5; object-fit: cover; }
+  .w-bleed-right img { aspect-ratio: 4 / 3; object-fit: cover; object-position: center 22%; }
+  .v-slot { display: none; }
+  @media (min-width: 1200px) {
+    .v-slot { display: block; grid-column: 12; grid-row: 1; justify-self: end; }
+  }
+  .cut-copy { grid-column: 1 / -1; align-self: end; display: grid; gap: var(--space-4); }
+  @media (min-width: 768px) { .cut-copy { grid-column: 1 / span 2; } }
+  @media (min-width: 1200px) { .cut-copy { grid-column: 2 / span 4; } }
+  .posts-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--space-2) var(--space-5); margin-bottom: var(--space-5); }
+  .filter-demo { display: grid; gap: var(--space-3); margin-bottom: var(--block-gap); }
+
+  .states { display: flex; flex-wrap: wrap; gap: var(--space-5) var(--space-6); align-items: flex-end; }
+  .state { display: grid; gap: var(--space-3); justify-items: start; }
+  .form { grid-column: 1 / -1; display: grid; gap: var(--space-5); margin-top: var(--block-gap); }
+  @media (min-width: 1200px) { .form { grid-column: 4 / span 6; } }
+  .form fieldset { border: 0; margin: 0; padding: 0; display: grid; gap: var(--space-2); }
+  .form legend { padding: 0; margin-bottom: var(--space-2); }
+
+  .night { padding-bottom: var(--section-gap); }
+  .night__head { display: flex; align-items: flex-start; gap: var(--space-4); }
+  .night__body { grid-column: 1 / -1; display: grid; gap: var(--space-5); margin-top: var(--block-gap); }
+  @media (min-width: 1200px) { .night__body { grid-column: 5 / span 7; } }
+
+  .motion-list { display: grid; gap: var(--space-3); grid-column: 1 / -1; }
+  .motion-list li { display: grid; grid-template-columns: 1fr; gap: var(--space-1); padding-block: var(--space-3); border-top: 1px solid var(--color-rule-soft); }
+  @media (min-width: 768px) { .motion-list li { grid-template-columns: 240px 1fr; gap: var(--space-4); } }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <a href="#top" aria-label="NE0NNi"><span class="logo" role="img" aria-label="NE0NNi"></span></a>
+  <nav class="site-nav t-label" aria-label="メイン">
+    <a href="#works">Works</a><a href="#about">About</a><a href="#contact">Contact</a>
+  </nav>
+  <button class="menu-btn" type="button" aria-label="メニューを開く"><span></span></button>
+</header>
+
+<main id="top">
+
+<!-- COVER: hero concept -->
+<section class="cover l-container" aria-label="カバー" data-glints="day">
+  <div class="cover__grid l-grid">
+    <span class="logo cover__logo" role="img" aria-label="NE0NNi" data-masthead></span>
+    <span class="ast is-twinkle cover__ast-a" style="--size:80px" aria-hidden="true"></span>
+    <span class="ast is-twinkle cover__ast-c" style="--size:40px;--delay:-2.2s" aria-hidden="true"></span>
+    <span class="sc sc-1 t-number">No.002</span>
+    <span class="sc sc-2 t-grotesk-data">HEADPHONES GIRL</span>
+    <span class="sc sc-3 t-grotesk-data">FIIO</span>
+    <span class="sc sc-4 t-grotesk-data">EH11</span>
+    <span class="sc sc-5 t-grotesk-data">Girls &amp; night sounds.</span>
+  </div>
+  <img class="cover__cut" src="assets/art/002-cut.webp" alt="屋上の手すりにもたれる、首にオレンジのヘッドホンをかけた女の子" width="1600" height="1960">
+  <div class="cover__meta t-label">
+    <span>Design System v0.1</span><span class="t-sub">2026.11.08</span>
+  </div>
+</section>
+
+<!-- 01 COLOR -->
+<section class="l-section l-container" aria-labelledby="h-color">
+  <div class="chapter doc-head"><span class="chapter__no t-number">01</span><h2 class="chapter__title t-grotesk-title" id="h-color">Color</h2></div>
+  <div class="l-grid"><p class="t-body doc-lead" style="margin:0 0 var(--block-gap)">サイトは白と黒でつくり、色は作品が持つ。UIにアクセント色は置かない。色の値は tokens.css の :root にだけ書く。</p></div>
+  <div class="swatches">
+    <div class="swatch"><div class="swatch__chip is-light" style="background:var(--color-paper)"></div><dl><dt class="t-label">paper</dt><dd class="t-grotesk-data">#FFFFFF</dd><dd class="t-small t-sub">地</dd></dl></div>
+    <div class="swatch"><div class="swatch__chip" style="background:var(--color-ink)"></div><dl><dt class="t-label">ink</dt><dd class="t-grotesk-data">#0E0E12</dd><dd class="t-small t-sub">文字・罫線・黒の反転　白に対して 19.26:1</dd></dl></div>
+    <div class="swatch"><div class="swatch__chip" style="background:var(--color-ink-sub)"></div><dl><dt class="t-label">ink-sub</dt><dd class="t-grotesk-data">#62626C</dd><dd class="t-small t-sub">キャプション　白 6.03:1／mist 5.16:1</dd></dl></div>
+    <div class="swatch"><div class="swatch__chip" style="background:var(--color-mist)"></div><dl><dt class="t-label">mist</dt><dd class="t-grotesk-data">#ECECF4</dd><dd class="t-small t-sub">作品を並べる面　作品の背景色を白に20%</dd></dl></div>
+    <div class="swatch"><div class="swatch__chip" style="background:var(--color-art)"></div><dl><dt class="t-label">art</dt><dd class="t-grotesk-data">#9FA2C6</dd><dd class="t-small t-sub">作品画像の背景だけ　ink 7.76:1</dd></dl></div>
+    <div class="swatch"><div class="swatch__chip" style="background:var(--color-field)"></div><dl><dt class="t-label">field</dt><dd class="t-grotesk-data">#8A8A94</dd><dd class="t-small t-sub">フォームの枠　白 3.42:1</dd></dl></div>
+    <div class="swatch"><div class="swatch__chip" style="background:var(--color-rule-soft)"></div><dl><dt class="t-label">rule-soft</dt><dd class="t-grotesk-data">#D4D4DC</dd><dd class="t-small t-sub">情報を持たない区切り線</dd></dl></div>
+    <div class="swatch"><div class="swatch__chip" style="background:var(--color-night-sub)"></div><dl><dt class="t-label">night-sub</dt><dd class="t-grotesk-data">#A3A3AD</dd><dd class="t-small t-sub">黒地の補足文字　ink 7.7:1</dd></dl></div>
+  </div>
+</section>
+
+<!-- 02 TYPE -->
+<section class="l-section l-container" aria-labelledby="h-type">
+  <div class="chapter doc-head"><span class="chapter__no t-number">02</span><h2 class="chapter__title t-grotesk-title" id="h-type">Typography</h2></div>
+  <div class="type-row l-grid"><div class="type-row__meta"><span class="t-label">display-1</span><span class="t-small t-sub">Bodoni Moda Italic 600　192/176・SP 80/80</span></div><p class="type-row__sample t-display-1"><span class="kern" style="--k:-0.1em">W</span>orks</p></div>
+  <div class="type-row l-grid"><div class="type-row__meta"><span class="t-label">display-2</span><span class="t-small t-sub">Bodoni Moda Italic 600　128/120・SP 56/56</span></div><p class="type-row__sample t-display-2">Headphones</p></div>
+  <div class="type-row l-grid"><div class="type-row__meta"><span class="t-label">display-3</span><span class="t-small t-sub">Bodoni Moda Italic 500　80/80・SP 40/40</span></div><p class="type-row__sample t-display-3">Headphones Girl</p></div>
+  <div class="type-row l-grid"><div class="type-row__meta"><span class="t-label">display-4 / number</span><span class="t-small t-sub">Bodoni Moda Italic 500　48/56・32/40</span></div><p class="type-row__sample"><span class="t-display-4">Headphones Girl</span>　<span class="t-number">No.001</span></p></div>
+  <div class="type-row l-grid"><div class="type-row__meta"><span class="t-label">grotesk-display</span><span class="t-small t-sub">Inter Tight 400　120/112・SP 48/48</span></div><p class="type-row__sample t-grotesk-display">Contact</p></div>
+  <div class="type-row l-grid"><div class="type-row__meta"><span class="t-label">grotesk-title / data / label</span><span class="t-small t-sub">Inter Tight 500・400・600</span></div><div class="type-row__sample" style="display:grid;gap:var(--space-3)"><span class="t-grotesk-title">Headphones Girl</span><span class="t-grotesk-data">FIIO / EH11　Girls &amp; night sounds.</span><span class="t-label">Works　About　Contact</span></div></div>
+  <div class="type-row l-grid"><div class="type-row__meta"><span class="t-label">statement</span><span class="t-small t-sub">Shippori Mincho B1 500　40/72・SP 24/48</span></div><p class="type-row__sample t-statement">音楽を聴く女の子を描く。</p></div>
+  <div class="type-row l-grid"><div class="type-row__meta"><span class="t-label">lead</span><span class="t-small t-sub">Shippori Mincho B1 500　24/48・SP 20/40</span></div><p class="type-row__sample t-lead">人物と表情、服装、音楽を聴いている時間を描く。</p></div>
+  <div class="type-row l-grid"><div class="type-row__meta"><span class="t-label">body / small</span><span class="t-small t-sub">Zen Kaku Gothic New 400　16/32・12/24</span></div><div class="type-row__sample" style="display:grid;gap:var(--space-3)"><p class="t-body">作品ごとに、描いたヘッドホンのメーカーと型番を掲載しています。制作のご依頼、PR、コラボレーション、作品の利用については、お問い合わせフォームからご連絡ください。</p><p class="t-small t-sub">No.002　FIIO EH11 を描いた作品</p></div></div>
+</section>
+
+<!-- 03 GRID -->
+<section class="l-section l-container" aria-labelledby="h-grid">
+  <div class="chapter doc-head"><span class="chapter__no t-number">03</span><h2 class="chapter__title t-grotesk-title" id="h-grid">Grid &amp; Space</h2></div>
+  <p class="t-body">8pxグリッド。PC 12カラム（余白48・溝24）、TB 8カラム（32・24）、SP 4カラム（16・16）。キーボードの G か左下のボタンでグリッドチェッカーを重ねる。</p>
+  <div class="cols-demo l-grid t-label" aria-hidden="true">
+    <span>1</span><span>2</span><span>3</span><span>4</span><span class="tb">5</span><span class="tb">6</span><span class="tb">7</span><span class="tb">8</span><span class="pc">9</span><span class="pc">10</span><span class="pc">11</span><span class="pc">12</span>
+  </div>
+  <div class="space-list">
+    <div class="space-row"><span class="t-label">space-1</span><span class="t-grotesk-data">4</span><i style="width:var(--space-1)"></i></div>
+    <div class="space-row"><span class="t-label">space-2</span><span class="t-grotesk-data">8</span><i style="width:var(--space-2)"></i></div>
+    <div class="space-row"><span class="t-label">space-3</span><span class="t-grotesk-data">16</span><i style="width:var(--space-3)"></i></div>
+    <div class="space-row"><span class="t-label">space-4</span><span class="t-grotesk-data">24</span><i style="width:var(--space-4)"></i></div>
+    <div class="space-row"><span class="t-label">space-5</span><span class="t-grotesk-data">32</span><i style="width:var(--space-5)"></i></div>
+    <div class="space-row"><span class="t-label">space-6</span><span class="t-grotesk-data">48</span><i style="width:var(--space-6)"></i></div>
+    <div class="space-row"><span class="t-label">space-7</span><span class="t-grotesk-data">64</span><i style="width:var(--space-7)"></i></div>
+    <div class="space-row"><span class="t-label">space-8</span><span class="t-grotesk-data">96</span><i style="width:var(--space-8)"></i></div>
+    <div class="space-row"><span class="t-label">space-9</span><span class="t-grotesk-data">128</span><i style="width:var(--space-9)"></i></div>
+    <div class="space-row"><span class="t-label">space-10</span><span class="t-grotesk-data">192</span><i style="width:var(--space-10)"></i></div>
+    <div class="space-row"><span class="t-label">space-11</span><span class="t-grotesk-data">256</span><i style="width:var(--space-11)"></i></div>
+  </div>
+</section>
+
+<!-- 04 SIGNATURE -->
+<section class="l-section l-container" aria-labelledby="h-sig">
+  <div class="chapter doc-head"><span class="chapter__no t-number">04</span><h2 class="chapter__title t-grotesk-title" id="h-sig">Signature</h2></div>
+  <div class="sig l-grid">
+    <div class="sig__ast" aria-hidden="true">
+      <span class="ast is-twinkle" style="--size:16px"></span>
+      <span class="ast is-twinkle" style="--size:24px;--delay:-.6s"></span>
+      <span class="ast is-twinkle" style="--size:40px;--delay:-1.2s"></span>
+      <span class="ast is-twinkle" style="--size:80px;--delay:-1.8s"></span>
+      <span class="ast is-twinkle" style="--size:160px;--delay:-2.4s"></span>
+    </div>
+    <div class="sig__text">
+      <p class="t-label">Asterisk</p>
+      <p class="t-body" style="margin-top:var(--space-2)">ロゴの「*」をそのまま使う。16・24・40・80・160px。1画面に3か所まで。</p>
+    </div>
+  </div>
+
+  <div class="cable-block" data-cable>
+    <svg class="cable" viewBox="0 0 1440 720" preserveAspectRatio="none" aria-hidden="true">
+      <path class="c-out" d="M -40 120 C 420 20, 820 120, 780 330 C 740 520, 470 470, 520 330 C 570 190, 980 260, 1120 470 C 1220 620, 1320 690, 1500 700"/>
+      <path class="c-in" d="M -40 120 C 420 20, 820 120, 780 330 C 740 520, 470 470, 520 330 C 570 190, 980 260, 1120 470 C 1220 620, 1320 690, 1500 700"/>
+    </svg>
+    <span class="ast cable__traveler" style="--size:40px" aria-hidden="true"></span>
+    <div class="l-grid">
+      <figure class="cable-a"><img src="assets/art/001-face.webp" alt="スマートフォンを見る、黒いヘッドホンの女の子" width="945" height="1181" loading="lazy"><figcaption class="w-cap"><span class="t-number">No.001</span></figcaption></figure>
+      <figure class="cable-src"><img src="assets/silhouette.svg" alt="ロゴの線画。ヘッドホンのケーブルが人物を囲む" loading="lazy"><figcaption class="t-small t-sub" style="margin-top:var(--space-2)">線のもと：ケーブルの2本線</figcaption></figure>
+      <figure class="cable-b"><img src="assets/art/002-face.webp" alt="首にヘッドホンをかけて微笑む女の子" width="1200" height="1500" loading="lazy"><figcaption class="w-cap"><span class="t-number">No.002</span></figcaption></figure>
+    </div>
+  </div>
+
+  <div class="l-grid" style="margin-top:var(--block-gap)">
+    <div class="numbers"><span class="t-display-3">No.001</span><span class="t-display-3">No.002</span><span class="t-small t-sub">号数。シリーズをまたいだ通し番号で、一覧・詳細・SNSで共通</span></div>
+  </div>
+</section>
+
+<!-- 05 WORKS layout (on mist) -->
+<section class="l-section l-mist l-container" id="works" aria-labelledby="h-works">
+  <div class="chapter work-head"><span class="chapter__no t-number">No.002</span><h2 class="chapter__title t-grotesk-title" id="h-works">Headphones Girl</h2></div>
+  <div class="work-main l-grid">
+    <div class="stack" data-stack><img src="assets/art/002-key.webp" alt="ラベンダーの背景に、首にオレンジのヘッドホンをかけた長い髪の女の子" width="1600" height="2000" loading="lazy"></div>
+    <div class="work-main__info">
+      <p class="t-lead">首にかけたヘッドホン。</p>
+      <ul class="data-list">
+        <li class="data-item">
+          <img class="data-item__thumb" src="assets/art/002-gear.webp" alt="" width="550" height="550" loading="lazy">
+          <dl class="t-grotesk-data"><dt class="t-label">Brand</dt><dd>FIIO</dd><dt class="t-label">Model</dt><dd>EH11</dd></dl>
+        </li>
+      </ul>
+      <p><a class="link t-label" href="#filter">FIIO EH11 の作品を見る</a></p>
+      <p><a class="pill t-label" href="#contact">お問い合わせ</a></p>
+    </div>
+  </div>
+
+  <div class="work-flow l-grid">
+    <figure class="w-pair-a"><img src="assets/art/001-face.webp" alt="スマートフォンの光に照らされた女の子の顔" width="945" height="1181" loading="lazy"><figcaption class="w-cap t-label"><span>pair</span></figcaption></figure>
+    <figure class="w-pair-b"><img src="assets/art/002-face.webp" alt="首にヘッドホンをかけて微笑む女の子の顔" width="1200" height="1500" loading="lazy"><figcaption class="w-cap t-label"><span>pair</span></figcaption></figure>
+    <div class="v-slot" aria-hidden="true"><span class="v-word t-grotesk-display">Works</span></div>
+
+    <figure class="w-bleed-right"><img src="assets/art/002-city.webp" alt="夜の街を背にした屋上の女の子" width="1179" height="2096" loading="lazy"><figcaption class="w-cap t-label"><span>bleed-right</span></figcaption></figure>
+
+    <div class="cut-copy">
+      <span class="t-number">No.001</span>
+      <p class="t-lead">人物と表情、服装、音楽を聴いている時間を描く。</p>
+      <span class="t-label t-sub">cutout</span>
+    </div>
+    <figure class="w-cutout"><img src="assets/art/001-cut.webp" alt="枕に頬をのせ、うつぶせでスマートフォンを見る女の子" width="1600" height="1535" loading="lazy"></figure>
+  </div>
+</section>
+
+<!-- WORK DETAIL: SNS posts -->
+<section class="l-section l-container" aria-labelledby="h-posts">
+  <div class="posts-head">
+    <h2 class="t-display-4" id="h-posts">Posts</h2>
+    <p class="t-small t-sub">No.002 のショート動画と写真投稿を同じ枠で並べる。再生ボタンは枠の下に置き、プレーヤーの上に重ねない。角丸はこのブロックだけ。</p>
+  </div>
+  <div class="posts">
+    <ul class="posts__list">
+      <li class="post">
+        <div class="post__media post__media--short">
+          <video src="assets/video/002-short.mp4" poster="assets/art/002-short-poster.webp" muted loop playsinline preload="metadata" aria-label="屋上で夜の街を背にした女の子のショート動画"></video>
+        </div>
+        <div class="post__meta">
+          <span class="post__ctrl"><button class="post__play" type="button" aria-label="動画を再生"><span></span></button><span class="t-label">Short</span></span>
+          <a class="link t-label" href="https://www.tiktok.com/@ne0nni" target="_blank" rel="noopener">TikTok</a>
+        </div>
+      </li>
+      <li class="post">
+        <div class="post__media post__media--photo">
+          <img src="assets/art/002-ig-feed.webp" alt="HEADPHONES GIRL のロゴと、FIIO EH11 を首にかけた女の子のフィード投稿" width="1080" height="1350" loading="lazy">
+        </div>
+        <div class="post__meta"><span class="t-label">Photo</span><a class="link t-label" href="https://www.instagram.com/ne0nni/" target="_blank" rel="noopener">Instagram</a></div>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<!-- 06 COMPONENTS -->
+<section class="l-section l-container" id="contact" aria-labelledby="h-comp">
+  <div class="chapter doc-head"><span class="chapter__no t-number">05</span><h2 class="chapter__title t-grotesk-title" id="h-comp">Components</h2></div>
+  <div class="filter-demo" id="filter">
+    <p class="t-label">Filter</p>
+    <div class="filter" role="group" aria-label="作品の絞り込み">
+      <button class="filter__btn t-label" type="button" aria-pressed="true">All<span class="filter__count">2</span></button>
+      <button class="filter__btn t-label" type="button" aria-pressed="false">Headphones Girl<span class="filter__count">2</span></button>
+      <button class="filter__btn t-label" type="button" aria-pressed="false">FIIO EH11<span class="filter__count">1</span></button>
+    </div>
+  </div>
+  <div class="states">
+    <div class="state"><span class="t-small t-sub">default</span><span class="pill t-label">お問い合わせ</span></div>
+    <div class="state"><span class="t-small t-sub">hover</span><span class="pill t-label is-hover">お問い合わせ</span></div>
+    <div class="state"><span class="t-small t-sub">focus-visible</span><span class="pill t-label is-focus">お問い合わせ</span></div>
+    <div class="state"><span class="t-small t-sub">disabled</span><span class="pill t-label is-disabled">送信中</span></div>
+    <div class="state"><span class="t-small t-sub">link</span><a class="link t-label" href="#works">View all works</a></div>
+    <div class="state"><span class="t-small t-sub">link hover</span><span class="link t-label is-hover">View all works</span></div>
+  </div>
+
+  <div class="l-grid">
+    <form class="form" onsubmit="return false">
+      <fieldset>
+        <legend class="t-label">ご用件</legend>
+        <div class="chips t-small">
+          <label class="chip"><input type="radio" name="kind" checked><span>制作のご依頼</span></label>
+          <label class="chip"><input type="radio" name="kind"><span>PR</span></label>
+          <label class="chip"><input type="radio" name="kind"><span>コラボレーション</span></label>
+          <label class="chip"><input type="radio" name="kind"><span>作品の利用</span></label>
+        </div>
+      </fieldset>
+      <div class="field"><label class="field__label t-label" for="f-company">会社名</label><input class="input" id="f-company" autocomplete="organization"></div>
+      <div class="field"><label class="field__label t-label" for="f-name">お名前</label><input class="input" id="f-name" autocomplete="name"></div>
+      <div class="field">
+        <label class="field__label t-label" for="f-mail">メールアドレス</label>
+        <input class="input is-error" id="f-mail" type="email" autocomplete="email" aria-invalid="true" aria-describedby="f-mail-err">
+        <p class="field__error t-small" id="f-mail-err">メールアドレスを入力してください</p>
+      </div>
+      <div class="field"><label class="field__label t-label" for="f-body">内容</label><textarea class="textarea" id="f-body"></textarea></div>
+      <p><button class="pill t-label" type="submit">送信する</button></p>
+    </form>
+  </div>
+</section>
+
+<!-- 07 NIGHT -->
+<section class="l-section is-night night l-container" id="about" aria-labelledby="h-about" data-glints="night">
+  <div class="night__head">
+    <h2 class="t-display-2" id="h-about" data-reveal="chars">About</h2>
+    <span class="ast is-twinkle" style="--size:40px" aria-hidden="true"></span>
+  </div>
+  <div class="l-grid">
+    <div class="night__body">
+      <p class="t-display-3">Girls &amp; night sounds.</p>
+      <p class="t-body">NE0NNi（ネオンニ）は、音楽を聴く女の子を描くイラストレーションです。現在のシリーズは HEADPHONES GIRL。作品ごとに、描いたヘッドホンのメーカーと型番を記録しています。</p>
+      <p class="t-small t-sub">黒の反転は1ページ1か所。見出しは1文字ずつ順不同で現れる。</p>
+    </div>
+  </div>
+</section>
+
+<!-- 08 MOTION -->
+<section class="l-section l-container" aria-labelledby="h-motion">
+  <div class="chapter doc-head"><span class="chapter__no t-number">06</span><h2 class="chapter__title t-grotesk-title" id="h-motion">Motion</h2></div>
+  <ul class="motion-list">
+    <li><span class="t-label">ease-out</span><span class="t-small">cubic-bezier(.16, 1, .3, 1)</span></li>
+    <li><span class="t-label">dur-1 / 2 / 3</span><span class="t-small">240ms（hover）／640ms（文字・画像の出現）／1200ms（重なった画像が揃う）</span></li>
+    <li><span class="t-label">Stack</span><span class="t-small">傾いた画像3枚が、画面に入ると1枚に揃う（05 の No.002）</span></li>
+    <li><span class="t-label">Chars</span><span class="t-small">見出しの文字が0〜600msの範囲で順不同に現れる（07 の About）</span></li>
+    <li><span class="t-label">Cable</span><span class="t-small">スクロールに合わせて線が描かれ、アスタリスクが線の上を進む（04）</span></li>
+    <li><span class="t-label">Reduced motion</span><span class="t-small">prefers-reduced-motion のときは動きを止め、完成した状態で見せる</span></li>
+  </ul>
+</section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="site-footer__row">
+    <ul class="sns t-label">
+      <li><a class="link" href="https://www.instagram.com/ne0nni/" target="_blank" rel="noopener">Instagram</a></li>
+      <li><a class="link" href="https://www.tiktok.com/@ne0nni" target="_blank" rel="noopener">TikTok</a></li>
+      <li><a class="link" href="https://www.youtube.com/@ne0nni_z" target="_blank" rel="noopener">YouTube</a></li>
+    </ul>
+    <span class="t-label t-sub">© NE0NNi</span>
+  </div>
+  <span class="logo site-footer__logo" role="img" aria-label="NE0NNi"></span>
+</footer>
+
+<script src="ds.js"></script>
+<script src="fx.js"></script>
+<script src="grid-checker.js"></script>
+</body>
+</html>

@@ -1,0 +1,145 @@
+/* NE0NNi design tokens — the only place color values are written.
+   Spec: ../design-system.md */
+
+:root {
+  /* color */
+  --color-paper: #FFFFFF;
+  --color-ink: #0E0E12;
+  --color-ink-sub: #62626C;
+  --color-mist: #ECECF4;
+  --color-art: #9FA2C6;
+  --color-field: #8A8A94;
+  --color-rule-soft: #D4D4DC;
+  --color-night-sub: #A3A3AD;
+
+  /* light (decoration only, taken from the artwork) */
+  --color-glint-violet: #7888D8;   /* jacket of No.002 */
+  --color-glint-violet-lt: #B8C0F8; /* lit jacket highlight */
+  --color-glint-cyan: #B8F0F0;     /* phone-screen glow of No.001 */
+  --glow-mist: rgba(159, 162, 198, .22);
+  --glow-violet: rgba(120, 136, 216, .30);
+  --glow-cyan: rgba(184, 240, 240, .16);
+  --grain-opacity: .14;
+
+  /* grid checker (debug overlay only) */
+  --checker-col: rgba(255, 0, 128, .08);
+  --checker-col-edge: rgba(255, 0, 128, .35);
+  --checker-row: rgba(0, 160, 255, .14);
+  --checker-row-strong: rgba(0, 160, 255, .32);
+  --checker-ui-bg: #0E0E12;
+  --checker-ui-fg: #FFFFFF;
+
+  /* font families */
+  --font-display: "Bodoni Moda", serif;
+  --font-grotesk: "Inter Tight", "Helvetica Neue", Arial, sans-serif;
+  --font-mincho: YakuHanMP, "Shippori Mincho B1", "Hiragino Mincho ProN", serif;
+  --font-gothic: YakuHanJP, "Zen Kaku Gothic New", "Hiragino Sans", sans-serif;
+
+  /* letter spacing */
+  --ls-display-tight: -0.04em;
+  --ls-display: -0.02em;
+  --ls-none: 0;
+  --ls-title: 0.02em;
+  --ls-label: 0.08em;
+  --ls-ja-body: 0.04em;
+  --ls-ja-display: 0.08em;
+
+  /* space (8px grid, 4px for fine adjustment) */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 16px;
+  --space-4: 24px;
+  --space-5: 32px;
+  --space-6: 48px;
+  --space-7: 64px;
+  --space-8: 96px;
+  --space-9: 128px;
+  --space-10: 192px;
+  --space-11: 256px;
+
+  /* grid — SP */
+  --grid-cols: 4;
+  --grid-margin: 16px;
+  --grid-gutter: 16px;
+  --row: 48px;
+  --section-gap: var(--space-8);
+  --block-gap: var(--space-6);
+
+  /* type — SP (size / line-height) */
+  --fs-display-1: 80px;  --lh-display-1: 80px;
+  --fs-display-2: 56px;  --lh-display-2: 56px;
+  --fs-display-3: 40px;  --lh-display-3: 40px;
+  --fs-display-4: 32px;  --lh-display-4: 40px;
+  --fs-number: 24px;     --lh-number: 32px;
+  --fs-grotesk-display: 48px; --lh-grotesk-display: 48px;
+  --fs-grotesk-title: 16px;   --lh-grotesk-title: 24px;
+  --fs-grotesk-data: 16px;    --lh-grotesk-data: 24px;
+  --fs-label: 12px;      --lh-label: 16px;
+  --fs-statement: 24px;  --lh-statement: 48px;
+  --fs-lead: 20px;       --lh-lead: 40px;
+  --fs-body: 16px;       --lh-body: 32px;
+  --fs-small: 12px;      --lh-small: 24px;
+
+  /* parts */
+  --header-h: 56px;
+  --logo-h: 16px;
+  --chapter-h: 56px;
+  --pill-h: 48px;
+  --radius-pill: 24px;
+  --radius-frame: 48px;
+  --thumb: 64px;
+  --post-h: 400px;
+
+  /* motion */
+  --ease-out: cubic-bezier(.16, 1, .3, 1);
+  --dur-1: 240ms;
+  --dur-2: 640ms;
+  --dur-3: 1200ms;
+}
+
+@media (min-width: 768px) {
+  :root {
+    --grid-cols: 8;
+    --grid-margin: 32px;
+    --grid-gutter: 24px;
+    --section-gap: var(--space-9);
+    --block-gap: var(--space-7);
+
+    --fs-display-1: 128px; --lh-display-1: 120px;
+    --fs-display-2: 88px;  --lh-display-2: 88px;
+    --fs-display-3: 56px;  --lh-display-3: 56px;
+    --fs-display-4: 40px;  --lh-display-4: 48px;
+    --fs-number: 28px;     --lh-number: 32px;
+    --fs-grotesk-display: 80px; --lh-grotesk-display: 80px;
+    --fs-grotesk-title: 20px;   --lh-grotesk-title: 24px;
+    --fs-statement: 32px;  --lh-statement: 56px;
+    --fs-lead: 24px;       --lh-lead: 48px;
+
+    --header-h: 64px;
+    --logo-h: 20px;
+    --chapter-h: 64px;
+    --post-h: 480px;
+  }
+}
+
+@media (min-width: 1200px) {
+  :root {
+    --grid-cols: 12;
+    --grid-margin: 48px;
+    --grid-gutter: 24px;
+    --section-gap: var(--space-10);
+    --block-gap: var(--space-8);
+
+    --fs-display-1: 192px; --lh-display-1: 176px;
+    --fs-display-2: 128px; --lh-display-2: 120px;
+    --fs-display-3: 80px;  --lh-display-3: 80px;
+    --fs-display-4: 48px;  --lh-display-4: 56px;
+    --fs-number: 32px;     --lh-number: 40px;
+    --fs-grotesk-display: 120px; --lh-grotesk-display: 112px;
+    --fs-statement: 40px;  --lh-statement: 72px;
+
+    --header-h: 80px;
+    --logo-h: 24px;
+    --post-h: 560px;
+  }
+}
