@@ -261,26 +261,32 @@ ul, ol { list-style: none; }
 /* ---------- footer ---------- */
 .site-footer { padding: var(--section-gap) var(--grid-margin) var(--space-6); }
 .site-footer__logo { width: 100%; margin-top: var(--space-8); }
-.site-footer__row { display: flex; flex-wrap: wrap; justify-content: space-between; gap: var(--space-4); }
-.sns { display: flex; flex-wrap: wrap; gap: var(--space-4); }
+.site-footer__row { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: var(--space-4); }
+.sns { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); }
+
+/* ---------- SNS icon (brand glyphs, Simple Icons CC0) ---------- */
+.sns-icon {
+  display: inline-grid; place-items: center; flex: none;
+  width: 48px; height: 48px; border-radius: 50%;
+  color: var(--color-ink);
+  transition: background-color var(--dur-1) var(--ease-out), color var(--dur-1) var(--ease-out);
+}
+.sns-icon svg { width: 24px; height: 24px; fill: currentColor; }
+.sns-icon:hover, .sns-icon.is-hover { background: var(--color-ink); color: var(--color-paper); }
+.is-night .sns-icon { color: var(--color-paper); }
+.is-night .sns-icon:hover { background: var(--color-paper); color: var(--color-ink); }
 
 /* ---------- light: grain / glints / glow (4-7) ---------- */
-.grain { position: fixed; inset: 0; z-index: 50; pointer-events: none; overflow: hidden; opacity: var(--grain-opacity); }
-.grain::before {
-  content: ""; position: absolute; inset: -50%;
-  background: url(assets/grain.png) 0 0 / 256px 256px repeat;
-  animation: grain 1s steps(1, end) infinite;
-}
-@keyframes grain {
-  0%   { transform: translate(0, 0); }
-  17%  { transform: translate(-7%, 4%); }
-  33%  { transform: translate(5%, -6%); }
-  50%  { transform: translate(-3%, -8%); }
-  67%  { transform: translate(8%, 3%); }
-  83%  { transform: translate(-5%, 7%); }
+/* static grain is part of every surface's background, so it never covers images */
+body, .site-header, .l-mist, .is-night, .posts {
+  background-image: var(--grain);
+  background-size: 256px 256px;
+  background-attachment: fixed;
 }
 .glints { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; }
+.glints--page { position: fixed; z-index: -1; }
 [data-glints] { position: relative; isolation: isolate; }
+[data-glints] > :not(.glints) { position: relative; z-index: 1; }
 .cover::before {
   content: ""; position: absolute; z-index: 0; pointer-events: none;
   width: 64vmax; height: 64vmax; right: -16vmax; top: 8vmax;
@@ -288,7 +294,6 @@ ul, ol { list-style: none; }
   animation: drift 24s ease-in-out infinite alternate;
 }
 .is-night { overflow: hidden; }
-.is-night > :not(.glints) { position: relative; z-index: 1; }
 .is-night::before, .is-night::after {
   content: ""; position: absolute; z-index: 0; pointer-events: none; border-radius: 50%;
 }
