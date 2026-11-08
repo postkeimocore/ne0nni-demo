@@ -1,6 +1,6 @@
 # NE0NNi 公式サイト｜current.md
 
-最終更新：2026-11-08 ／ フェーズ：**本番サイトの実装（v0.1、確認用URLで公開中・noindex）** ／ 次：下の「確認事項」をもらって中身を確定、CMS の決定
+最終更新：2026-11-08 ／ フェーズ：**本番サイトの実装（v0.2、確認用URLで公開中・noindex）** ／ 次：下の「確認事項」をもらって中身を確定、CMS の決定
 
 ## 概要
 - **誰の**：Casterisk の自社企画のイラストレーター IP「NE0NNi（ネオンニ）」。シリーズ HEADPHONES GIRL
@@ -26,33 +26,37 @@
 - 公開まで noindex（meta と `X-Robots-Tag`。`PUBLIC_ALLOW_INDEX=true` で外れる）。robots.txt は開けたまま
 - フォント：Google Fonts ＋ YakuHanJP（jsDelivr）
 
+## 情報の分け方（2026-11-08）
+CHARACTER（A／B の人格・嗜好・好きなアーティスト群）／WORK（Original・Tribute）／MUSIC（作品に紐づけたアーティスト・楽曲）／GEAR（作品に登場するオーディオ製品。下に Brand・Model）。ラベル・絞り込み・章をこの4つで揃えた。導線は文字リンクにせず、ボタンかアイコンにする。
+
 ## ページ
 - HOME：ヒーロー（No.002 の切り抜き・ロゴ・言葉の散らし・波形）→ 新しい作品3点を章で（1本のケーブルが作品の後ろを通る）→ ABOUT（黒の反転）→ CONTACT
-- WORKS：号数順。All／シリーズ／種類（Original・Cover）／ギアで絞り込み（URL `?f=`）。中央・2枚並び・裁ち落としのリズム
-- WORK DETAIL（`/works/001/`〜）：キービジュアル＋データ → 切り抜き・寄り・場面 → ギア → SNS投稿 → お問い合わせ（作品を選んだ状態でフォームへ）→ 前後の作品
-- ABOUT：黒の反転でステートメント → Series／Gear／SNS／For business
-- CONTACT：用件・会社名・お名前・メール・対象の作品・内容・個人情報の同意 → `/contact/thanks/`
+- WORKS：号数順。All／Work／Character／Music／Gear で絞り込み（URL `?f=`）。中央・2枚並び・裁ち落としのリズム
+- WORK DETAIL（`/works/001/`〜）：キービジュアル＋データ → 切り抜き・寄り・場面 → Character・Music・Gear のノート → SNS投稿（TikTok・Instagram のアイコンで各投稿へ）→ お問い合わせ（作品を選んだ状態でフォームへ）→ 前後の作品
+- ABOUT：黒の反転でステートメント → Series／Character／Music／Gear／SNS／For business
+- CONTACT：用件（ラジオボタン）・会社名・お名前・メール・対象の作品・内容・個人情報の同意 → `/contact/thanks/`
 - 404、sitemap.xml、robots.txt、作品ごとの OGP と構造化データ（VisualArtwork・BreadcrumbList）
 
 ## 確認事項（中身を確定するために必要なもの）
-1. **「Cover」の呼び名**：アニメ・漫画・映画のキャラクターを描いた作品の呼び方。今は仮に「Cover」。変えるときは `KIND_LABEL` の1か所
-2. **No.003 のキャラクター表記**：「シャンプー（らんま1/2）」とデータ欄に出している。出すか、出さないか
-3. **号数の順**：お団子髪の子を No.003 にした。公開順と合っているか
-4. **`amgw5のコピー.PNG`（体育座りのボブの子）**：No.001 と同じキャラクターに見える。作品として載せるか、号数は何番か
-5. **作品タイトル**：今は「号数＋シリーズ名」（例 No.002 Headphones Girl）。作品ごとのタイトルを付けるか
-6. **公開日**：各作品の日付（データ欄と構造化データに入る）
-7. **No.001・No.003 のヘッドホン**：メーカー・型番（今はギアなし）
-8. **作品の一言**：絵から書いた説明（No.001「うつぶせで、スマホを見る。」No.002「屋上で、首にヘッドホン。」No.003「両手でヘッドホンを押さえる。」）でよいか
-9. **SNS の投稿ID・URL**：TikTok の投稿ID（埋め込みに必要）、Instagram の投稿URL。今は手元の動画・画像で代わりに見せている
-10. **CMS**：若林さんが使っている CMS の名前
-11. **運営表記と個人情報の文面**：ABOUT・CONTACT・フッターに「Casterisk」と出している。表記（会社名の正式表記など）
-12. **お問い合わせの通知先**：受け取るメールアドレス（GAS の Script Properties に入れる）
-13. **独自ドメイン**
+1. **Character A／B の割り当て**：No.001（ボブの子）を A、No.002（屋上の子）を B にした。投稿の曲（ずとまよ／Ayumu Imazu）と Notion「キャラクター設計」の A・B のアーティスト傾向から判断
+2. **キャラクターの紹介文と好きなアーティスト**：Notion「キャラクター設計｜2026-10-19」の人物像・音楽の方向性・アーティストの参考例から書いた（ABOUT の Character 章）。そのまま公開してよいか、名前はいつ付くか
+3. **No.003 のキャラクター表記**：「シャンプー（らんま1/2）」とデータ欄に出している。出すか、出さないか
+4. **号数の順**：お団子髪の子を No.003 にした。公開順と合っているか
+5. **`amgw5のコピー.PNG`（体育座りのボブの子）**：No.001 と同じキャラクターに見える。作品として載せるか、号数は何番か
+6. **作品タイトル**：今は「号数＋シリーズ名」（例 No.002 Headphones Girl）。作品ごとのタイトルを付けるか
+7. **公開日**：各作品の日付（データ欄と構造化データに入る）
+8. **No.003 のヘッドホンと曲**：No.001（audio-technica ATH-HL7BT）と No.002（FiiO EH11）は投稿のタグから入れた。No.003 は投稿が未着でギア・曲なし
+9. **曲名の表記**：No.001 の曲は TikTok の音源名どおり「akanesasu」（ずっと真夜中でいいのに。）。歌詞サイトでは「あかねさす頃」と出ている。正式な表記
+10. **ブランドの表記**：公式の表記に合わせて「FiiO」「audio-technica」にした（以前は FIIO）
+11. **作品の一言**：絵から書いた説明（No.001「うつぶせで、スマホを見る。」No.002「屋上で、首にヘッドホン。」No.003「両手でヘッドホンを押さえる。」）でよいか
+12. **No.003 の投稿**：TikTok・Instagram のURL（No.001・No.002 は入れ済み）
+13. **CMS**：若林さんが使っている CMS の名前
+14. **運営表記と個人情報の文面**：ABOUT・CONTACT・フッターに「Casterisk」と出している。表記（会社名の正式表記など）
+15. **お問い合わせの通知先**：受け取るメールアドレス（GAS の Script Properties に入れる）
+16. **独自ドメイン**
 
 ## 公開までの作業
 - GAS をデプロイして Cloudflare に `GAS_WEBHOOK_URL`・`GAS_SECRET` を入れる（それまで *.pages.dev では送信を受け付けて捨てる）
 - Turnstile のサイトキー（`PUBLIC_TURNSTILE_SITE_KEY`）とシークレット（`TURNSTILE_SECRET`）
-- TikTok の投稿IDを入れて Embed Player を試す（ロゴを消せるか、上に重ねてよいか：design-system.md 5章の未確認）
-- Instagram API with Instagram Login（プロアカウント化、Meta の開発者アプリ、長期トークンの定期更新）
 - 独自ドメイン、`SITE_URL`、`PUBLIC_ALLOW_INDEX=true`、Cloudflare Web Analytics
 - 本公開（noindex を外す・ドメインをつなぐ）の前にユーザーに確認する

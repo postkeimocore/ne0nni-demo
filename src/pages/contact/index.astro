@@ -24,8 +24,8 @@ const siteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY as string | undefined;
       <form class="form contact__form" action="/api/contact" method="post" novalidate data-contact>
         <fieldset data-required="ご用件を選んでください" data-error-id="e-kind" aria-describedby="e-kind">
           <legend class="field__label t-label">ご用件<span class="req">必須</span></legend>
-          <div class="chips t-small">
-            {KINDS.map((k) => <label class="chip"><input type="radio" name="kind" value={k} required><span>{k}</span></label>)}
+          <div class="radios">
+            {KINDS.map((k) => <label class="radio t-body"><input type="radio" name="kind" value={k} required><span>{k}</span></label>)}
           </div>
           <p class="field__error t-small" id="e-kind" hidden></p>
         </fieldset>
@@ -113,6 +113,17 @@ const siteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY as string | undefined;
   .privacy { display: grid; gap: var(--space-2); padding-top: var(--space-4); border-top: 1px solid var(--color-rule-soft); }
   .check { display: inline-flex; align-items: center; gap: var(--space-2); min-height: 48px; cursor: pointer; justify-self: start; }
   .check input { width: 24px; height: 24px; margin: 0; accent-color: var(--color-ink); }
+  /* ご用件: plain radio buttons, one per line */
+  .radios { display: grid; justify-items: start; }
+  .radio { display: inline-flex; align-items: center; gap: var(--space-3); min-height: 48px; cursor: pointer; justify-self: start; max-width: none; }
+  .radio input { appearance: none; flex: none; display: grid; place-items: center; width: 24px; height: 24px; margin: 0;
+    border: 1px solid var(--color-field); border-radius: 50%; background: var(--color-paper); cursor: pointer;
+    transition: border-color var(--dur-1) var(--ease-out); }
+  .radio input::before { content: ""; width: 12px; height: 12px; border-radius: 50%; background: var(--color-ink); transform: scale(0); transition: transform var(--dur-1) var(--ease-out); }
+  .radio:hover input { border-color: var(--color-ink); }
+  .radio input:checked { border-color: var(--color-ink); }
+  .radio input:checked::before { transform: scale(1); }
+  .radio input:focus-visible { outline: 2px solid var(--color-ink); outline-offset: 4px; }
   .hp { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
   .contact__submit { display: grid; gap: var(--space-3); justify-items: start; }
 </style>

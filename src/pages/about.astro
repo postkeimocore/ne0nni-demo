@@ -4,21 +4,30 @@ import Art from '../components/Art.astro';
 import Chapter from '../components/Chapter.astro';
 import GearList from '../components/GearList.astro';
 import SnsIcons from '../components/SnsIcons.astro';
-import { getWorks, getGear, KIND_LABEL, label, pathOf } from '../lib/cms';
+import Go from '../components/Go.astro';
+import { getWorks, getCharacters, getGear, getMusic, characterName, filterKey, KIND_LABEL, label, pathOf, worksWith } from '../lib/cms';
 import { ACCOUNTS } from '../lib/sns';
 
 const works = await getWorks();
+const characters = await getCharacters();
+const music = await getMusic();
 const gear = (await getGear()).filter((g) => works.some((w) => w.gear.some((x) => x.id === g.id)));
 const gearCount = Object.fromEntries(gear.map((g) => [g.id, works.filter((w) => w.gear.some((x) => x.id === g.id)).length]));
+const charaCount = (id: string) => works.filter((w) => w.character?.id === id).length;
 const originals = works.filter((w) => w.kind === 'original');
-const covers = works.filter((w) => w.kind === 'cover');
+const tributes = works.filter((w) => w.kind === 'tribute');
+
+// chapters in the order of the site's groups: Series (works) / Character / Music / Gear, then SNS and business
+const sections = ['series', ...(characters.length ? ['character'] : []), ...(music.length ? ['music'] : []), ...(gear.length ? ['gear'] : []), 'sns', 'business'];
+const no = (id: string) => String(sections.indexOf(id) + 1).padStart(2, '0');
+
 const base = Astro.site!.href;
 const jsonLd = {
   '@context': 'https://schema.org', '@type': 'AboutPage', url: new URL('/about/', base).href,
   mainEntity: { '@type': 'Organization', name: 'NE0NNi', alternateName: 'ネオンニ', url: base, sameAs: ACCOUNTS.map((a) => a.url), parentOrganization: { '@type': 'Organization', name: 'Casterisk' } },
 };
 ---
-<Base title="About" description="NE0NNi（ネオンニ）は、ヘッドホンで音楽を聴く女の子を描くイラストレーションです。シリーズ HEADPHONES GIRL、描いたヘッドホンの記録、SNS アカウントについて。" current="about" jsonLd={jsonLd}>
+<Base title="About" description="NE0NNi（ネオンニ）は、ヘッドホンで音楽を聴く女の子を描くイラストレーションです。シリーズ HEADPHONES GIRL、キャラクター、作品の曲とギア、SNS アカウントについて。" current="about" jsonLd={jsonLd}>
 
   <!-- the one black section of this page -->
   <section class="l-section l-container is-night about-hero" aria-labelledby="about-h" data-glints="night">
@@ -36,15 +45,15 @@ const jsonLd = {
   </section>
 
   <section class="l-section l-container about-sec" aria-labelledby="series-h">
-    <Chapter no="01" title="Series" id="series-h" />
+    <Chapter no={no('series')} title="Series" id="series-h" />
     <div class="l-grid about-sec__grid">
       <div class="about-sec__text">
         <p class="t-display-4">Headphones Girl</p>
-        <p class="t-body">ヘッドホンをつけた女の子を描くシリーズです。NE0NNi のオリジナルのキャラクターと、アニメ・漫画・映画のキャラクターを NE0NNi の絵で描いた作品（{KIND_LABEL.cover}）があります。</p>
-        <p><a class="link t-label" href="/works/">View all works</a></p>
+        <p class="t-body">ヘッドホンをつけた女の子を描くシリーズです。NE0NNi のキャラクターを描く {KIND_LABEL.original} と、アニメ・漫画・映画のキャラクターを NE0NNi の絵で描く {KIND_LABEL.tribute} があります。</p>
+        <Go href="/works/" label="View all works" />
       </div>
       <ul class="about-thumbs">
-        {[...originals, ...covers].map((w) => (
+        {[...originals, ...tributes].map((w) => (
           <li>
             <a href={pathOf(w)} class="about-thumbs__link">
               <span class="about-thumbs__art"><Art img={w.face ?? w.key} sizes="(min-width: 1200px) 16vw, (min-width: 768px) 20vw, 33vw" decorative /></span>
@@ -56,12 +65,60 @@ const jsonLd = {
     </div>
   </section>
 
-  {gear.length > 0 && (
-    <section class="l-section l-container about-sec" aria-labelledby="gear-h">
-      <Chapter no="02" title="Gear" id="gear-h" />
+  {characters.length > 0 && (
+    <section class="l-section l-container about-sec" aria-labelledby="character-h">
+      <Chapter no={no('character')} title="Character" id="character-h" />
+      <div class="charas">
+        {characters.map((c, i) => (
+          <article class:list={['chara l-grid', i % 2 && 'chara--flip']} id={`character-${c.id}`} aria-labelledby={`character-${c.id}-h`}>
+            {c.image && <figure class="chara__art"><Art img={c.image} sizes="(min-width: 1200px) 25vw, (min-width: 768px) 37vw, 50vw" /></figure>}
+            <div class="chara__body">
+              <h3 class="t-display-3" id={`character-${c.id}-h`}>{characterName(c)}</h3>
+              <dl class="wdata">
+                <div class="wdata__row"><dt class="t-label">Personality</dt><dd class="t-small">{c.personality}</dd></div>
+                <div class="wdata__row"><dt class="t-label">Taste</dt><dd class="t-small">{c.taste}</dd></div>
+                {c.genre && <div class="wdata__row"><dt class="t-label">Genre</dt><dd class="t-small">{c.genre}</dd></div>}
+                {c.artists.length > 0 && (
+                  <div class="wdata__row"><dt class="t-label">Artists</dt><dd><ul class="chara__artists t-small">{c.artists.map((a) => <li>{a}</li>)}</ul></dd></div>
+                )}
+              </dl>
+              {charaCount(c.id) > 0 && <Go href={worksWith(filterKey.character(c))} label={`${characterName(c)} の作品（${charaCount(c.id)}）`} />}
+            </div>
+          </article>
+        ))}
+      </div>
+    </section>
+  )}
+
+  {music.length > 0 && (
+    <section class="l-section l-container about-sec" aria-labelledby="music-h">
+      <Chapter no={no('music')} title="Music" id="music-h" />
       <div class="l-grid about-sec__grid">
         <div class="about-sec__text">
-          <p class="t-body">作品ごとに、描いたヘッドホンのメーカーと型番を記録しています。同じヘッドホンを描いた作品は、Works で絞り込めます。</p>
+          <p class="t-body">作品ごとに紐づけた曲です。</p>
+        </div>
+        <ol class="about-sec__side tracks">
+          {music.map(({ work, track }) => (
+            <li class="track">
+              <span class="t-number track__no">{label(work)}</span>
+              <span class="track__name">
+                <span class="t-grotesk-data t-ja">{track.title}</span>
+                <span class="t-small">{track.artist}</span>
+              </span>
+              <Go href={pathOf(work)} label={`${label(work)} を見る`} icon />
+            </li>
+          ))}
+        </ol>
+      </div>
+    </section>
+  )}
+
+  {gear.length > 0 && (
+    <section class="l-section l-container about-sec" aria-labelledby="gear-h">
+      <Chapter no={no('gear')} title="Gear" id="gear-h" />
+      <div class="l-grid about-sec__grid">
+        <div class="about-sec__text">
+          <p class="t-body">作品に描いたヘッドホンなどのギアです。ブランドと型番を記録しています。</p>
         </div>
         <div class="about-sec__side"><GearList gear={gear} counts={gearCount} /></div>
       </div>
@@ -69,17 +126,17 @@ const jsonLd = {
   )}
 
   <section class="l-section l-container about-sec" aria-labelledby="sns-h">
-    <Chapter no={gear.length ? '03' : '02'} title="SNS" id="sns-h" />
+    <Chapter no={no('sns')} title="SNS" id="sns-h" />
     <div class="l-grid about-sec__grid">
       <div class="about-sec__text">
-        <p class="t-body">ショート動画は Instagram・TikTok・YouTube で、作品の静止画は Instagram のフィードで公開しています。</p>
+        <p class="t-body">ショート動画は Instagram・TikTok・YouTube で、作品の静止画は Instagram と TikTok で公開しています。</p>
       </div>
       <div class="about-sec__side"><SnsIcons handles /></div>
     </div>
   </section>
 
   <section class="l-section l-container about-sec" aria-labelledby="biz-h">
-    <Chapter no={gear.length ? '04' : '03'} title="For business" id="biz-h" />
+    <Chapter no={no('business')} title="For business" id="biz-h" />
     <div class="l-grid about-sec__grid">
       <div class="about-sec__text">
         <p class="t-body">制作のご依頼、PR、コラボレーション、作品の利用について、企業・アーティストの方からのお問い合わせを受け付けています。</p>
@@ -123,4 +180,33 @@ const jsonLd = {
   .about-thumbs__art :global(img) { width: 100%; height: 100%; object-fit: cover; transition: transform var(--dur-3) var(--ease-out); }
   .about-thumbs__link:hover :global(img) { transform: scale(1.04); }
   .about-thumbs__cap { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: var(--space-1); }
+
+  /* Character: A and B take turns, picture left / picture right (like the HOME chapters) */
+  .charas { display: grid; row-gap: var(--section-gap); margin-top: var(--block-gap); }
+  .chara { row-gap: var(--space-5); align-items: start; scroll-margin-top: calc(var(--header-h) + var(--space-5)); }
+  .chara__art { grid-column: 1 / span 2; }
+  .chara__art :global(img) { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; }
+  .chara__body { grid-column: 1 / -1; display: grid; gap: var(--space-5); justify-items: start; }
+  .chara__body .wdata { justify-self: stretch; }
+  .chara .wdata__row { grid-template-columns: 112px minmax(0, 1fr); }
+  .chara__artists { display: flex; flex-wrap: wrap; gap: 0 var(--space-3); }
+  @media (min-width: 768px) {
+    .chara__art { grid-column: 1 / span 3; }
+    .chara__body { grid-column: 4 / -1; }
+    .chara--flip .chara__art { grid-column: 6 / -1; grid-row: 1; }
+    .chara--flip .chara__body { grid-column: 1 / span 5; grid-row: 1; }
+  }
+  @media (min-width: 1200px) {
+    .chara__art { grid-column: 2 / span 3; }
+    .chara__body { grid-column: 6 / span 6; }
+    .chara--flip .chara__art { grid-column: 9 / span 3; }
+    .chara--flip .chara__body { grid-column: 2 / span 6; }
+  }
+
+  /* Music: a track list, one row per work */
+  .tracks { display: grid; }
+  .track { display: grid; grid-template-columns: max-content minmax(0, 1fr) auto; column-gap: var(--space-5); align-items: center; padding-block: var(--space-2); border-bottom: 1px solid var(--color-rule-soft); }
+  @media (max-width: 767px) { .track { column-gap: var(--space-3); } }
+  .track:first-child { border-top: 1px solid var(--color-ink); }
+  .track__name { display: grid; gap: var(--space-1); }
 </style>

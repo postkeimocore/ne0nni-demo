@@ -1,8 +1,9 @@
 ---
 /**
  * SNS posts of a work: short videos (9:16) and photo posts (4:5) at the same height, in the one rounded frame
- * of the page. Controls sit under each frame, never on the player (design-system.md 5, "SNS投稿の取り込み").
- * TikTok posts with an ID play in the TikTok Embed Player; without one, the stand-in clip plays.
+ * of the page. The video or photo plays in our own frame; under it, the play button and an icon for each
+ * platform the post is on (design-system.md 5, "SNS投稿の取り込み").
+ * TikTok's Embed Player was tried and dropped: it always shows the account bar and the like counts.
  */
 import { getImage } from 'astro:assets';
 import type { Post } from '../lib/types';
@@ -10,29 +11,27 @@ import Art from './Art.astro';
 import SnsIcon from './SnsIcon.astro';
 interface Props { posts: Post[] }
 const { posts } = Astro.props;
-// poster frames for the stand-in clips, resized like any other image
+// poster frames for the videos, resized like any other image
 const posters = await Promise.all(posts.map((p) =>
   p.kind === 'short' && p.video && p.image ? getImage({ src: p.image.src, width: 720, format: 'webp', quality: 82, ...(typeof p.image.src === 'string' ? { height: Math.round(720 * p.image.height / p.image.width) } : {}) }) : undefined));
-const player = (id: string) =>
-  `https://www.tiktok.com/player/v1/${id}?controls=0&description=0&music_info=0&rel=0&loop=1&autoplay=0`;
 ---
 <div class="posts">
   <ul class="posts__list">
     {posts.map((p, i) => (
       <li class="post">
         <div class:list={['post__media', p.kind === 'short' ? 'post__media--short' : 'post__media--photo']}>
-          {p.platform === 'tiktok' && p.postId
-            ? <iframe src={player(p.postId)} title={p.image?.alt ?? 'TikTok の投稿'} loading="lazy" allow="autoplay; encrypted-media; fullscreen" />
-            : p.kind === 'short' && p.video
-              ? <video src={p.video} poster={posters[i]?.src} muted loop playsinline preload="none" aria-label={p.image?.alt} />
-              : p.image && <Art img={p.image} sizes="(min-width: 1200px) 448px, (min-width: 768px) 384px, 320px" />}
+          {p.kind === 'short' && p.video
+            ? <video src={p.video} poster={posters[i]?.src} muted loop playsinline preload="none" aria-label={p.image?.alt} />
+            : p.image && <Art img={p.image} sizes="(min-width: 1200px) 448px, (min-width: 768px) 384px, 320px" />}
         </div>
         <div class="post__meta">
           <span class="post__ctrl">
-            {p.kind === 'short' && <button class="post__play" type="button" aria-label="動画を再生"><span></span></button>}
-            <span class="t-label">{p.label}</span>
+            {p.kind === 'short' && p.video && <button class="post__play" type="button" aria-label="動画を再生"><span></span></button>}
+            <span class="t-label">{p.kind === 'short' ? 'Short' : 'Photo'}</span>
           </span>
-          <SnsIcon platform={p.platform} href={p.url} />
+          {p.links.length > 0 && (
+            <span class="post__links">{p.links.map((l) => <SnsIcon platform={l.platform} href={l.url} post />)}</span>
+          )}
         </div>
       </li>
     ))}

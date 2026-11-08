@@ -3,18 +3,14 @@ import Base from '../layouts/Base.astro';
 import Art from '../components/Art.astro';
 import Chapter from '../components/Chapter.astro';
 import WorkData from '../components/WorkData.astro';
-import GearList from '../components/GearList.astro';
+import Go from '../components/Go.astro';
 import SnsIcons from '../components/SnsIcons.astro';
-import { getSite, getWorks, KIND_LABEL, label, pathOf } from '../lib/cms';
+import { getSite, KIND_LABEL, label, pathOf } from '../lib/cms';
 import { ACCOUNTS } from '../lib/sns';
 
 const site = await getSite();
-const works = await getWorks();
 const { hero, latest } = site;
-const gearCount = Object.fromEntries(
-  [...new Set(works.flatMap((w) => w.gear.map((g) => g.id)))].map((id) => [id, works.filter((w) => w.gear.some((g) => g.id === id)).length]),
-);
-const tall = (w: (typeof works)[number]) => w.key.height / w.key.width > 1.5;
+const tall = (w: (typeof latest)[number]) => w.key.height / w.key.width > 1.5;
 // the HOME chapters take turns: art left / art right / the cutout bleeding off the right edge
 const LOOKS = ['a', 'b', 'c'] as const;
 
@@ -64,7 +60,7 @@ const jsonLd = [
         const useCut = look === 'c' && w.cut;
         return (
           <article class:list={['look', `look--${look}`, tall(w) && 'is-tall']} aria-labelledby={`look-${w.id}`}>
-            <Chapter no={label(w)} title={w.series.name} href={pathOf(w)} id={`look-${w.id}`} tag="h3">
+            <Chapter no={label(w)} title={w.series.name} id={`look-${w.id}`} tag="h3">
               <span class="t-label">{KIND_LABEL[w.kind]}</span>
             </Chapter>
             <div class="look__body l-grid">
@@ -78,15 +74,14 @@ const jsonLd = [
               <div class="look__info" data-reveal="up">
                 {w.lead && <p class="t-lead">{w.lead}</p>}
                 <WorkData work={w} />
-                {w.gear.length > 0 && <GearList gear={w.gear} counts={gearCount} />}
-                <p><a class="link t-label" href={pathOf(w)}>View {label(w)}</a></p>
+                <Go href={pathOf(w)} label={`View ${label(w)}`} />
               </div>
             </div>
           </article>
         );
       })}
       <p class="home-works__more" data-cable-point="top">
-        <a class="link t-label" href="/works/">View all works</a>
+        <Go href="/works/" label="View all works" />
       </p>
     </div>
   </section>
@@ -101,9 +96,9 @@ const jsonLd = [
       <div class="home-about__body">
         <p class="t-display-3">Girls &amp; night sounds.</p>
         <p class="t-statement">音楽を聴く女の子を描く<br>イラストレーション。</p>
-        <p class="t-body">NE0NNi（ネオンニ）は、人物と表情、装い、音楽を聴いている時間を描いています。シリーズ HEADPHONES GIRL では、作品ごとに、描いたヘッドホンのメーカーと型番を記録しています。</p>
+        <p class="t-body">NE0NNi（ネオンニ）は、人物と表情、装い、音楽を聴いている時間を描いています。シリーズ HEADPHONES GIRL では、作品ごとに、キャラクターと曲、描いたヘッドホンなどのギアを記録しています。</p>
         <SnsIcons handles />
-        <p><a class="link t-label" href="/about/">About NE0NNi</a></p>
+        <Go href="/about/" label="About NE0NNi" />
       </div>
     </div>
   </section>

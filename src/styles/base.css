@@ -15,6 +15,7 @@ body {
   font-size: var(--fs-body);
   line-height: var(--lh-body);
   letter-spacing: var(--ls-ja-body);
+  line-break: strict;               /* no small kana (ィ・ッ) or long vowel mark at the start of a line */
   -webkit-font-smoothing: antialiased;
 }
 img, video { display: block; max-width: 100%; height: auto; }
@@ -381,7 +382,7 @@ section[id], [id^="look-"] { scroll-margin-top: var(--header-h); }
 .wdata { display: grid; gap: var(--space-2); }
 .wdata__row { display: grid; grid-template-columns: 96px minmax(0, 1fr); column-gap: var(--space-3); align-items: baseline; padding-bottom: var(--space-2); border-bottom: 1px solid var(--color-rule-soft); }
 .data-item__body { display: grid; gap: var(--space-1); }
-.data-item__body .link { min-height: 32px; justify-self: start; }
+.data-item__body .go { justify-self: start; }
 
 /* ---------- cable line (4-2): one line threading behind the works ---------- */
 [data-cable] { position: relative; isolation: isolate; }
@@ -413,10 +414,9 @@ section[id], [id^="look-"] { scroll-margin-top: var(--header-h); }
   .page-head__title { grid-column: 1 / span 7; }
   .page-head__lead { grid-column: 8 / span 4; }
 }
-.crumbs { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+.crumbs { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); }
+.crumbs li { display: inline-flex; align-items: center; }
 .crumbs li + li::before { content: "/"; margin-right: var(--space-2); }
-.crumbs a { text-decoration: none; }
-.crumbs a:hover { text-decoration: underline; text-underline-offset: 4px; }
 
 /* ---------- works list ---------- */
 .w-solo { grid-column: 1 / -1; }
@@ -441,4 +441,38 @@ section[id], [id^="look-"] { scroll-margin-top: var(--header-h); }
 .site-footer small { font-size: inherit; }
 
 /* ---------- posts: embedded player ---------- */
-.post__media iframe { display: block; }
+
+/* ---------- the way on (Go): a round arrow and its label, used instead of text links ----------
+   The circle is 48px (the hit area). It fills on hover; on night sections the colors swap. */
+.go { display: inline-flex; align-items: center; gap: var(--space-3); min-height: 48px; text-decoration: none; color: inherit; cursor: pointer; }
+.go__icon {
+  display: inline-grid; place-items: center; flex: none;
+  width: 48px; height: 48px; border: 1px solid currentColor; border-radius: 50%;
+  transition: background-color var(--dur-1) var(--ease-out), color var(--dur-1) var(--ease-out), border-color var(--dur-1) var(--ease-out);
+}
+.go__icon svg { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: square; transition: transform var(--dur-1) var(--ease-out); }
+.go:hover .go__icon, .go.is-hover .go__icon { background: var(--color-ink); border-color: var(--color-ink); color: var(--color-paper); }
+.is-night .go:hover .go__icon, .is-night .go.is-hover .go__icon { background: var(--color-paper); border-color: var(--color-paper); color: var(--color-ink); }
+.go:hover .go__icon svg { transform: translateX(2px); }
+.go--back:hover .go__icon svg { transform: translateX(-2px); }
+.go:active .go__icon { transform: scale(.96); }
+.go:focus-visible { outline: 2px solid currentColor; outline-offset: 4px; }
+.go--icon { gap: 0; }
+
+/* ---------- works filter: names keep their own capitals ---------- */
+.filter__btn.is-name { text-transform: none; }
+
+/* ---------- work notes: Character / Music / Gear side by side ---------- */
+.notes { row-gap: var(--block-gap); align-items: start; }
+.note { grid-column: 1 / -1; display: grid; gap: var(--space-4); align-content: start; padding-top: var(--space-3); border-top: 1px solid var(--color-ink); }
+@media (min-width: 768px) { .note { grid-column: span 4; } }
+.note__chara { display: grid; grid-template-columns: 96px minmax(0, 1fr); column-gap: var(--space-3); align-items: start; }
+.note__thumb { display: block; overflow: hidden; aspect-ratio: 4 / 5; }
+.note__thumb img { width: 100%; height: 100%; object-fit: cover; }
+.note__body { display: grid; gap: var(--space-2); align-content: start; }
+.note__go { display: grid; gap: var(--space-1); justify-items: start; }
+.note__go:empty { display: none; }
+.data-item--plain { grid-template-columns: minmax(0, 1fr); }
+
+/* ---------- posts: an icon for each platform the post is on ---------- */
+.post__links { display: inline-flex; margin-right: calc(var(--space-1) * -3); }

@@ -167,29 +167,18 @@ export default function site() {
     apply(start && filter.querySelector(`[data-key="${CSS.escape(start)}"]`) ? start : 'all', false);
   }
 
-  // ---------- posts: play / pause sit under the frame, never on the player ----------
+  // ---------- posts: play / pause sit under the frame, never on the video ----------
   document.querySelectorAll('.post').forEach((post) => {
     const btn = post.querySelector('.post__play');
-    if (!btn) return;
     const video = post.querySelector('video');
-    const frame = post.querySelector('iframe');
+    if (!btn || !video) return;
     const set = (playing) => {
       btn.classList.toggle('is-playing', playing);
       btn.setAttribute('aria-label', playing ? '動画を一時停止' : '動画を再生');
     };
-    if (video) {
-      btn.addEventListener('click', () => (video.paused ? video.play() : video.pause()));
-      video.addEventListener('play', () => set(true));
-      video.addEventListener('pause', () => set(false));
-    } else if (frame) {
-      // TikTok Embed Player: controlled with postMessage
-      let playing = false;
-      btn.addEventListener('click', () => {
-        playing = !playing;
-        frame.contentWindow?.postMessage({ type: playing ? 'play' : 'pause', 'x-tiktok-player': true }, '*');
-        set(playing);
-      });
-    }
+    btn.addEventListener('click', () => (video.paused ? video.play() : video.pause()));
+    video.addEventListener('play', () => set(true));
+    video.addEventListener('pause', () => set(false));
   });
 
   // ---------- contact form ----------

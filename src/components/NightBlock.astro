@@ -5,6 +5,7 @@
  * the page's one pill stays in the page itself.
  */
 import SnsIcons from './SnsIcons.astro';
+import Go from './Go.astro';
 interface Props { to?: 'about' | 'contact' }
 const { to = 'about' } = Astro.props;
 ---
@@ -14,9 +15,7 @@ const { to = 'about' } = Astro.props;
     <div class="night-block__body">
       <p class="t-body">NE0NNi（ネオンニ）は、ヘッドホンで音楽を聴く女の子を描くイラストレーションです。Instagram・TikTok・YouTube で作品とショート動画を公開しています。</p>
       <SnsIcons />
-      {to === 'about'
-        ? <p><a class="link t-label" href="/about/">About NE0NNi</a></p>
-        : <p><a class="link t-label" href="/contact/">Contact</a></p>}
+      {to === 'about' ? <Go href="/about/" label="About NE0NNi" /> : <Go href="/contact/" label="Contact" />}
     </div>
   </div>
 </section>

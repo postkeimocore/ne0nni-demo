@@ -1,5 +1,6 @@
 ---
 import Base from '../layouts/Base.astro';
+import Go from '../components/Go.astro';
 ---
 <Base title="ページが見つかりません" description="お探しのページは見つかりませんでした。">
   <section class="page-head l-container nf">
@@ -7,12 +8,12 @@ import Base from '../layouts/Base.astro';
       <h1 class="t-display-1 page-head__title">404</h1>
       <div class="page-head__lead">
         <p class="t-body">お探しのページは見つかりませんでした。移動したか、削除された可能性があります。</p>
-        <p class="nf__links"><a class="link t-label" href="/">Home</a><a class="link t-label" href="/works/">Works</a></p>
+        <p class="nf__links"><Go href="/" label="Home" /><Go href="/works/" label="Works" /></p>
       </div>
     </div>
   </section>
 </Base>
 <style>
   .nf { padding-bottom: var(--section-gap); }
-  .nf__links { display: flex; gap: var(--space-5); }
+  .nf__links { display: flex; flex-wrap: wrap; gap: var(--space-3) var(--space-5); }
 </style>

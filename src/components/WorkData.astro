@@ -1,15 +1,21 @@
 ---
-/** Facts about a work as a data list: series, type (original / cover), the covered character, gear, date. */
+/** Facts about a work as a data list: Series, Work (Original / Tribute), Character, Music, Gear, Date. */
 import type { Work } from '../lib/types';
-import { KIND_LABEL } from '../lib/cms';
+import { KIND_LABEL, trackName } from '../lib/cms';
 interface Props { work: Work; class?: string }
 const { work, class: cls } = Astro.props;
 ---
 <dl class:list={['wdata', cls]}>
   <div class="wdata__row"><dt class="t-label">Series</dt><dd class="t-grotesk-data">{work.series.name}</dd></div>
-  <div class="wdata__row"><dt class="t-label">Type</dt><dd class="t-grotesk-data">{KIND_LABEL[work.kind]}</dd></div>
-  {work.original && (
-    <div class="wdata__row"><dt class="t-label">Character</dt><dd class="t-grotesk-data t-ja">{work.original.character}（{work.original.title}）</dd></div>
+  <div class="wdata__row"><dt class="t-label">Work</dt><dd class="t-grotesk-data">{KIND_LABEL[work.kind]}</dd></div>
+  {work.character && (
+    <div class="wdata__row"><dt class="t-label">Character</dt><dd class="t-grotesk-data">{work.character.name}</dd></div>
+  )}
+  {work.tribute && (
+    <div class="wdata__row"><dt class="t-label">Character</dt><dd class="t-grotesk-data t-ja">{work.tribute.character}（{work.tribute.title}）</dd></div>
+  )}
+  {work.music.length > 0 && (
+    <div class="wdata__row"><dt class="t-label">Music</dt><dd class="t-grotesk-data t-ja">{work.music.map(trackName).join(' / ')}</dd></div>
   )}
   {work.gear.length > 0 && (
     <div class="wdata__row"><dt class="t-label">Gear</dt><dd class="t-grotesk-data">{work.gear.map((g) => `${g.brand} ${g.model}`).join(' / ')}</dd></div>

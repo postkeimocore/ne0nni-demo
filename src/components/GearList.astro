@@ -1,10 +1,15 @@
 ---
-/** Gear list (GLOBAL WORK item list): 64px thumbnail, brand / model, a link to the works with the same gear. */
+/**
+ * Gear list: 64px thumbnail, Brand / Model, and a button to the works that draw the same gear.
+ * The button shows when that many works or more draw it (min). On a work page min is 2, so it never points
+ * back at a list of one.
+ */
 import type { Gear } from '../lib/types';
-import { filterKey } from '../lib/cms';
+import { filterKey, worksWith } from '../lib/cms';
 import Art from './Art.astro';
-interface Props { gear: Gear[]; counts?: Record<string, number>; link?: boolean }
-const { gear, counts = {}, link = true } = Astro.props;
+import Go from './Go.astro';
+interface Props { gear: Gear[]; counts?: Record<string, number>; min?: number }
+const { gear, counts = {}, min = 1 } = Astro.props;
 ---
 <ul class="data-list">
   {gear.map((g) => (
@@ -12,10 +17,8 @@ const { gear, counts = {}, link = true } = Astro.props;
       {g.thumb ? <Art img={g.thumb} sizes="64px" class="data-item__thumb" decorative /> : <span class="data-item__thumb data-item__thumb--type" aria-hidden="true" />}
       <div class="data-item__body">
         <dl class="t-grotesk-data"><dt class="t-label">Brand</dt><dd>{g.brand}</dd><dt class="t-label">Model</dt><dd>{g.model}</dd></dl>
-        {link && (
-          <a class="link t-label" href={`/works/?f=${filterKey.gear(g)}`}>
-            {g.brand} {g.model} の作品{counts[g.id] ? `（${counts[g.id]}）` : ''}
-          </a>
+        {(counts[g.id] ?? 0) >= min && (
+          <Go href={worksWith(filterKey.gear(g))} label={`このギアを描いた作品（${counts[g.id]}）`} />
         )}
       </div>
     </li>

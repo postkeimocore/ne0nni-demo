@@ -1,13 +1,14 @@
 /**
- * Works kept in the repository. Used when microCMS is not configured (see src/lib/cms.ts).
- * Facts only: anything not confirmed (titles, dates, the headphones of No.001 and No.003) is left out
- * and listed in current.md.
+ * Content kept in the repository. Used while no CMS is connected (see src/lib/cms.ts).
+ * Sources: the posts on TikTok / Instagram (music, gear), Notion「キャラクター設計」(Character A / B).
+ * Anything not confirmed is listed in current.md.
  */
-import type { Gear, Series, Work } from '../lib/types';
+import type { Character, Gear, Series, Track, Work } from '../lib/types';
 
 import k1 from '../assets/art/001-key.webp';
 import c1 from '../assets/art/001-cut.webp';
 import f1 from '../assets/art/001-face.webp';
+import g1 from '../assets/art/001-gear.webp';
 import p1 from '../assets/art/001-short-poster.webp';
 import k2 from '../assets/art/002-key.webp';
 import c2 from '../assets/art/002-cut.webp';
@@ -21,14 +22,44 @@ import c3 from '../assets/art/003-cut.webp';
 import f3 from '../assets/art/003-face.webp';
 
 const img = (src: ImageMetadata, alt: string) => ({ src, width: src.width, height: src.height, alt });
+const tiktok = (path: string) => ({ platform: 'tiktok' as const, url: `https://www.tiktok.com/@ne0nni/${path}` });
+const instagram = (path: string) => ({ platform: 'instagram' as const, url: `https://www.instagram.com/${path}/` });
 
 export const series: Series[] = [{ id: 'headphones-girl', name: 'Headphones Girl' }];
 const HG = series[0];
 
-export const gear: Gear[] = [
-  { id: 'fiio-eh11', brand: 'FIIO', model: 'EH11', thumb: img(g2, 'FIIO EH11') },
+export const characters: Character[] = [
+  {
+    id: 'a',
+    name: 'A',
+    personality: '自分のペースを大切にして、人との距離は自分で選ぶ。まわりからは、ちょっと不思議で独特に見える。',
+    taste: '流行っていても、自分の感性に合うものを選ぶ。好きな音楽は、その周りまで掘り下げる。',
+    genre: 'ダーク・オルタナ／ハイパーポップ／インディー',
+    artists: ['4s4ki', 'Яu-a', 'nyamura', 'ずっと真夜中でいいのに。', 'ヨルシカ', 'あたらよ', 'なとり', 'きのこ帝国', 'ひとひら', '羊文学', 'No Buses', 'aespa', 'XG'],
+    image: img(f1, 'Character A：黒いヘッドホンをつけた、ボブの女の子'),
+  },
+  {
+    id: 'b',
+    name: 'B',
+    personality: '人との距離を自然に縮めて、まわりと楽しさを分け合う。明るくて、一緒にいて楽しい。',
+    taste: '流行を楽しんで、気に入ったものを取り入れる。SNS や毎日の中から、幅広く音楽を見つける。',
+    genre: 'ポップ・メロウ／SNS で話題の曲／邦楽・K‑POP',   // non-breaking hyphen: K-POP never splits
+    artists: ['ILLIT', 'CUTIE STREET', 'CANDY TUNE', 'M!LK', 'モナキ', 'MISAMO', 'BLACKPINK', 'BTS', '藤井 風', 'サカナクション', 'RADWIMPS', 'Suchmos', 'ちゃんみな', 'HANA', 'aespa', 'XG', 'KANA-BOON'],
+    image: img(f2, 'Character B：首にヘッドホンをかけた、長い髪の女の子'),
+  },
 ];
-const EH11 = gear[0];
+const [A, B] = characters;
+
+const music: Record<string, Track> = {
+  akanesasu: { id: 'zutomayo', artist: 'ずっと真夜中でいいのに。', title: 'akanesasu' },
+  musubi: { id: 'ayumu-imazu', artist: 'Ayumu Imazu', title: '結び' },
+};
+
+export const gear: Gear[] = [
+  { id: 'audio-technica-ath-hl7bt', brand: 'audio-technica', model: 'ATH-HL7BT', thumb: img(g1, 'audio-technica ATH-HL7BT') },
+  { id: 'fiio-eh11', brand: 'FiiO', model: 'EH11', thumb: img(g2, 'FiiO EH11') },
+];
+const [HL7BT, EH11] = gear;
 
 export const works: Work[] = [
   {
@@ -36,14 +67,25 @@ export const works: Work[] = [
     id: '001',
     series: HG,
     kind: 'original',
+    character: A,
     lead: 'うつぶせで、スマホを見る。',
     key: img(k1, '枕に頬をのせ、うつぶせでスマートフォンを見る、黒いヘッドホンの女の子'),
     cut: img(c1, '枕に頬をのせ、うつぶせでスマートフォンを見る女の子'),
     face: img(f1, 'スマートフォンの光に照らされた、黒いヘッドホンの女の子の顔'),
     focus: '62% 50%',
-    gear: [],
+    music: [music.akanesasu],
+    gear: [HL7BT],
     posts: [
-      { kind: 'short', platform: 'tiktok', video: '/video/001-short.mp4', image: img(p1, '夜の部屋で、うつぶせでスマートフォンを見る女の子のショート動画'), label: 'Short' },
+      {
+        kind: 'short', video: '/video/001-short.mp4',
+        image: img(p1, '雨の夜の部屋で、うつぶせでスマートフォンを見る女の子のショート動画'),
+        links: [tiktok('video/7703174687689559317'), instagram('reel/DfMuF0Rh-FX')],
+      },
+      {
+        kind: 'photo',
+        image: img(k1, 'うつぶせでスマートフォンを見る、黒いヘッドホンの女の子の写真投稿'),
+        links: [tiktok('photo/7703943576702635285'), instagram('p/DfR9lD7mon3')],
+      },
     ],
   },
   {
@@ -51,29 +93,40 @@ export const works: Work[] = [
     id: '002',
     series: HG,
     kind: 'original',
+    character: B,
     lead: '屋上で、首にヘッドホン。',
     key: img(k2, 'ラベンダーの背景に、首にオレンジのヘッドホンをかけた長い髪の女の子'),
     cut: img(c2, '首にオレンジのヘッドホンをかけ、手すりにもたれる女の子'),
     face: img(f2, '首にヘッドホンをかけて微笑む女の子の顔'),
     scene: img(s2, '夜の街を背にした屋上の女の子'),
     focus: '40% 30%',
+    music: [music.musubi],
     gear: [EH11],
     posts: [
-      { kind: 'short', platform: 'tiktok', video: '/video/002-short.mp4', image: img(p2, '屋上で夜の街を背にした女の子のショート動画'), label: 'Short' },
-      { kind: 'photo', platform: 'instagram', image: img(ig2, 'HEADPHONES GIRL のロゴと、FIIO EH11 を首にかけた女の子のフィード投稿'), label: 'Photo' },
+      {
+        kind: 'short', video: '/video/002-short.mp4',
+        image: img(p2, '屋上で夜の街を背にした女の子のショート動画'),
+        links: [tiktok('video/7704655287642262836'), instagram('reel/DfW-wUqPzyd')],
+      },
+      {
+        kind: 'photo',
+        image: img(ig2, 'HEADPHONES GIRL のロゴと、FiiO EH11 を首にかけた女の子の写真投稿'),
+        links: [tiktok('photo/7705420626323983637'), instagram('p/DfcSmkhmiPx')],
+      },
     ],
   },
   {
     no: 3,
     id: '003',
     series: HG,
-    kind: 'cover',
-    original: { character: 'シャンプー', title: 'らんま1/2' },
+    kind: 'tribute',
+    tribute: { character: 'シャンプー', title: 'らんま1/2' },
     lead: '両手でヘッドホンを押さえる。',
     key: img(k3, '紫の背景に、お団子髪とチャイナ服の女の子が両手でヘッドホンを押さえる'),
     cut: img(c3, 'お団子髪とチャイナ服の女の子が、両手でヘッドホンを押さえる'),
     face: img(f3, 'ヘッドホンを押さえて舌を出す、お団子髪の女の子の顔'),
     focus: '50% 18%',
+    music: [],
     gear: [],
     posts: [],
   },
@@ -82,5 +135,5 @@ export const works: Work[] = [
 export const site = {
   hero: '002',
   description:
-    'NE0NNi（ネオンニ）は、ヘッドホンで音楽を聴く女の子を描くイラストレーションです。作品と、描いたヘッドホンのメーカー・型番を掲載しています。',
+    'NE0NNi（ネオンニ）は、ヘッドホンで音楽を聴く女の子を描くイラストレーションです。作品ごとに、キャラクター、曲、描いたヘッドホンなどのギアを掲載しています。',
 };

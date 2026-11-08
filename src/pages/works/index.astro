@@ -2,23 +2,29 @@
 import Base from '../../layouts/Base.astro';
 import Art from '../../components/Art.astro';
 import NightBlock from '../../components/NightBlock.astro';
-import { getWorks, getSeries, getGear, KIND_LABEL, filterKey, label, pathOf } from '../../lib/cms';
-import type { WorkKind } from '../../lib/types';
+import { getWorks, getSeries, getCharacters, getGear, characterName, filterKey, keysOf, KIND_LABEL, label, pathOf } from '../../lib/cms';
+import type { Track, WorkKind } from '../../lib/types';
 
 const works = await getWorks();
-const series = (await getSeries()).filter((s) => works.some((w) => w.series.id === s.id));
-const gear = (await getGear()).filter((g) => works.some((w) => w.gear.some((x) => x.id === g.id)));
-const kinds = (['original', 'cover'] as WorkKind[]).filter((k) => works.some((w) => w.kind === k));
 const count = (pred: (w: (typeof works)[number]) => boolean) => works.filter(pred).length;
+const series = await getSeries();
+const kinds: WorkKind[] = ['original', 'tribute'];
+const characters = await getCharacters();
+const artists = [...new Map(works.flatMap((w) => w.music).map((t) => [t.id, t] as [string, Track])).values()];
+const gear = await getGear();
 
+// The four groups of the site (Work / Character / Music / Gear), plus Series once there is more than one.
+// A button that would show every work (or none) is left out: it would not narrow anything.
+// name: brand and artist names keep their own capitals.
 const groups = [
   { title: 'Series', items: series.map((s) => ({ key: filterKey.series(s), label: s.name, n: count((w) => w.series.id === s.id) })) },
-  { title: 'Character', items: kinds.map((k) => ({ key: filterKey.kind(k), label: KIND_LABEL[k], n: count((w) => w.kind === k) })) },
-  { title: 'Gear', items: gear.map((g) => ({ key: filterKey.gear(g), label: `${g.brand} ${g.model}`, n: count((w) => w.gear.some((x) => x.id === g.id)) })) },
-].filter((g) => g.items.length);
-
-const keysOf = (w: (typeof works)[number]) =>
-  [filterKey.series(w.series), filterKey.kind(w.kind), ...w.gear.map(filterKey.gear)].join(' ');
+  { title: 'Work', items: kinds.map((k) => ({ key: filterKey.kind(k), label: KIND_LABEL[k], n: count((w) => w.kind === k) })) },
+  { title: 'Character', items: characters.map((c) => ({ key: filterKey.character(c), label: characterName(c), n: count((w) => w.character?.id === c.id) })) },
+  { title: 'Music', name: true, items: artists.map((t) => ({ key: filterKey.music(t), label: t.artist, n: count((w) => w.music.some((x) => x.id === t.id)) })) },
+  { title: 'Gear', name: true, items: gear.map((g) => ({ key: filterKey.gear(g), label: `${g.brand} ${g.model}`, n: count((w) => w.gear.some((x) => x.id === g.id)) })) },
+]
+  .map((g) => ({ ...g, items: g.items.filter((it) => it.n > 0 && it.n < works.length) }))
+  .filter((g) => g.items.length);
 // first paint (no JavaScript): the same rhythm the filter script applies
 const RHYTHM = ['w-center', 'w-pair-a', 'w-pair-b', 'w-bleed-right', 'w-center', 'w-pair-a', 'w-pair-b', 'w-bleed-left'];
 const layoutOf = (i: number) => {
@@ -32,13 +38,13 @@ const jsonLd = {
   hasPart: works.map((w) => ({ '@type': 'VisualArtwork', name: `${label(w)} ${w.series.name}`, url: new URL(pathOf(w), base).href })),
 };
 ---
-<Base title="Works" description="NE0NNi（ネオンニ）の作品一覧。シリーズ HEADPHONES GIRL の作品を、号数順に掲載しています。描いたヘッドホンのメーカー・型番でも絞り込めます。" current="works" jsonLd={jsonLd}>
+<Base title="Works" description="NE0NNi（ネオンニ）の作品一覧。シリーズ HEADPHONES GIRL の作品を、号数順に掲載しています。Original／Tribute、キャラクター、曲のアーティスト、描いたギアで絞り込めます。" current="works" jsonLd={jsonLd}>
 
   <header class="page-head l-container">
     <div class="l-grid page-head__grid">
       <h1 class="t-display-1 page-head__title">Works</h1>
       <div class="page-head__lead">
-        <p class="t-body">号数は、シリーズをまたいだ公開順の通し番号です。作品ごとに、描いたヘッドホンのメーカーと型番を掲載しています。</p>
+        <p class="t-body">号数は、シリーズをまたいだ公開順の通し番号です。Work・Character・Music・Gear で絞り込めます。</p>
       </div>
     </div>
   </header>
@@ -46,14 +52,18 @@ const jsonLd = {
   <section class="l-section l-container works" aria-label="作品一覧">
     <div class="filter-bar">
       <div class="filter" role="group" aria-label="作品の絞り込み" data-filter>
-        <button class="filter__btn t-label" type="button" aria-pressed="true" data-key="all">All<span class="filter__count">{works.length}</span></button>
+        <div class="filter__group filter__group--all">
+          <button class="filter__btn t-label" type="button" aria-pressed="true" data-key="all">All<span class="filter__count">{works.length}</span></button>
+        </div>
         {groups.map((g) => (
-          <span class="filter__group">
+          <div class="filter__group">
             <span class="filter__title t-label" aria-hidden="true">{g.title}</span>
-            {g.items.map((it) => (
-              <button class="filter__btn t-label" type="button" aria-pressed="false" data-key={it.key}>{it.label}<span class="filter__count">{it.n}</span></button>
-            ))}
-          </span>
+            <span class="filter__items">
+              {g.items.map((it) => (
+                <button class:list={['filter__btn t-label', g.name && 'is-name']} type="button" aria-pressed="false" data-key={it.key} aria-label={`${g.title}：${it.label}（${it.n}）`}>{it.label}<span class="filter__count">{it.n}</span></button>
+              ))}
+            </span>
+          </div>
         ))}
       </div>
       <p class="t-label works__count" aria-live="polite"><span data-count>{works.length}</span> works</p>
@@ -62,7 +72,7 @@ const jsonLd = {
     <div class="works__grid l-grid" data-works>
       <div class="v-slot" aria-hidden="true"><span class="v-word t-grotesk-display">Works</span></div>
       {works.map((w, i) => (
-        <article class:list={['wcard', layoutOf(i)]} data-keys={keysOf(w)}>
+        <article class:list={['wcard', layoutOf(i)]} data-keys={keysOf(w).join(' ')}>
           <a class="wcard__link" href={pathOf(w)}>
             <div class="wcard__art">
               <Art img={w.key} sizes="(min-width: 1200px) 50vw, (min-width: 768px) 75vw, 100vw" style={w.focus ? `object-position:${w.focus}` : undefined} />
@@ -83,10 +93,14 @@ const jsonLd = {
 
 <style>
   .filter-bar { display: grid; gap: var(--space-4); margin-bottom: var(--block-gap); }
-  .filter { align-items: center; row-gap: var(--space-3); }
-  .filter__group { display: inline-flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); margin-left: var(--space-4); }
-  .filter__title { margin-right: var(--space-1); }
-  @media (max-width: 767px) { .filter__group { margin-left: 0; } .filter__group:first-of-type { margin-left: var(--space-2); } }
+  /* one row per group: the group's name, then its buttons */
+  .filter { display: grid; gap: var(--space-3); }
+  .filter__group { display: grid; gap: var(--space-2); align-items: center; }
+  .filter__items { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+  @media (min-width: 768px) {
+    .filter__group { grid-template-columns: 96px minmax(0, 1fr); column-gap: var(--space-3); }
+    .filter__group--all { grid-template-columns: none; justify-items: start; }
+  }
   .works__count span { font-variant-numeric: tabular-nums; }
   @media (min-width: 768px) { .filter-bar { grid-template-columns: 1fr auto; align-items: end; } }
 

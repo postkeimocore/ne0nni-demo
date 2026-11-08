@@ -5,7 +5,7 @@ Run from web/:  python3 scripts/make-assets.py
 
 Writes
   src/assets/art/{no}-{kind}.webp   images Astro resizes into srcsets (long side up to 2400px)
-  public/video/{no}-short.mp4       stand-in clips, used until a work has a TikTok post ID
+  public/video/{no}-short.mp4       the short videos shown in the posts frame (same as the TikTok / Instagram posts)
 Originals are never modified. Crops are written as boxes on the original image (left, top, right, bottom).
 """
 import os
@@ -71,6 +71,7 @@ save(k1, '001-key')
 c1 = Image.open(src('01', '3350236aac97442e.png')).convert('RGBA')
 save(trim(c1), '001-cut')
 save(k1.crop((880, 900, 2080, 2400)), '001-face')                            # face, headphones and the lit phone
+save(k1.crop((860, 820, 1560, 1520)), '001-gear')                            # the ear cup (audio-technica ATH-HL7BT)
 
 # ---------------- No.002 (rooftop, headphones round the neck) ----------------
 k2 = Image.open(src('02', 'R1.png')).convert('RGB')                         # 2500 x 3125
@@ -82,7 +83,7 @@ save(k2.crop((650, 1430, 1170, 1950)), '002-gear')
 save(Image.open(src('02', 'IMG_8343.jpg')).convert('RGB'), '002-city')
 save(Image.open(src('SNS', 'NE0NNi_feed_headphones-girl.png')).convert('RGB'), '002-ig-feed')
 
-# ---------------- No.003 (cover: twin buns, china dress) ----------------
+# ---------------- No.003 (tribute: twin buns, china dress) ----------------
 k3 = Image.open(src('amgw5_2.PNG')).convert('RGBA')                          # 2250 x 4000
 save(k3.convert('RGB'), '003-key')
 save(trim(cut_flat_bg(k3)), '003-cut')

@@ -1,4 +1,4 @@
-// NE0NNi effects: cursor asterisks, glints, hero sound wave.
+// NE0NNi effects: cursor stars, glints, hero sound wave.
 // Glints and the wave sit behind the content, so they never cover the illustrations.
 // Spec: design-system.md 4-6, 4-7, 4-8
 export default function fx() {
@@ -8,14 +8,43 @@ export default function fx() {
   const token = (n) => root.getPropertyValue(n).trim();
   const AST_D = 'M1151.19,64.9c.52,2.65.14,5.45-1.28,7.74-1.89,3.06-5.13,4.86-9.01,4.83-2.4.2-4.65-.42-6.51-1.64-3.52-2.32-5.11-6.69-4.22-10.82l2.8-12.93-13.43,9.77c-1.18.86-2.52,1.53-3.96,1.82-4.74.97-9.32-1.61-11.25-6.19-2.34-5.82.74-11.99,6.9-13.78l13.03-4.09-13.03-4.87c-2.68-1-4.88-3.05-5.83-5.74-1.06-2.99-.56-6.27,1.56-9.15,2.82-3.94,7.89-5.84,12.41-3.95.69.29,1.32.69,1.93,1.13l12.63,9.19-2.38-11.88c-.17-.85-.28-1.71-.26-2.58.17-5.65,4.48-9.75,10.15-10.18q.37-.03.74-.03c6.79-.1,11.76,6.44,10.27,13.06l-2.74,12.21,11.97-8.21c4.84-3.93,11.18-3.5,14.97,1.24,2.27,2.71,2.99,6.05,2.18,9.1-.84,3.14-3.37,5.54-6.46,6.52l-13.94,4.39,12.98,5.37c5.59,2.31,7.57,9.44,3.69,14.09q-.21.24-.43.48c-3.4,4.17-9.32,5.19-13.66,2.13l-12.34-9.8L1151.19,64.9Z';
 
-  // ---------- cursor asterisks (logo asterisk) ----------
+  // ---------- cursor stars: the logo asterisk first, mixed with the three glint shapes ----------
+  // Same family as the page's glints (sparkle / spark / gothic asterisk), black and white-with-black-line
+  // taking turns. Shapes are picked at random, the logo asterisk half of the time.
   if (fine && !reduce) {
     const NS = 'http://www.w3.org/2000/svg';
+    const r = (v) => Math.round(v * 100) / 100;
+    const pt = (rad, a) => `${r(Math.cos(a) * rad)},${r(Math.sin(a) * rad)}`;
+    const D = Math.PI / 180;
+    // gothic asterisk: three flat-ended bars, one outline (so the white version has no inner lines)
+    const gothic = (() => {
+      const L = 46, w = 8, out = [];
+      for (let k = 0; k < 6; k++) {
+        const a = (-90 + k * 60) * D, n = a + 90 * D;
+        const tip = (side) => `${r(Math.cos(a) * L + Math.cos(n) * w * side)},${r(Math.sin(a) * L + Math.sin(n) * w * side)}`;
+        out.push(tip(-1), tip(1), pt(2 * w, a + 30 * D));
+      }
+      return `M${out.join('L')}Z`;
+    })();
+    // spark: eight needles, long and short, with a gap in the middle
+    const spark = Array.from({ length: 8 }, (_, k) => {
+      const a = k * 45 * D, long = k % 2 === 0;
+      const r0 = 14, r1 = long ? 48 : 30, rm = (r0 + r1) / 2, hw = long ? 4.5 : 3.5;
+      const side = (sgn) => `${r(Math.cos(a) * rm - Math.sin(a) * hw * sgn)},${r(Math.sin(a) * rm + Math.cos(a) * hw * sgn)}`;
+      return `M${pt(r0, a)}L${side(1)}L${pt(r1, a)}L${side(-1)}Z`;
+    }).join('');
+    const sparkle = 'M0,-48Q6,-6 48,0Q6,6 0,48Q-6,6 -48,0Q-6,-6 0,-48Z';     // キラン (4-point star)
+
     const defs = document.createElementNS(NS, 'svg');
     defs.setAttribute('width', '0'); defs.setAttribute('height', '0');
     defs.setAttribute('aria-hidden', 'true');
     defs.style.position = 'absolute';
-    defs.innerHTML = `<symbol id="ast-sym" viewBox="1101.5 -0.5 79.6 80"><path vector-effect="non-scaling-stroke" d="${AST_D}"/></symbol>`;
+    defs.innerHTML = [
+      `<symbol id="cs-ast" viewBox="1101.5 -0.5 79.6 80"><path vector-effect="non-scaling-stroke" d="${AST_D}"/></symbol>`,
+      `<symbol id="cs-sparkle" viewBox="-50 -50 100 100"><path vector-effect="non-scaling-stroke" d="${sparkle}"/></symbol>`,
+      `<symbol id="cs-gothic" viewBox="-50 -50 100 100"><path vector-effect="non-scaling-stroke" stroke-linejoin="miter" d="${gothic}"/></symbol>`,
+      `<symbol id="cs-spark" viewBox="-50 -50 100 100"><path vector-effect="non-scaling-stroke" d="${spark}"/></symbol>`,
+    ].join('');
     document.body.appendChild(defs);
 
     const layer = document.createElement('div');
@@ -23,16 +52,26 @@ export default function fx() {
     layer.setAttribute('aria-hidden', 'true');
     document.body.appendChild(layer);
 
+    const SHAPE_W = [['ast', 50], ['sparkle', 20], ['gothic', 15], ['spark', 15]];
+    let lastShape = '';
+    const pickShape = () => {
+      const pick = () => { let x = Math.random() * 100; for (const [id, w] of SHAPE_W) { if ((x -= w) < 0) return id; } return 'ast'; };
+      let id = pick();
+      if (id !== 'ast' && id === lastShape) id = pick();      // the same glint twice in a row reads as a pattern
+      return (lastShape = id);
+    };
+
     const SIZES = [16, 24, 40, 80];
     const SPEED = [0.5, 1.2, 2.4];           // px/ms thresholds between sizes
     let last = null, v = 0, travel = 0, n = 0;
 
     const spawn = (x, y, size) => {
       const night = !!document.elementFromPoint(x, y)?.closest('.is-night');
+      const shape = pickShape();
       const s = document.createElementNS(NS, 'svg');
       s.setAttribute('class', `cstar ${n++ % 2 ? 'cstar--outline' : 'cstar--solid'}${night ? ' is-night-star' : ''}`);
       s.setAttribute('width', size); s.setAttribute('height', size);
-      s.innerHTML = '<use href="#ast-sym"/>';
+      s.innerHTML = `<use href="#cs-${shape}"/>`;
       layer.appendChild(s);
       if (layer.childElementCount > 48) layer.firstElementChild.remove();
       const r0 = Math.random() * 60;

@@ -1,0 +1,73 @@
+---
+/**
+ * A work's notes, side by side like an album's liner notes: Character / Music / Gear.
+ * Only the groups the work has. Buttons to the WORKS filter show when two or more works share the item.
+ */
+import type { Work } from '../lib/types';
+import { characterName, filterKey, KIND_LABEL, worksWith } from '../lib/cms';
+import Art from './Art.astro';
+import Go from './Go.astro';
+import GearList from './GearList.astro';
+interface Props { work: Work; works: Work[] }
+const { work, works } = Astro.props;
+const n = (pred: (w: Work) => boolean) => works.filter(pred).length;
+const c = work.character;
+const cCount = c ? n((w) => w.character?.id === c.id) : 0;
+const tCount = n((w) => w.kind === 'tribute');
+const gearCount = Object.fromEntries(work.gear.map((g) => [g.id, n((w) => w.gear.some((x) => x.id === g.id))]));
+---
+<div class="notes l-grid">
+  {(c || work.tribute) && (
+    <section class="note" aria-labelledby="note-character">
+      <h2 class="note__h t-grotesk-title" id="note-character">Character</h2>
+      {c && (
+        <div class="note__chara">
+          {c.image && <span class="note__thumb"><Art img={c.image} sizes="96px" decorative /></span>}
+          <div class="note__body">
+            <p class="t-display-4">{characterName(c)}</p>
+            <p class="t-small">{c.personality}</p>
+            {c.genre && <p class="t-small">{c.genre}</p>}
+          </div>
+        </div>
+      )}
+      {work.tribute && (
+        <div class="note__body">
+          <p class="t-lead">{work.tribute.character}</p>
+          <p class="t-small">{work.tribute.title}</p>
+          <p class="t-label">{KIND_LABEL.tribute}</p>
+        </div>
+      )}
+      <div class="note__go">
+        {c && <Go href={`/about/#character-${c.id}`} label={`${characterName(c)} について`} />}
+        {c && cCount >= 2 && <Go href={worksWith(filterKey.character(c))} label={`${characterName(c)} の作品（${cCount}）`} />}
+        {work.tribute && tCount >= 2 && <Go href={worksWith(filterKey.kind('tribute'))} label={`${KIND_LABEL.tribute} の作品（${tCount}）`} />}
+      </div>
+    </section>
+  )}
+
+  {work.music.length > 0 && (
+    <section class="note" aria-labelledby="note-music">
+      <h2 class="note__h t-grotesk-title" id="note-music">Music</h2>
+      <ul class="data-list">
+        {work.music.map((t) => {
+          const count = n((w) => w.music.some((x) => x.id === t.id));
+          return (
+            <li class="data-item data-item--plain">
+              <div class="data-item__body">
+                <dl class="t-grotesk-data t-ja"><dt class="t-label">Artist</dt><dd>{t.artist}</dd><dt class="t-label">Title</dt><dd>{t.title}</dd></dl>
+                {count >= 2 && <Go href={worksWith(filterKey.music(t))} label={`同じアーティストの作品（${count}）`} />}
+              </div>
+            </li>
+          );
+        })}
+      </ul>
+    </section>
+  )}
+
+  {work.gear.length > 0 && (
+    <section class="note" aria-labelledby="note-gear">
+      <h2 class="note__h t-grotesk-title" id="note-gear">Gear</h2>
+      <GearList gear={work.gear} counts={gearCount} min={2} />
+    </section>
+  )}
+</div>
