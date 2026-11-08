@@ -5,6 +5,7 @@ import Chapter from '../components/Chapter.astro';
 import GearList from '../components/GearList.astro';
 import SnsIcons from '../components/SnsIcons.astro';
 import Go from '../components/Go.astro';
+import Icon from '../components/Icon.astro';
 import { getWorks, getCharacters, getGear, getMusic, characterName, filterKey, KIND_LABEL, label, pathOf, worksWith } from '../lib/cms';
 import { ACCOUNTS } from '../lib/sns';
 
@@ -116,6 +117,7 @@ const jsonLd = {
       <Chapter no={no('gear')} title="Gear" id="gear-h" />
       <div class="l-grid about-sec__grid">
         <div class="about-sec__text">
+          <Icon name="headphones" />
           <p class="t-body">作品に描いたヘッドホンなどのギアです。ブランドと型番を記録しています。</p>
         </div>
         <div class="about-sec__side"><GearList gear={gear} counts={gearCount} /></div>
@@ -137,6 +139,7 @@ const jsonLd = {
     <Chapter no={no('business')} title="For business" id="biz-h" />
     <div class="l-grid about-sec__grid">
       <div class="about-sec__text">
+        <Icon name="stylus-hand" />
         <p class="t-body">制作のご依頼、PR、コラボレーション、作品の利用について、企業・アーティストの方からのお問い合わせを受け付けています。</p>
         <p><a class="pill t-label" href="/contact/">お問い合わせ</a></p>
       </div>

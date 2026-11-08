@@ -6,6 +6,7 @@ import Notes from '../../components/Notes.astro';
 import Posts from '../../components/Posts.astro';
 import NightBlock from '../../components/NightBlock.astro';
 import Go from '../../components/Go.astro';
+import Icon from '../../components/Icon.astro';
 import { getWorks, characterName, KIND_LABEL, label, pathOf, trackName } from '../../lib/cms';
 import type { Work } from '../../lib/types';
 
@@ -127,6 +128,7 @@ const jsonLd = [
       <div class="l-grid wd-contact__grid">
         <h2 class="t-grotesk-title wd-contact__h" id="wd-contact-h">For business</h2>
         <div class="wd-contact__body">
+          <Icon name="stylus-hand" />
           <p class="t-body">この作品の利用や、同じシリーズでの制作のご依頼は、お問い合わせフォームからご連絡ください。</p>
           <p><a class="pill t-label" href={`/contact/?work=${work.id}`}>この作品について問い合わせる</a></p>
         </div>
@@ -198,7 +200,8 @@ const jsonLd = [
   .wd-posts__head { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--space-2) var(--space-5); margin-bottom: var(--space-5); }
 
   .wd-contact__grid { row-gap: var(--space-4); padding-top: var(--space-5); border-top: 1px solid var(--color-ink); }
-  .wd-contact__h { grid-column: 1 / -1; }
+  /* the heading's capitals meet the top of the icon beside it */
+  .wd-contact__h { grid-column: 1 / -1; text-box: trim-start cap alphabetic; }
   .wd-contact__body { grid-column: 1 / -1; display: grid; gap: var(--space-5); justify-items: start; }
   @media (min-width: 768px) { .wd-contact__h { grid-column: 1 / span 3; } .wd-contact__body { grid-column: 4 / -1; } }
   @media (min-width: 1200px) { .wd-contact__h { grid-column: 1 / span 4; } .wd-contact__body { grid-column: 5 / span 6; } }

@@ -1,6 +1,6 @@
 ---
 /**
- * Gear list: 64px thumbnail, Brand / Model, and a button to the works that draw the same gear.
+ * Gear list: 64px thumbnail (the headphones icon when the gear has no picture), Brand / Model, and a button to the works that draw the same gear.
  * The button shows when that many works or more draw it (min). On a work page min is 2, so it never points
  * back at a list of one.
  */
@@ -8,13 +8,14 @@ import type { Gear } from '../lib/types';
 import { filterKey, worksWith } from '../lib/cms';
 import Art from './Art.astro';
 import Go from './Go.astro';
+import Icon from './Icon.astro';
 interface Props { gear: Gear[]; counts?: Record<string, number>; min?: number }
 const { gear, counts = {}, min = 1 } = Astro.props;
 ---
 <ul class="data-list">
   {gear.map((g) => (
     <li class="data-item">
-      {g.thumb ? <Art img={g.thumb} sizes="64px" class="data-item__thumb" decorative /> : <span class="data-item__thumb data-item__thumb--type" aria-hidden="true" />}
+      {g.thumb ? <Art img={g.thumb} sizes="64px" class="data-item__thumb" decorative /> : <span class="data-item__thumb data-item__thumb--type" aria-hidden="true"><Icon name="headphones" /></span>}
       <div class="data-item__body">
         <dl class="t-grotesk-data"><dt class="t-label">Brand</dt><dd>{g.brand}</dd><dt class="t-label">Model</dt><dd>{g.model}</dd></dl>
         {(counts[g.id] ?? 0) >= min && (

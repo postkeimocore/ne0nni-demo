@@ -155,6 +155,7 @@ ul, ol { list-style: none; }
 .data-item { display: grid; grid-template-columns: var(--thumb) 1fr; column-gap: var(--space-3); align-items: start; }
 .data-item__thumb { width: var(--thumb); height: var(--thumb); object-fit: cover; }
 .data-item__thumb--type { display: grid; place-items: center; background: var(--color-mist); }
+.data-item__thumb--type .icon { height: var(--space-6); }
 .data-item dl { display: grid; grid-template-columns: max-content 1fr; column-gap: var(--space-3); row-gap: var(--space-1); align-items: baseline; }
 .data-item dt:first-of-type, .data-item dd:first-of-type { text-box: trim-start cap alphabetic; }
 
@@ -472,6 +473,15 @@ section[id], [id^="look-"] { scroll-margin-top: var(--header-h); }
 .site-footer__logo .logo { width: 100%; }
 .site-footer__legal { margin-top: var(--space-5); }
 .site-footer small { font-size: inherit; }
+
+/* ---------- NE0NNi* icons (design-system.md 4-9) ----------
+   Drawn by NE0NNi* (headphones, stylus, stylus in hand); colors from tokens. The box is the drawing's own bounds,
+   so the left edge of the drawing meets the left edge of the text. */
+.icon { display: block; height: var(--icon-spot); width: auto; }
+.icon__fill { fill: var(--color-paper); }
+.icon__ink { fill: var(--color-ink); }
+.icon--night .icon__fill { fill: var(--color-ink); }
+.icon--night .icon__ink { fill: var(--color-paper); }
 
 /* ---------- the way on (Go): a label and a round arrow on its right, used instead of text links ----------
    The circle is 48px (the hit area). It fills on hover; on night sections the colors swap. */
