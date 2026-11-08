@@ -7,7 +7,7 @@ const works = await getWorks();
 const KINDS = ['制作のご依頼', 'PR', 'コラボレーション', '作品の利用', 'その他'];
 const siteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY as string | undefined;
 ---
-<Base title="Contact" description="NE0NNi（ネオンニ）へのお問い合わせ。制作のご依頼、PR、コラボレーション、作品の利用について、企業・アーティストの方からのお問い合わせを受け付けています。" current="contact">
+<Base title="Contact" description="NE0NNi*（ネオンニ）へのお問い合わせ。制作のご依頼、PR、コラボレーション、作品の利用について、企業・アーティストの方からのお問い合わせを受け付けています。" current="contact">
   <Fragment slot="head">{siteKey && <script is:inline src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>}</Fragment>
 
   <header class="page-head l-container">

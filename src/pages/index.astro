@@ -16,9 +16,9 @@ const LOOKS = ['a', 'b', 'c'] as const;
 
 const url = Astro.site!.href;
 const jsonLd = [
-  { '@context': 'https://schema.org', '@type': 'WebSite', name: 'NE0NNi', alternateName: 'ネオンニ', url, inLanguage: 'ja' },
+  { '@context': 'https://schema.org', '@type': 'WebSite', name: 'NE0NNi*', alternateName: 'ネオンニ', url, inLanguage: 'ja' },
   {
-    '@context': 'https://schema.org', '@type': 'Organization', name: 'NE0NNi', alternateName: 'ネオンニ', url,
+    '@context': 'https://schema.org', '@type': 'Organization', name: 'NE0NNi*', alternateName: 'ネオンニ', url,
     logo: new URL('/assets/logo.svg', url).href, sameAs: ACCOUNTS.map((a) => a.url),
   },
 ];
@@ -30,7 +30,7 @@ const jsonLd = [
     <div class="cover__grid l-grid">
       <h1 class="cover__h1" id="home-h">
         <span class="logo cover__logo" aria-hidden="true" data-masthead></span>
-        <span class="u-sr">NE0NNi（ネオンニ） Girls &amp; night sounds.</span>
+        <span class="u-sr">NE0NNi*（ネオンニ） Girls &amp; night sounds.</span>
       </h1>
       <span class="ast is-twinkle cover__ast-a" style="--size:80px" aria-hidden="true"></span>
       <span class="ast is-twinkle cover__ast-c" style="--size:40px;--delay:-2.2s" aria-hidden="true"></span>
@@ -95,9 +95,9 @@ const jsonLd = [
       <div class="home-about__body">
         <p class="t-display-3">Girls &amp; night sounds.</p>
         <p class="t-statement">音楽を聴く女の子を描く<br>イラストレーション。</p>
-        <p class="t-body">NE0NNi（ネオンニ）は、人物と表情、装い、音楽を聴いている時間を描いています。シリーズ HEADPHONES GIRL では、作品ごとに、キャラクターと曲、描いたヘッドホンなどのギアを記録しています。</p>
+        <p class="t-body">NE0NNi*（ネオンニ）は、人物と表情、装い、音楽を聴いている時間を描いています。シリーズ HEADPHONES GIRL では、作品ごとに、キャラクターと曲、描いたヘッドホンなどのギアを記録しています。</p>
         <SnsIcons handles />
-        <Go href="/about/" label="About NE0NNi" />
+        <Go href="/about/" label="About NE0NNi*" />
       </div>
     </div>
   </section>

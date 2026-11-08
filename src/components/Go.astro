@@ -5,13 +5,16 @@
  * Used instead of underlined text links. The page's main action stays the pill.
  * icon: only the round arrow, the label goes to aria-label.
  */
+import { BRAND } from '../lib/cms';
 interface Props { href: string; label: string; back?: boolean; icon?: boolean; class?: string; ariaLabel?: string }
 const { href, label, back = false, icon = false, class: cls, ariaLabel } = Astro.props;
+// the label is upper-cased; the name keeps its own letters (NE0NNi*)
+const parts = label.split(BRAND);
 ---
 <a class:list={['go', back && 'go--back', icon && 'go--icon', cls]} href={href} aria-label={icon ? (ariaLabel ?? label) : ariaLabel}>
-  {!icon && !back && <span class="go__label t-label">{label}</span>}
+  {!icon && !back && <span class="go__label t-label">{parts.map((p, i) => <>{i > 0 && <span class="is-name">{BRAND}</span>}{p}</>)}</span>}
   <span class="go__icon" aria-hidden="true">
     <svg viewBox="0 0 24 24" focusable="false"><path d={back ? 'M19 12H5M11 6l-6 6 6 6' : 'M5 12h14M13 6l6 6-6 6'} /></svg>
   </span>
-  {!icon && back && <span class="go__label t-label">{label}</span>}
+  {!icon && back && <span class="go__label t-label">{parts.map((p, i) => <>{i > 0 && <span class="is-name">{BRAND}</span>}{p}</>)}</span>}
 </a>

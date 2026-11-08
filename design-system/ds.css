@@ -59,6 +59,7 @@ ul, ol { list-style: none; }
 .t-grotesk-title { font: 500 var(--fs-grotesk-title)/var(--lh-grotesk-title) var(--font-grotesk); letter-spacing: var(--ls-title); text-transform: uppercase; }
 .t-grotesk-data { font: 400 var(--fs-grotesk-data)/var(--lh-grotesk-data) var(--font-grotesk); letter-spacing: var(--ls-none); }
 .t-label { font: 600 var(--fs-label)/var(--lh-label) var(--font-grotesk); letter-spacing: var(--ls-label); text-transform: uppercase; }
+.is-name { text-transform: none; }
 
 .t-statement { font: 500 var(--fs-statement)/var(--lh-statement) var(--font-mincho); letter-spacing: var(--ls-ja-display); }
 .t-lead { font: 500 var(--fs-lead)/var(--lh-lead) var(--font-mincho); letter-spacing: var(--ls-ja-display); }
@@ -147,10 +148,12 @@ ul, ol { list-style: none; }
 
 /* ---------- data list (gear / track) ---------- */
 .data-list { display: grid; gap: var(--space-4); }
-.data-item { display: grid; grid-template-columns: var(--thumb) 1fr; column-gap: var(--space-3); align-items: center; }
+/* the picture's top meets the top of the capitals of the first line; labels and values share a baseline */
+.data-item { display: grid; grid-template-columns: var(--thumb) 1fr; column-gap: var(--space-3); align-items: start; }
 .data-item__thumb { width: var(--thumb); height: var(--thumb); object-fit: cover; }
 .data-item__thumb--type { display: grid; place-items: center; background: var(--color-mist); }
-.data-item dl { display: grid; grid-template-columns: max-content 1fr; column-gap: var(--space-3); row-gap: var(--space-1); }
+.data-item dl { display: grid; grid-template-columns: max-content 1fr; column-gap: var(--space-3); row-gap: var(--space-1); align-items: baseline; }
+.data-item dt:first-of-type, .data-item dd:first-of-type { text-box: trim-start cap alphabetic; }
 
 /* ---------- stacked reveal (GLOBAL WORK) ---------- */
 .stack { position: relative; isolation: isolate; }

@@ -51,7 +51,7 @@ CHARACTER（A／B の人格・嗜好・好きなアーティスト群）／WORK�
 11. **お問い合わせの通知先**：受け取るメールアドレス（GAS の Script Properties に入れる）
 12. **独自ドメイン**
 
-決まったこと（2026-11-08）：No.001＝Character A、No.002＝Character B（A／B は仮の名前で、あとで変える）。No.001 の曲名は「あかねさす頃」。作品にタイトルや一言は付けない（号数で呼ぶ）。YouTube は @NE0NNi-z（Notion の @ne0nni_z は誤り）。ショート動画の再生は TikTok（再生が伸びている方。数字を見て YouTube に切り替えることもある）。導線ボタンの円はテキストの右。
+決まったこと（2026-11-08）：No.001＝Character A、No.002＝Character B（A／B は仮の名前で、あとで変える）。No.001 の曲名は「あかねさす頃」。作品にタイトルや一言は付けない（号数で呼ぶ）。YouTube は @NE0NNi-z（Notion の @ne0nni_z は誤り）。ショート動画の再生は TikTok（再生が伸びている方。数字を見て YouTube に切り替えることもある）。導線ボタンの円はテキストの右。名前の表記は NE0NNi*（どこでも同じ。大文字にしない）。
 
 ## 公開までの作業
 - GAS をデプロイして Cloudflare に `GAS_WEBHOOK_URL`・`GAS_SECRET` を入れる（それまで *.pages.dev では送信を受け付けて捨てる）

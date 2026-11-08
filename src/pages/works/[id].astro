@@ -20,7 +20,7 @@ const next = works.find((w) => w.no === work.no + 1);
 const tall = work.key.height / work.key.width > 1.5;
 const name = `${label(work)} ${work.series.name}`;
 const description = [
-  `NE0NNi（ネオンニ）の作品 ${label(work)}。シリーズ ${work.series.name.toUpperCase()}。`,
+  `NE0NNi*（ネオンニ）の作品 ${label(work)}。シリーズ ${work.series.name.toUpperCase()}。`,
   work.character ? `${characterName(work.character)}。` : '',
   work.tribute ? `${work.tribute.title}の${work.tribute.character}を描いた ${KIND_LABEL.tribute}。` : '',
   work.music.length ? `曲：${work.music.map(trackName).join('、')}。` : '',
@@ -34,7 +34,7 @@ const jsonLd = [
     '@context': 'https://schema.org', '@type': 'VisualArtwork', name, url,
     image: new URL(`/og/${work.id}.jpg`, base).href,
     artform: 'イラストレーション', artMedium: 'デジタル',
-    creator: { '@type': 'Organization', name: 'NE0NNi', url: base },
+    creator: { '@type': 'Organization', name: 'NE0NNi*', url: base },
     isPartOf: { '@type': 'CreativeWorkSeries', name: work.series.name },
     ...(work.date ? { dateCreated: work.date } : {}),
     ...(work.gear.length || work.music.length ? { mentions: [
@@ -47,7 +47,7 @@ const jsonLd = [
   {
     '@context': 'https://schema.org', '@type': 'BreadcrumbList',
     itemListElement: [
-      { '@type': 'ListItem', position: 1, name: 'NE0NNi', item: base },
+      { '@type': 'ListItem', position: 1, name: 'NE0NNi*', item: base },
       { '@type': 'ListItem', position: 2, name: 'Works', item: new URL('/works/', base).href },
       { '@type': 'ListItem', position: 3, name: label(work), item: url },
     ],

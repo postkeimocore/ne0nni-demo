@@ -10,6 +10,9 @@ const DOMAIN = import.meta.env.MICROCMS_SERVICE_DOMAIN as string | undefined;
 const KEY = import.meta.env.MICROCMS_API_KEY as string | undefined;
 export const usingCms = Boolean(DOMAIN && KEY);
 
+/** The official name. Always written this way, with the asterisk and a small i (never upper-cased). */
+export const BRAND = 'NE0NNi*';
+
 /** The word shown for each kind of work. One place, so the name can change without touching pages. */
 export const KIND_LABEL: Record<WorkKind, string> = { original: 'Original', tribute: 'Tribute' };
 

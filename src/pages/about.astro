@@ -22,10 +22,10 @@ const no = (id: string) => String(sections.indexOf(id) + 1).padStart(2, '0');
 const base = Astro.site!.href;
 const jsonLd = {
   '@context': 'https://schema.org', '@type': 'AboutPage', url: new URL('/about/', base).href,
-  mainEntity: { '@type': 'Organization', name: 'NE0NNi', alternateName: 'ネオンニ', url: base, sameAs: ACCOUNTS.map((a) => a.url), parentOrganization: { '@type': 'Organization', name: 'Casterisk' } },
+  mainEntity: { '@type': 'Organization', name: 'NE0NNi*', alternateName: 'ネオンニ', url: base, sameAs: ACCOUNTS.map((a) => a.url), parentOrganization: { '@type': 'Organization', name: 'Casterisk' } },
 };
 ---
-<Base title="About" description="NE0NNi（ネオンニ）は、ヘッドホンで音楽を聴く女の子を描くイラストレーションです。シリーズ HEADPHONES GIRL、キャラクター、作品の曲とギア、SNS アカウントについて。" current="about" jsonLd={jsonLd}>
+<Base title="About" description="NE0NNi*（ネオンニ）は、ヘッドホンで音楽を聴く女の子を描くイラストレーションです。シリーズ HEADPHONES GIRL、キャラクター、作品の曲とギア、SNS アカウントについて。" current="about" jsonLd={jsonLd}>
 
   <!-- the one black section of this page -->
   <section class="l-section l-container is-night about-hero" aria-labelledby="about-h" data-glints="night">
@@ -37,7 +37,7 @@ const jsonLd = {
       <div class="about-hero__body">
         <p class="t-display-3">Girls &amp; night sounds.</p>
         <p class="t-statement">音楽を聴く女の子を描く<br>イラストレーション。</p>
-        <p class="t-body">NE0NNi（ネオンニ）は、ヘッドホンで音楽を聴く女の子を描くイラストレーションです。人物と表情、装い、音楽を聴いている時間を描いています。</p>
+        <p class="t-body">NE0NNi*（ネオンニ）は、ヘッドホンで音楽を聴く女の子を描くイラストレーションです。人物と表情、装い、音楽を聴いている時間を描いています。</p>
       </div>
     </div>
   </section>
@@ -47,7 +47,7 @@ const jsonLd = {
     <div class="l-grid about-sec__grid">
       <div class="about-sec__text">
         <p class="t-display-4">Headphones Girl</p>
-        <p class="t-body">ヘッドホンをつけた女の子を描くシリーズです。NE0NNi のキャラクターを描く {KIND_LABEL.original} と、アニメ・漫画・映画のキャラクターを NE0NNi の絵で描く {KIND_LABEL.tribute} があります。</p>
+        <p class="t-body">ヘッドホンをつけた女の子を描くシリーズです。NE0NNi* のキャラクターを描く {KIND_LABEL.original} と、アニメ・漫画・映画のキャラクターを NE0NNi* の絵で描く {KIND_LABEL.tribute} があります。</p>
         <Go href="/works/" label="View all works" />
       </div>
       <ul class="about-thumbs">
@@ -141,7 +141,7 @@ const jsonLd = {
         <p><a class="pill t-label" href="/contact/">お問い合わせ</a></p>
       </div>
       <dl class="about-sec__side wdata">
-        <div class="wdata__row"><dt class="t-label">Name</dt><dd class="t-grotesk-data">NE0NNi <span class="t-ja">（ネオンニ）</span></dd></div>
+        <div class="wdata__row"><dt class="t-label">Name</dt><dd class="t-grotesk-data">NE0NNi* <span class="t-ja">（ネオンニ）</span></dd></div>
         <div class="wdata__row"><dt class="t-label">Operated by</dt><dd class="t-grotesk-data">Casterisk</dd></div>
       </dl>
     </div>
@@ -185,6 +185,8 @@ const jsonLd = {
   .chara__art { grid-column: 1 / span 2; }
   .chara__art :global(img) { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; }
   .chara__body { grid-column: 1 / -1; display: grid; gap: var(--space-5); justify-items: start; }
+  /* the picture's top meets the top of the name's capitals (side by side from 768px) */
+  .chara__body h3 { text-box: trim-start cap alphabetic; }
   .chara__body .wdata { justify-self: stretch; }
   .chara .wdata__row { grid-template-columns: 112px minmax(0, 1fr); }
   .chara__artists { display: flex; flex-wrap: wrap; gap: 0 var(--space-3); }

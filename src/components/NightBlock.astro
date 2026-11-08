@@ -1,7 +1,7 @@
 ---
 /**
  * The one black section of a lower page, just before the footer (design-system.md 1).
- * The tagline, a short line about NE0NNi and the way on (About or Contact). No pill button here:
+ * The tagline, a short line about NE0NNi* and the way on (About or Contact). No pill button here:
  * the page's one pill stays in the page itself.
  */
 import SnsIcons from './SnsIcons.astro';
@@ -13,9 +13,9 @@ const { to = 'about' } = Astro.props;
   <div class="l-grid">
     <h2 class="night-block__tag t-display-2" id="night-h" data-reveal="chars">Girls &amp; night sounds.</h2>
     <div class="night-block__body">
-      <p class="t-body">NE0NNi（ネオンニ）は、ヘッドホンで音楽を聴く女の子を描くイラストレーションです。Instagram・TikTok・YouTube で作品とショート動画を公開しています。</p>
+      <p class="t-body">NE0NNi*（ネオンニ）は、ヘッドホンで音楽を聴く女の子を描くイラストレーションです。Instagram・TikTok・YouTube で作品とショート動画を公開しています。</p>
       <SnsIcons />
-      {to === 'about' ? <Go href="/about/" label="About NE0NNi" /> : <Go href="/contact/" label="Contact" />}
+      {to === 'about' ? <Go href="/about/" label="About NE0NNi*" /> : <Go href="/contact/" label="Contact" />}
     </div>
   </div>
 </section>

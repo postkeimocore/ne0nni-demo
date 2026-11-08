@@ -150,10 +150,13 @@ ul, ol { list-style: none; }
 
 /* ---------- data list (gear / track) ---------- */
 .data-list { display: grid; gap: var(--space-4); }
-.data-item { display: grid; grid-template-columns: var(--thumb) 1fr; column-gap: var(--space-3); align-items: center; }
+/* Lining up a picture with the text beside it: the picture's top meets the top of the capitals of the first line
+   (text-box trims the space above them). Labels and values in a row share a baseline. */
+.data-item { display: grid; grid-template-columns: var(--thumb) 1fr; column-gap: var(--space-3); align-items: start; }
 .data-item__thumb { width: var(--thumb); height: var(--thumb); object-fit: cover; }
 .data-item__thumb--type { display: grid; place-items: center; background: var(--color-mist); }
-.data-item dl { display: grid; grid-template-columns: max-content 1fr; column-gap: var(--space-3); row-gap: var(--space-1); }
+.data-item dl { display: grid; grid-template-columns: max-content 1fr; column-gap: var(--space-3); row-gap: var(--space-1); align-items: baseline; }
+.data-item dt:first-of-type, .data-item dd:first-of-type { text-box: trim-start cap alphabetic; }
 
 /* ---------- stacked reveal (GLOBAL WORK) ---------- */
 .stack { position: relative; isolation: isolate; }
@@ -488,7 +491,8 @@ section[id], [id^="look-"] { scroll-margin-top: var(--header-h); }
 .go--icon { gap: 0; }
 
 /* ---------- works filter: names keep their own capitals ---------- */
-.filter__btn.is-name { text-transform: none; }
+/* names keep their own letters inside upper-cased labels (NE0NNi*, brand and artist names) */
+.is-name { text-transform: none; }
 
 /* ---------- work notes: Character / Music / Gear side by side ---------- */
 .notes { row-gap: var(--block-gap); align-items: start; }
@@ -498,6 +502,7 @@ section[id], [id^="look-"] { scroll-margin-top: var(--header-h); }
 .note__thumb { display: block; overflow: hidden; aspect-ratio: 4 / 5; }
 .note__thumb img { width: 100%; height: 100%; object-fit: cover; }
 .note__body { display: grid; gap: var(--space-2); align-content: start; }
+.note__chara .note__body > :first-child { text-box: trim-start cap alphabetic; }
 .note__go { display: grid; gap: var(--space-1); justify-items: start; }
 .note__go:empty { display: none; }
 .data-item--plain { grid-template-columns: minmax(0, 1fr); }

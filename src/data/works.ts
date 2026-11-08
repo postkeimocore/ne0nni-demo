@@ -135,5 +135,5 @@ export const site = {
   /** which platform plays the shorts on the site (the one with the most plays); the other is used when a post lacks it */
   player: 'tiktok' as const,
   description:
-    'NE0NNi（ネオンニ）は、ヘッドホンで音楽を聴く女の子を描くイラストレーションです。作品ごとに、キャラクター、曲、描いたヘッドホンなどのギアを掲載しています。',
+    'NE0NNi*（ネオンニ）は、ヘッドホンで音楽を聴く女の子を描くイラストレーションです。作品ごとに、キャラクター、曲、描いたヘッドホンなどのギアを掲載しています。',
 };

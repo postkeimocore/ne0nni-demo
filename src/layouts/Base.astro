@@ -7,6 +7,7 @@ import '../styles/tokens.css';
 import '../styles/base.css';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
+import { BRAND } from '../lib/cms';
 
 interface Props {
   title?: string;
@@ -20,7 +21,7 @@ interface Props {
   current?: 'works' | 'about' | 'contact';
 }
 const { title, description, ogImage = '/og/default.jpg', ogType = 'website', jsonLd, home = false, current } = Astro.props;
-const SITE_NAME = 'NE0NNi';
+const SITE_NAME = BRAND;
 const fullTitle = title ? `${title}｜${SITE_NAME}` : `${SITE_NAME}（ネオンニ）｜Girls & night sounds.`;
 const canonical = new URL(Astro.url.pathname, Astro.site).href;
 const og = new URL(ogImage, Astro.site).href;

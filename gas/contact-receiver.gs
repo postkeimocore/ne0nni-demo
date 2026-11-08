@@ -8,7 +8,7 @@
  *                     spreadsheet as in 1 (it then writes to its own spreadsheet)
  *      SHARED_SECRET  long random string, same as GAS_SECRET on Cloudflare
  *      NOTIFY_TO      address that receives the notification
- *      SITE_NAME      e.g. NE0NNi                    (optional)
+ *      SITE_NAME      e.g. NE0NNi*                    (optional)
  *      SITE_URL       e.g. https://example.com       (optional)
  * 3. Deploy → New deployment → Web app → Execute as: Me / Who has access: Anyone → copy the URL
  *    → Cloudflare env GAS_WEBHOOK_URL. Re-deploy (Manage deployments → Edit → New version) after edits.
@@ -78,12 +78,12 @@ function summary_(d) {
 }
 
 function notifyOwner_(p, d) {
-  var site = p.SITE_NAME || 'NE0NNi';
+  var site = p.SITE_NAME || 'NE0NNi*';
   MailApp.sendEmail({
     to: p.NOTIFY_TO,
     replyTo: d.email,
     name: site,
-    subject: '【NE0NNi お問い合わせ】' + (d.kind || '') + '｜' + d.name + ' 様',
+    subject: '【NE0NNi* お問い合わせ】' + (d.kind || '') + '｜' + d.name + ' 様',
     body: 'サイトのフォームからお問い合わせがありました。\n\n' + summary_(d) +
       '\n\n---\nこのメールに返信すると ' + d.email + ' に届きます。\nスプレッドシートにも記録されています。',
   });
@@ -91,7 +91,7 @@ function notifyOwner_(p, d) {
 
 // Sent from the Google account the script runs as, so a reply to it does arrive; the note says only that it is automatic.
 function autoReply_(p, d) {
-  var site = p.SITE_NAME || 'NE0NNi';
+  var site = p.SITE_NAME || 'NE0NNi*';
   MailApp.sendEmail({
     to: d.email,
     name: site,

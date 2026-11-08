@@ -34,11 +34,11 @@ const layoutOf = (i: number) => {
 
 const base = Astro.site!.href;
 const jsonLd = {
-  '@context': 'https://schema.org', '@type': 'CollectionPage', name: 'Works｜NE0NNi', url: new URL('/works/', base).href,
+  '@context': 'https://schema.org', '@type': 'CollectionPage', name: 'Works｜NE0NNi*', url: new URL('/works/', base).href,
   hasPart: works.map((w) => ({ '@type': 'VisualArtwork', name: `${label(w)} ${w.series.name}`, url: new URL(pathOf(w), base).href })),
 };
 ---
-<Base title="Works" description="NE0NNi（ネオンニ）の作品一覧。シリーズ HEADPHONES GIRL の作品を、号数順に掲載しています。Original／Tribute、キャラクター、曲のアーティスト、描いたギアで絞り込めます。" current="works" jsonLd={jsonLd}>
+<Base title="Works" description="NE0NNi*（ネオンニ）の作品一覧。シリーズ HEADPHONES GIRL の作品を、号数順に掲載しています。Original／Tribute、キャラクター、曲のアーティスト、描いたギアで絞り込めます。" current="works" jsonLd={jsonLd}>
 
   <header class="page-head l-container">
     <div class="l-grid page-head__grid">
