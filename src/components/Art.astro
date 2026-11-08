@@ -1,0 +1,36 @@
+---
+/**
+ * An artwork image. Local images and microCMS URLs both go through Astro's image service:
+ * a srcset of WebP files sized for the layout (`sizes`).
+ */
+import { Image } from 'astro:assets';
+import type { Img } from '../lib/types';
+
+interface Props {
+  img: Img;
+  sizes: string;
+  class?: string;
+  eager?: boolean;
+  /** decorative copies (alt already given elsewhere) */
+  decorative?: boolean;
+  style?: string;
+}
+const { img, sizes, class: cls, eager = false, decorative = false, style } = Astro.props;
+const WIDTHS = [480, 720, 960, 1280, 1600, 2000, 2400].filter((w) => w <= img.width);
+if (!WIDTHS.includes(img.width) && img.width < 2400) WIDTHS.push(img.width);
+---
+<Image
+  src={img.src}
+  width={img.width}
+  height={img.height}
+  widths={WIDTHS}
+  sizes={sizes}
+  alt={decorative ? '' : img.alt}
+  class={cls}
+  style={style}
+  format="webp"
+  quality={86}
+  loading={eager ? 'eager' : 'lazy'}
+  fetchpriority={eager ? 'high' : undefined}
+  decoding={eager ? 'sync' : 'async'}
+/>

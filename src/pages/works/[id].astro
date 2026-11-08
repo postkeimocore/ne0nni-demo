@@ -1,0 +1,232 @@
+---
+import Base from '../../layouts/Base.astro';
+import Art from '../../components/Art.astro';
+import Chapter from '../../components/Chapter.astro';
+import WorkData from '../../components/WorkData.astro';
+import GearList from '../../components/GearList.astro';
+import Posts from '../../components/Posts.astro';
+import NightBlock from '../../components/NightBlock.astro';
+import { getWorks, KIND_LABEL, label, pathOf } from '../../lib/cms';
+import type { Work } from '../../lib/types';
+
+export async function getStaticPaths() {
+  const works = await getWorks();
+  return works.map((work) => ({ params: { id: work.id }, props: { work } }));
+}
+const { work } = Astro.props as { work: Work };
+const works = await getWorks();
+const prev = works.find((w) => w.no === work.no - 1);
+const next = works.find((w) => w.no === work.no + 1);
+const gearCount = Object.fromEntries(work.gear.map((g) => [g.id, works.filter((w) => w.gear.some((x) => x.id === g.id)).length]));
+const tall = work.key.height / work.key.width > 1.5;
+const name = `${label(work)} ${work.series.name}`;
+const description = [
+  `NE0NNi（ネオンニ）の作品 ${label(work)}。シリーズ ${work.series.name.toUpperCase()}。`,
+  work.original ? `${work.original.title}の${work.original.character}を描いた作品。` : '',
+  work.lead ?? '',
+  work.gear.length ? `描いたヘッドホン：${work.gear.map((g) => `${g.brand} ${g.model}`).join('、')}。` : '',
+].join('');
+
+const base = Astro.site!.href;
+const url = new URL(pathOf(work), base).href;
+const jsonLd = [
+  {
+    '@context': 'https://schema.org', '@type': 'VisualArtwork', name, url,
+    image: new URL(`/og/${work.id}.jpg`, base).href,
+    artform: 'イラストレーション', artMedium: 'デジタル',
+    creator: { '@type': 'Organization', name: 'NE0NNi', url: base },
+    isPartOf: { '@type': 'CreativeWorkSeries', name: work.series.name },
+    ...(work.date ? { dateCreated: work.date } : {}),
+    ...(work.gear.length ? { mentions: work.gear.map((g) => ({ '@type': 'Product', name: `${g.brand} ${g.model}`, brand: { '@type': 'Brand', name: g.brand } })) } : {}),
+    ...(work.original ? { character: { '@type': 'Person', name: work.original.character } } : {}),
+  },
+  {
+    '@context': 'https://schema.org', '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'NE0NNi', item: base },
+      { '@type': 'ListItem', position: 2, name: 'Works', item: new URL('/works/', base).href },
+      { '@type': 'ListItem', position: 3, name: label(work), item: url },
+    ],
+  },
+];
+---
+<Base title={name} description={description} ogImage={`/og/${work.id}.jpg`} ogType="article" current="works" jsonLd={jsonLd}>
+  <article aria-labelledby="wd-h">
+
+    <header class="wd-head l-container">
+      <nav aria-label="パンくずリスト"><ol class="crumbs t-label"><li><a href="/works/">Works</a></li><li aria-current="page">{label(work)}</li></ol></nav>
+      <div class="chapter wd-chapter">
+        <h1 class="wd-h1" id="wd-h"><span class="chapter__no t-number">{label(work)}</span><span class="chapter__title t-grotesk-title">{work.series.name}</span></h1>
+        <span class="chapter__note t-label">{KIND_LABEL[work.kind]}</span>
+      </div>
+    </header>
+
+    <!-- key visual: the work itself, the largest thing on the page -->
+    <section class="wd-hero l-container" aria-label="作品">
+      <div class="l-grid wd-hero__grid">
+        <p class="wd-hero__no t-display-1" aria-hidden="true">{label(work)}</p>
+        <figure class:list={['wd-hero__key', tall && 'is-tall']}>
+          <Art img={work.key} eager sizes={tall ? '(min-width: 1200px) 36vw, (min-width: 768px) 50vw, 100vw' : '(min-width: 1200px) 50vw, (min-width: 768px) 62vw, 100vw'} />
+        </figure>
+        <div class="wd-hero__data">
+          <WorkData work={work} />
+        </div>
+      </div>
+    </section>
+
+    <!-- the picture taken apart: cutout on mist, a close crop, the scene -->
+    {(work.cut || work.face || work.scene) && (
+      <section class="l-section l-mist l-container wd-flow" aria-label="作品の部分" data-glints="day">
+        <div class="l-grid wd-flow__grid">
+          {work.cut && (
+            <>
+              <div class="cut-copy" data-reveal="up">
+                <span class="t-number">{label(work)}</span>
+                {work.lead && <p class="t-lead">{work.lead}</p>}
+              </div>
+              <figure class="w-cutout"><Art img={work.cut} sizes="(min-width: 1200px) 58vw, (min-width: 768px) 75vw, 100vw" /></figure>
+            </>
+          )}
+          {work.face && work.scene && (
+            <>
+              <figure class="w-pair-a"><Art img={work.face} sizes="(min-width: 1200px) 40vw, (min-width: 768px) 50vw, 50vw" /></figure>
+              <figure class="w-pair-b"><Art img={work.scene} sizes="(min-width: 1200px) 40vw, (min-width: 768px) 50vw, 50vw" /></figure>
+              <div class="v-slot" aria-hidden="true"><span class="v-word t-grotesk-display">{work.series.name}</span></div>
+            </>
+          )}
+          {work.face && !work.scene && (
+            <figure class="w-center"><Art img={work.face} sizes="(min-width: 1200px) 50vw, (min-width: 768px) 75vw, 100vw" /></figure>
+          )}
+          {work.scene && !work.face && (
+            <figure class="w-bleed-right"><Art img={work.scene} sizes="(min-width: 1200px) 58vw, 100vw" /></figure>
+          )}
+        </div>
+      </section>
+    )}
+
+    {work.gear.length > 0 && (
+      <section class="l-section l-container wd-gear" aria-labelledby="gear-h">
+        <Chapter no="Gear" title="描いたヘッドホン" id="gear-h" />
+        <div class="l-grid wd-gear__grid">
+          <div class="wd-gear__list"><GearList gear={work.gear} counts={gearCount} /></div>
+        </div>
+      </section>
+    )}
+
+    {work.posts.length > 0 && (
+      <section class="l-section l-container wd-posts" aria-labelledby="posts-h">
+        <div class="wd-posts__head">
+          <h2 class="t-display-3" id="posts-h">Posts</h2>
+          <p class="t-small">{label(work)} を SNS で公開した投稿です。</p>
+        </div>
+        <Posts posts={work.posts} />
+      </section>
+    )}
+
+    <section class="l-section l-container wd-contact" aria-labelledby="wd-contact-h">
+      <div class="l-grid wd-contact__grid">
+        <h2 class="t-grotesk-title wd-contact__h" id="wd-contact-h">For business</h2>
+        <div class="wd-contact__body">
+          <p class="t-body">この作品の利用や、同じシリーズでの制作のご依頼は、お問い合わせフォームからご連絡ください。</p>
+          <p><a class="pill t-label" href={`/contact/?work=${work.id}`}>この作品について問い合わせる</a></p>
+        </div>
+      </div>
+    </section>
+
+    <nav class="l-container wd-pager" aria-label="前後の作品">
+      <ul class="l-grid wd-pager__grid">
+        <li class="wd-pager__prev">
+          {prev && (
+            <a href={pathOf(prev)} class="wd-pager__link">
+              <span class="wd-pager__thumb"><Art img={prev.face ?? prev.key} sizes="96px" decorative /></span>
+              <span class="wd-pager__text"><span class="t-label">Prev</span><span class="t-number">{label(prev)}</span></span>
+            </a>
+          )}
+        </li>
+        <li class="wd-pager__all"><a class="link t-label" href="/works/">All works</a></li>
+        <li class="wd-pager__next">
+          {next && (
+            <a href={pathOf(next)} class="wd-pager__link">
+              <span class="wd-pager__text"><span class="t-label">Next</span><span class="t-number">{label(next)}</span></span>
+              <span class="wd-pager__thumb"><Art img={next.face ?? next.key} sizes="96px" decorative /></span>
+            </a>
+          )}
+        </li>
+      </ul>
+    </nav>
+  </article>
+
+  <NightBlock to="about" />
+</Base>
+
+<style>
+  .wd-head { padding-top: var(--space-5); display: grid; gap: var(--space-4); }
+  .wd-h1 { display: flex; align-items: center; height: 100%; font: inherit; }
+  .crumbs a { display: inline-flex; min-height: 24px; align-items: center; }
+
+  .wd-hero { padding-block: var(--block-gap) var(--section-gap); }
+  .wd-hero__grid { row-gap: var(--space-6); align-items: end; }
+  .wd-hero__no { display: none; }
+  .wd-hero__key { grid-column: 1 / -1; }
+  .wd-hero__key :global(img) { width: 100%; }
+  .wd-hero__data { grid-column: 1 / -1; display: grid; gap: var(--space-4); }
+  @media (min-width: 768px) {
+    .wd-hero__key { grid-column: 1 / span 5; }
+    .wd-hero__key.is-tall { grid-column: 2 / span 4; }
+    .wd-hero__data { grid-column: 6 / -1; }
+  }
+  @media (min-width: 1200px) {
+    .wd-hero__no { display: block; grid-column: 1 / span 3; grid-row: 1; align-self: start; writing-mode: vertical-rl; justify-self: start; }
+    .wd-hero__key { grid-column: 4 / span 6; grid-row: 1; }
+    .wd-hero__key.is-tall { grid-column: 4 / span 5; }
+    .wd-hero__data { grid-column: 10 / -1; grid-row: 1; }
+  }
+
+  .wd-flow__grid { row-gap: var(--block-gap); }
+  .wd-flow figure :global(img) { width: 100%; }
+  .wd-flow .w-pair-a :global(img), .wd-flow .w-pair-b :global(img) { aspect-ratio: 4 / 5; object-fit: cover; }
+  .wd-flow .w-pair-b :global(img) { object-position: center 22%; }
+  .cut-copy { grid-column: 1 / -1; align-self: end; display: grid; gap: var(--space-4); }
+  .v-slot { display: none; }
+  @media (min-width: 768px) and (max-width: 1199px) { .cut-copy { grid-column: 1 / span 5; } }
+  @media (min-width: 1200px) {
+    .cut-copy { grid-column: 1 / span 5; }
+    .v-slot { display: block; grid-column: 12; grid-row: 2; justify-self: end; }
+  }
+
+  .wd-gear__grid { margin-top: var(--block-gap); row-gap: var(--space-5); }
+  .wd-gear__list { grid-column: 1 / -1; }
+  @media (min-width: 768px) { .wd-gear__list { grid-column: 1 / span 5; } }
+  @media (min-width: 1200px) { .wd-gear__list { grid-column: 2 / span 5; } }
+
+  .wd-posts__head { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--space-2) var(--space-5); margin-bottom: var(--space-5); }
+
+  .wd-contact__grid { row-gap: var(--space-4); padding-top: var(--space-5); border-top: 1px solid var(--color-ink); }
+  .wd-contact__h { grid-column: 1 / -1; }
+  .wd-contact__body { grid-column: 1 / -1; display: grid; gap: var(--space-5); justify-items: start; }
+  @media (min-width: 768px) { .wd-contact__h { grid-column: 1 / span 3; } .wd-contact__body { grid-column: 4 / -1; } }
+  @media (min-width: 1200px) { .wd-contact__h { grid-column: 1 / span 4; } .wd-contact__body { grid-column: 5 / span 6; } }
+
+  .wd-pager { padding-bottom: var(--section-gap); }
+  .wd-pager__grid { align-items: center; row-gap: var(--space-4); }
+  .wd-pager__prev { grid-column: 1 / span 2; }
+  .wd-pager__all { display: none; }
+  .wd-pager__next { grid-column: 3 / span 2; justify-self: end; }
+  @media (min-width: 768px) {
+    .wd-pager__prev { grid-column: 1 / span 3; }
+    .wd-pager__all { display: block; grid-column: 4 / span 2; justify-self: center; }
+    .wd-pager__next { grid-column: 6 / span 3; }
+  }
+  @media (min-width: 1200px) {
+    .wd-pager__prev { grid-column: 1 / span 4; }
+    .wd-pager__all { grid-column: 5 / span 4; }
+    .wd-pager__next { grid-column: 9 / span 4; }
+  }
+  .wd-pager__link { display: inline-flex; align-items: center; gap: var(--space-2); text-decoration: none; }
+  .wd-pager__thumb { width: var(--space-7); aspect-ratio: 4 / 5; overflow: hidden; flex: none; }
+  @media (min-width: 768px) { .wd-pager__link { gap: var(--space-3); } .wd-pager__thumb { width: var(--space-8); } }
+  .wd-pager__thumb :global(img) { width: 100%; height: 100%; object-fit: cover; transition: transform var(--dur-3) var(--ease-out); }
+  .wd-pager__link:hover :global(img) { transform: scale(1.05); }
+  .wd-pager__text { display: grid; gap: var(--space-1); }
+  .wd-pager__next .wd-pager__text { text-align: right; }
+</style>

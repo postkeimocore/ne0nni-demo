@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Display font options 2</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@1,6..96,400..700&family=Libre+Bodoni:ital,wght@1,400..700&family=Baskervville:ital,wght@1,400..700&family=Libre+Baskerville:ital@1&family=Sorts+Mill+Goudy:ital@1&family=Source+Serif+4:ital,opsz,wght@1,8..60,200..900&family=Literata:ital,opsz,wght@1,7..72,200..900&family=Newsreader:ital,opsz,wght@1,6..72,200..800&family=Inter+Tight:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root { --paper: #FFFFFF; --ink: #0E0E12; --sub: #62626C; --rule: #D4D4DC; }
+  body { margin: 0; padding: 48px; background: var(--paper); color: var(--ink); font-family: "Inter Tight", sans-serif; }
+  .logo { height: 40px; margin-bottom: 32px; }
+  .row { display: grid; grid-template-columns: 240px 1fr; gap: 24px; align-items: center; padding: 24px 0; border-top: 1px solid var(--rule); }
+  .meta { display: grid; gap: 4px; }
+  .name { font: 600 12px/16px "Inter Tight"; letter-spacing: .08em; text-transform: uppercase; }
+  .note { font: 400 12px/16px "Inter Tight"; color: var(--sub); }
+  .sample { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 32px; font-style: italic; font-variant-numeric: lining-nums; }
+  .big { font-size: 96px; line-height: 104px; letter-spacing: -0.02em; }
+  .mid { font-size: 40px; line-height: 48px; }
+  .num { font-size: 32px; line-height: 40px; }
+  .amp { font-size: 96px; line-height: 104px; }
+</style>
+</head>
+<body>
+<img class="logo" src="../../Logo/NE0NNi-typeLogo.svg" alt="NE0NNi">
+
+<div class="row"><div class="meta"><span class="name">参考：Bodoni Moda 600</span><span class="note">現在。大きいサイズで細線が極細になる</span></div>
+  <div class="sample" style="font-family:'Bodoni Moda';font-weight:600"><span class="big">Headphones Girl</span><span class="amp">&amp; agy</span><span class="mid">Girls &amp; night sounds.</span><span class="num">illustration　No.002</span></div></div>
+
+<div class="row"><div class="meta"><span class="name">A｜Bodoni Moda opsz 24</span><span class="note">同じ書体を小さいサイズ向けの設計で使う。形は Bodoni のまま、細線が太くなる</span></div>
+  <div class="sample" style="font-family:'Bodoni Moda';font-weight:600;font-optical-sizing:none;font-variation-settings:'opsz' 24"><span class="big">Headphones Girl</span><span class="amp">&amp; agy</span><span class="mid">Girls &amp; night sounds.</span><span class="num">illustration　No.002</span></div></div>
+
+<div class="row"><div class="meta"><span class="name">B｜Libre Bodoni 500</span><span class="note">本文用の Bodoni。コントラストが穏やかで、細線がしっかり</span></div>
+  <div class="sample" style="font-family:'Libre Bodoni';font-weight:500"><span class="big">Headphones Girl</span><span class="amp">&amp; agy</span><span class="mid">Girls &amp; night sounds.</span><span class="num">illustration　No.002</span></div></div>
+
+<div class="row"><div class="meta"><span class="name">C｜Baskervville 500</span><span class="note">バスカヴィル。気品があり、細線は細すぎない</span></div>
+  <div class="sample" style="font-family:'Baskervville';font-weight:500"><span class="big">Headphones Girl</span><span class="amp">&amp; agy</span><span class="mid">Girls &amp; night sounds.</span><span class="num">illustration　No.002</span></div></div>
+
+<div class="row"><div class="meta"><span class="name">D｜Libre Baskerville</span><span class="note">太めのバスカヴィル。落ち着いた高級感</span></div>
+  <div class="sample" style="font-family:'Libre Baskerville'"><span class="big">Headphones Girl</span><span class="amp">&amp; agy</span><span class="mid">Girls &amp; night sounds.</span><span class="num">illustration　No.002</span></div></div>
+
+<div class="row"><div class="meta"><span class="name">E｜Sorts Mill Goudy</span><span class="note">Goudy 系。GENTLE MONSTER の Goudy Old Style と同じ系統</span></div>
+  <div class="sample" style="font-family:'Sorts Mill Goudy'"><span class="big">Headphones Girl</span><span class="amp">&amp; agy</span><span class="mid">Girls &amp; night sounds.</span><span class="num">illustration　No.002</span></div></div>
+
+<div class="row"><div class="meta"><span class="name">F｜Source Serif 4 Display 500</span><span class="note">opsz 60。細身で端正な斜体</span></div>
+  <div class="sample" style="font-family:'Source Serif 4';font-weight:500;font-optical-sizing:none;font-variation-settings:'opsz' 60"><span class="big">Headphones Girl</span><span class="amp">&amp; agy</span><span class="mid">Girls &amp; night sounds.</span><span class="num">illustration　No.002</span></div></div>
+
+<div class="row"><div class="meta"><span class="name">G｜Literata 500</span><span class="note">opsz 72。流れのある、柔らかい斜体</span></div>
+  <div class="sample" style="font-family:'Literata';font-weight:500;font-optical-sizing:none;font-variation-settings:'opsz' 72"><span class="big">Headphones Girl</span><span class="amp">&amp; agy</span><span class="mid">Girls &amp; night sounds.</span><span class="num">illustration　No.002</span></div></div>
+
+<div class="row"><div class="meta"><span class="name">H｜Newsreader Display 400</span><span class="note">opsz 72・細め。前回の Newsreader を見出し向けに</span></div>
+  <div class="sample" style="font-family:'Newsreader';font-weight:400;font-optical-sizing:none;font-variation-settings:'opsz' 72"><span class="big">Headphones Girl</span><span class="amp">&amp; agy</span><span class="mid">Girls &amp; night sounds.</span><span class="num">illustration　No.002</span></div></div>
+</body>
+</html>

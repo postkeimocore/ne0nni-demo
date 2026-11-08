@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Display font options</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@1,6..96,500..600&family=Playfair:ital,opsz,wght@1,5..1200,400..700&family=Instrument+Serif:ital@1&family=Noto+Serif+Display:ital,wght@1,400..700&family=Cormorant+Garamond:ital,wght@1,500..700&family=Fraunces:ital,opsz,wght@1,9..144,400..700&family=DM+Serif+Display:ital@1&family=Newsreader:ital,opsz,wght@1,6..72,400..600&family=Inter+Tight:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root { --paper: #FFFFFF; --ink: #0E0E12; --sub: #62626C; --rule: #D4D4DC; }
+  body { margin: 0; padding: 48px; background: var(--paper); color: var(--ink); font-family: "Inter Tight", sans-serif; }
+  .logo { height: 40px; margin-bottom: 32px; }
+  .row { display: grid; grid-template-columns: 240px 1fr; gap: 24px; align-items: center; padding: 24px 0; border-top: 1px solid var(--rule); }
+  .meta { display: grid; gap: 4px; }
+  .name { font: 600 12px/16px "Inter Tight"; letter-spacing: .08em; text-transform: uppercase; }
+  .note { font: 400 12px/16px "Inter Tight"; color: var(--sub); }
+  .sample { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 32px; font-style: italic; font-variant-numeric: lining-nums; }
+  .big { font-size: 96px; line-height: 96px; letter-spacing: -0.03em; }
+  .mid { font-size: 40px; line-height: 48px; letter-spacing: -0.01em; }
+  .num { font-size: 32px; line-height: 40px; }
+</style>
+</head>
+<body>
+<img class="logo" src="../../Logo/NE0NNi-typeLogo.svg" alt="NE0NNi">
+
+<div class="row"><div class="meta"><span class="name">Bodoni Moda 600</span><span class="note">現在。ディドン。縦線が太く細線が極細</span></div>
+  <div class="sample" style="font-family:'Bodoni Moda';font-weight:600"><span class="big">Headphones Girl</span><span class="mid">Girls &amp; night sounds.</span><span class="num">illustration　No.002</span></div></div>
+
+<div class="row"><div class="meta"><span class="name">Playfair 600</span><span class="note">ディドン寄り。opsz で大きいほど細線が繊細</span></div>
+  <div class="sample" style="font-family:'Playfair';font-weight:600"><span class="big">Headphones Girl</span><span class="mid">Girls &amp; night sounds.</span><span class="num">illustration　No.002</span></div></div>
+
+<div class="row"><div class="meta"><span class="name">Noto Serif Display 500</span><span class="note">ディドン。Bodoni より平坦で今っぽい</span></div>
+  <div class="sample" style="font-family:'Noto Serif Display';font-weight:500"><span class="big">Headphones Girl</span><span class="mid">Girls &amp; night sounds.</span><span class="num">illustration　No.002</span></div></div>
+
+<div class="row"><div class="meta"><span class="name">Instrument Serif</span><span class="note">細身・コンデンス。ファッション・ブランドのサイトで多い</span></div>
+  <div class="sample" style="font-family:'Instrument Serif'"><span class="big">Headphones Girl</span><span class="mid">Girls &amp; night sounds.</span><span class="num">illustration　No.002</span></div></div>
+
+<div class="row"><div class="meta"><span class="name">Cormorant Garamond 600</span><span class="note">ガラモン系。筆の流れが強く、繊細</span></div>
+  <div class="sample" style="font-family:'Cormorant Garamond';font-weight:600"><span class="big">Headphones Girl</span><span class="mid">Girls &amp; night sounds.</span><span class="num">illustration　No.002</span></div></div>
+
+<div class="row"><div class="meta"><span class="name">Fraunces 500</span><span class="note">柔らかいセリフ。丸みがあり、ロゴの丸い端と近い</span></div>
+  <div class="sample" style="font-family:'Fraunces';font-weight:500"><span class="big">Headphones Girl</span><span class="mid">Girls &amp; night sounds.</span><span class="num">illustration　No.002</span></div></div>
+
+<div class="row"><div class="meta"><span class="name">DM Serif Display</span><span class="note">太めのディドン。黒が強く、押しが強い</span></div>
+  <div class="sample" style="font-family:'DM Serif Display'"><span class="big">Headphones Girl</span><span class="mid">Girls &amp; night sounds.</span><span class="num">illustration　No.002</span></div></div>
+
+<div class="row"><div class="meta"><span class="name">Newsreader 500</span><span class="note">雑誌・新聞系。落ち着いた斜体</span></div>
+  <div class="sample" style="font-family:'Newsreader';font-weight:500"><span class="big">Headphones Girl</span><span class="mid">Girls &amp; night sounds.</span><span class="num">illustration　No.002</span></div></div>
+</body>
+</html>

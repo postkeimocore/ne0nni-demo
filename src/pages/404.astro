@@ -1,0 +1,18 @@
+---
+import Base from '../layouts/Base.astro';
+---
+<Base title="ページが見つかりません" description="お探しのページは見つかりませんでした。">
+  <section class="page-head l-container nf">
+    <div class="l-grid page-head__grid">
+      <h1 class="t-display-1 page-head__title">404</h1>
+      <div class="page-head__lead">
+        <p class="t-body">お探しのページは見つかりませんでした。移動したか、削除された可能性があります。</p>
+        <p class="nf__links"><a class="link t-label" href="/">Home</a><a class="link t-label" href="/works/">Works</a></p>
+      </div>
+    </div>
+  </section>
+</Base>
+<style>
+  .nf { padding-bottom: var(--section-gap); }
+  .nf__links { display: flex; gap: var(--space-5); }
+</style>

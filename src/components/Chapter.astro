@@ -1,0 +1,10 @@
+---
+/** Chapter heading (GLOBAL WORK): 1px rules above and below, number | title, an optional note on the right. */
+interface Props { no: string; title: string; tag?: 'h1' | 'h2' | 'h3'; id?: string; href?: string; class?: string }
+const { no, title, tag: Tag = 'h2', id, href, class: cls } = Astro.props;
+---
+<div class:list={['chapter', cls]}>
+  <span class="chapter__no t-number">{no}</span>
+  <Tag class="chapter__title t-grotesk-title" id={id}>{href ? <a class="chapter__link" href={href}>{title}</a> : title}</Tag>
+  {Astro.slots.has('default') && <span class="chapter__note"><slot /></span>}
+</div>

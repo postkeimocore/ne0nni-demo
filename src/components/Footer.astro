@@ -1,0 +1,19 @@
+---
+import SnsIcons from './SnsIcons.astro';
+const year = new Date().getFullYear();
+---
+<footer class="site-footer">
+  <div class="site-footer__row">
+    <nav class="site-footer__nav t-label" aria-label="フッター">
+      <a href="/works/">Works</a>
+      <a href="/about/">About</a>
+      <a href="/contact/">Contact</a>
+    </nav>
+    <SnsIcons />
+  </div>
+  <a class="site-footer__logo" href="/" aria-label="NE0NNi ホーム"><span class="logo" aria-hidden="true"></span></a>
+  <div class="site-footer__row site-footer__legal">
+    <p class="t-grotesk-data">Girls &amp; night sounds.</p>
+    <p class="t-label"><small>© {year} NE0NNi / Casterisk</small></p>
+  </div>
+</footer>

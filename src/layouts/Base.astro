@@ -1,0 +1,75 @@
+---
+/**
+ * Every page: head (SEO, OGP, JSON-LD), header, footer, scripts.
+ * Until launch (PUBLIC_ALLOW_INDEX !== "true") pages carry noindex here and in _headers (astro.config.mjs).
+ */
+import '../styles/tokens.css';
+import '../styles/base.css';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+
+interface Props {
+  title?: string;
+  description: string;
+  /** absolute or root-relative path of the 1200 x 630 share image */
+  ogImage?: string;
+  ogType?: 'website' | 'article';
+  jsonLd?: object | object[];
+  /** HOME hides the header logo while the big logo is on screen */
+  home?: boolean;
+  current?: 'works' | 'about' | 'contact';
+}
+const { title, description, ogImage = '/og/default.jpg', ogType = 'website', jsonLd, home = false, current } = Astro.props;
+const SITE_NAME = 'NE0NNi';
+const fullTitle = title ? `${title}｜${SITE_NAME}` : `${SITE_NAME}（ネオンニ）｜Girls & night sounds.`;
+const canonical = new URL(Astro.url.pathname, Astro.site).href;
+const og = new URL(ogImage, Astro.site).href;
+const allowIndex = import.meta.env.PUBLIC_ALLOW_INDEX === 'true';
+const ld = jsonLd ? (Array.isArray(jsonLd) ? jsonLd : [jsonLd]) : [];
+---
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{fullTitle}</title>
+<meta name="description" content={description}>
+{!allowIndex && <meta name="robots" content="noindex, nofollow">}
+<link rel="canonical" href={canonical}>
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<meta property="og:site_name" content={SITE_NAME}>
+<meta property="og:type" content={ogType}>
+<meta property="og:title" content={fullTitle}>
+<meta property="og:description" content={description}>
+<meta property="og:url" content={canonical}>
+<meta property="og:image" content={og}>
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="ja_JP">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="sitemap" href="/sitemap.xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@1,6..96,500..600&family=Inter+Tight:wght@400;500;600&family=Shippori+Mincho+B1:wght@500&family=Zen+Kaku+Gothic+New:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/yakuhanjp@4.1.1/dist/css/yakuhanjp.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/yakuhanjp@4.1.1/dist/css/yakuhanmp.css">
+<slot name="head" />
+{ld.map((d) => <script type="application/ld+json" set:html={JSON.stringify(d)} />)}
+</head>
+<body>
+<a class="skip t-label" href="#main">本文へ移動</a>
+<Header home={home} current={current} />
+<main id="main">
+  <slot />
+</main>
+<Footer />
+<script>
+  import site from '../scripts/site.js';
+  import fx from '../scripts/fx.js';
+  import gridChecker from '../scripts/grid-checker.js';
+  site();
+  fx();
+  if (import.meta.env.PUBLIC_ALLOW_INDEX !== 'true') gridChecker();
+</script>
+</body>
+</html>

@@ -1,0 +1,126 @@
+---
+import Base from '../layouts/Base.astro';
+import Art from '../components/Art.astro';
+import Chapter from '../components/Chapter.astro';
+import GearList from '../components/GearList.astro';
+import SnsIcons from '../components/SnsIcons.astro';
+import { getWorks, getGear, KIND_LABEL, label, pathOf } from '../lib/cms';
+import { ACCOUNTS } from '../lib/sns';
+
+const works = await getWorks();
+const gear = (await getGear()).filter((g) => works.some((w) => w.gear.some((x) => x.id === g.id)));
+const gearCount = Object.fromEntries(gear.map((g) => [g.id, works.filter((w) => w.gear.some((x) => x.id === g.id)).length]));
+const originals = works.filter((w) => w.kind === 'original');
+const covers = works.filter((w) => w.kind === 'cover');
+const base = Astro.site!.href;
+const jsonLd = {
+  '@context': 'https://schema.org', '@type': 'AboutPage', url: new URL('/about/', base).href,
+  mainEntity: { '@type': 'Organization', name: 'NE0NNi', alternateName: 'ネオンニ', url: base, sameAs: ACCOUNTS.map((a) => a.url), parentOrganization: { '@type': 'Organization', name: 'Casterisk' } },
+};
+---
+<Base title="About" description="NE0NNi（ネオンニ）は、ヘッドホンで音楽を聴く女の子を描くイラストレーションです。シリーズ HEADPHONES GIRL、描いたヘッドホンの記録、SNS アカウントについて。" current="about" jsonLd={jsonLd}>
+
+  <!-- the one black section of this page -->
+  <section class="l-section l-container is-night about-hero" aria-labelledby="about-h" data-glints="night">
+    <div class="about-hero__head">
+      <h1 class="t-display-1" id="about-h" data-reveal="chars">About</h1>
+      <span class="ast is-twinkle" style="--size:80px" aria-hidden="true"></span>
+    </div>
+    <div class="l-grid">
+      <div class="about-hero__body">
+        <p class="t-display-3">Girls &amp; night sounds.</p>
+        <p class="t-statement">音楽を聴く女の子を描く<br>イラストレーション。</p>
+        <p class="t-body">NE0NNi（ネオンニ）は、ヘッドホンで音楽を聴く女の子を描くイラストレーションです。人物と表情、装い、音楽を聴いている時間を描いています。</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="l-section l-container about-sec" aria-labelledby="series-h">
+    <Chapter no="01" title="Series" id="series-h" />
+    <div class="l-grid about-sec__grid">
+      <div class="about-sec__text">
+        <p class="t-display-4">Headphones Girl</p>
+        <p class="t-body">ヘッドホンをつけた女の子を描くシリーズです。NE0NNi のオリジナルのキャラクターと、アニメ・漫画・映画のキャラクターを NE0NNi の絵で描いた作品（{KIND_LABEL.cover}）があります。</p>
+        <p><a class="link t-label" href="/works/">View all works</a></p>
+      </div>
+      <ul class="about-thumbs">
+        {[...originals, ...covers].map((w) => (
+          <li>
+            <a href={pathOf(w)} class="about-thumbs__link">
+              <span class="about-thumbs__art"><Art img={w.face ?? w.key} sizes="(min-width: 1200px) 16vw, (min-width: 768px) 20vw, 33vw" decorative /></span>
+              <span class="about-thumbs__cap"><span class="t-number">{label(w)}</span><span class="t-label">{KIND_LABEL[w.kind]}</span></span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  {gear.length > 0 && (
+    <section class="l-section l-container about-sec" aria-labelledby="gear-h">
+      <Chapter no="02" title="Gear" id="gear-h" />
+      <div class="l-grid about-sec__grid">
+        <div class="about-sec__text">
+          <p class="t-body">作品ごとに、描いたヘッドホンのメーカーと型番を記録しています。同じヘッドホンを描いた作品は、Works で絞り込めます。</p>
+        </div>
+        <div class="about-sec__side"><GearList gear={gear} counts={gearCount} /></div>
+      </div>
+    </section>
+  )}
+
+  <section class="l-section l-container about-sec" aria-labelledby="sns-h">
+    <Chapter no={gear.length ? '03' : '02'} title="SNS" id="sns-h" />
+    <div class="l-grid about-sec__grid">
+      <div class="about-sec__text">
+        <p class="t-body">ショート動画は Instagram・TikTok・YouTube で、作品の静止画は Instagram のフィードで公開しています。</p>
+      </div>
+      <div class="about-sec__side"><SnsIcons handles /></div>
+    </div>
+  </section>
+
+  <section class="l-section l-container about-sec" aria-labelledby="biz-h">
+    <Chapter no={gear.length ? '04' : '03'} title="For business" id="biz-h" />
+    <div class="l-grid about-sec__grid">
+      <div class="about-sec__text">
+        <p class="t-body">制作のご依頼、PR、コラボレーション、作品の利用について、企業・アーティストの方からのお問い合わせを受け付けています。</p>
+        <p><a class="pill t-label" href="/contact/">お問い合わせ</a></p>
+      </div>
+      <dl class="about-sec__side wdata">
+        <div class="wdata__row"><dt class="t-label">Name</dt><dd class="t-grotesk-data">NE0NNi <span class="t-ja">（ネオンニ）</span></dd></div>
+        <div class="wdata__row"><dt class="t-label">Operated by</dt><dd class="t-grotesk-data">Casterisk</dd></div>
+      </dl>
+    </div>
+  </section>
+
+</Base>
+
+<style>
+  .about-hero { padding-top: var(--space-8); }
+  @media (min-width: 768px) { .about-hero { padding-top: var(--space-9); } }
+  .about-hero__head { display: flex; align-items: flex-start; gap: var(--space-4); }
+  .about-hero__body { grid-column: 1 / -1; display: grid; gap: var(--space-5); margin-top: var(--block-gap); }
+  @media (min-width: 768px) { .about-hero__body { grid-column: 3 / -1; } }
+  @media (min-width: 1200px) { .about-hero__body { grid-column: 5 / span 7; } }
+
+  .about-sec + .about-sec { padding-top: 0; }
+  .about-sec__grid { margin-top: var(--block-gap); row-gap: var(--space-6); align-items: start; }
+  .about-sec__text { grid-column: 1 / -1; display: grid; gap: var(--space-4); justify-items: start; }
+  .about-sec__side { grid-column: 1 / -1; }
+  @media (min-width: 768px) {
+    .about-sec__text { grid-column: 1 / span 4; }
+    .about-sec__side { grid-column: 5 / -1; }
+  }
+  @media (min-width: 1200px) {
+    .about-sec__text { grid-column: 2 / span 4; }
+    .about-sec__side { grid-column: 7 / span 5; }
+  }
+
+  .about-thumbs { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--grid-gutter); }
+  @media (min-width: 768px) { .about-thumbs { grid-column: 5 / -1; } }
+  @media (min-width: 1200px) { .about-thumbs { grid-column: 7 / span 6; } }
+  .about-thumbs__link { display: grid; gap: var(--space-2); text-decoration: none; }
+  .about-thumbs__art { display: block; overflow: hidden; aspect-ratio: 4 / 5; }
+  .about-thumbs__art :global(img) { width: 100%; height: 100%; object-fit: cover; transition: transform var(--dur-3) var(--ease-out); }
+  .about-thumbs__link:hover :global(img) { transform: scale(1.04); }
+  .about-thumbs__cap { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: var(--space-1); }
+</style>

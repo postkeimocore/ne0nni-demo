@@ -1,0 +1,10 @@
+---
+/** One SNS icon link (used under a post). */
+import { ACCOUNTS } from '../lib/sns';
+interface Props { platform: 'instagram' | 'tiktok' | 'youtube'; href?: string }
+const { platform, href } = Astro.props;
+const a = ACCOUNTS.find((x) => x.id === platform)!;
+---
+<a class="sns-icon" href={href ?? a.url} target="_blank" rel="noopener" aria-label={`${a.name}で見る（${a.handle}）`}>
+  <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d={a.d} /></svg>
+</a>

@@ -1,0 +1,22 @@
+---
+/**
+ * The one black section of a lower page, just before the footer (design-system.md 1).
+ * The tagline, a short line about NE0NNi and the way on (About or Contact). No pill button here:
+ * the page's one pill stays in the page itself.
+ */
+import SnsIcons from './SnsIcons.astro';
+interface Props { to?: 'about' | 'contact' }
+const { to = 'about' } = Astro.props;
+---
+<section class="l-section l-container is-night night-block" aria-labelledby="night-h" data-glints="night">
+  <div class="l-grid">
+    <h2 class="night-block__tag t-display-2" id="night-h" data-reveal="chars">Girls &amp; night sounds.</h2>
+    <div class="night-block__body">
+      <p class="t-body">NE0NNi（ネオンニ）は、ヘッドホンで音楽を聴く女の子を描くイラストレーションです。Instagram・TikTok・YouTube で作品とショート動画を公開しています。</p>
+      <SnsIcons />
+      {to === 'about'
+        ? <p><a class="link t-label" href="/about/">About NE0NNi</a></p>
+        : <p><a class="link t-label" href="/contact/">Contact</a></p>}
+    </div>
+  </div>
+</section>

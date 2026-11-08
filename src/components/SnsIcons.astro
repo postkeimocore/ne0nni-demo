@@ -1,0 +1,16 @@
+---
+/** SNS as icons (Simple Icons 16.35.0, CC0). 24px glyph in a 48px hit area. */
+interface Props { handles?: boolean; class?: string }
+import { ACCOUNTS } from '../lib/sns';
+const { handles = false, class: cls = '' } = Astro.props;
+---
+<ul class:list={['sns', handles && 'sns--handles', cls]} aria-label="SNS">
+  {ACCOUNTS.map((a) => (
+    <li>
+      <a class="sns-icon" href={a.url} target="_blank" rel="noopener" aria-label={`${a.name}（${a.handle}）`}>
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d={a.d} /></svg>
+      </a>
+      {handles && <span class="t-grotesk-data sns__handle" aria-hidden="true">{a.handle}</span>}
+    </li>
+  ))}
+</ul>

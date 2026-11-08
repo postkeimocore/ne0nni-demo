@@ -1,0 +1,118 @@
+---
+import Base from '../../layouts/Base.astro';
+import NightBlock from '../../components/NightBlock.astro';
+import { getWorks, label } from '../../lib/cms';
+
+const works = await getWorks();
+const KINDS = ['制作のご依頼', 'PR', 'コラボレーション', '作品の利用', 'その他'];
+const siteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY as string | undefined;
+---
+<Base title="Contact" description="NE0NNi（ネオンニ）へのお問い合わせ。制作のご依頼、PR、コラボレーション、作品の利用について、企業・アーティストの方からのお問い合わせを受け付けています。" current="contact">
+  <Fragment slot="head">{siteKey && <script is:inline src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>}</Fragment>
+
+  <header class="page-head l-container">
+    <div class="l-grid page-head__grid">
+      <h1 class="t-display-1 page-head__title">Contact</h1>
+      <div class="page-head__lead">
+        <p class="t-body">制作のご依頼、PR、コラボレーション、作品の利用について、企業・アーティストの方からのお問い合わせを受け付けています。内容を確認のうえ、メールでご連絡します。</p>
+      </div>
+    </div>
+  </header>
+
+  <section class="l-section l-container contact" aria-label="お問い合わせフォーム">
+    <div class="l-grid">
+      <form class="form contact__form" action="/api/contact" method="post" novalidate data-contact>
+        <fieldset data-required="ご用件を選んでください" data-error-id="e-kind" aria-describedby="e-kind">
+          <legend class="field__label t-label">ご用件<span class="req">必須</span></legend>
+          <div class="chips t-small">
+            {KINDS.map((k) => <label class="chip"><input type="radio" name="kind" value={k} required><span>{k}</span></label>)}
+          </div>
+          <p class="field__error t-small" id="e-kind" hidden></p>
+        </fieldset>
+
+        <div class="field">
+          <label class="field__label t-label" for="f-company">会社名・団体名</label>
+          <input class="input" id="f-company" name="company" autocomplete="organization" maxlength="100">
+        </div>
+        <div class="field">
+          <label class="field__label t-label" for="f-name">お名前<span class="req">必須</span></label>
+          <input class="input" id="f-name" name="name" autocomplete="name" maxlength="100" required data-required="お名前を入力してください" data-error-id="e-name" aria-describedby="e-name">
+          <p class="field__error t-small" id="e-name" hidden></p>
+        </div>
+        <div class="field">
+          <label class="field__label t-label" for="f-email">メールアドレス<span class="req">必須</span></label>
+          <input class="input" id="f-email" name="email" type="email" autocomplete="email" maxlength="200" required data-required="メールアドレスを入力してください" data-error-id="e-email" aria-describedby="e-email">
+          <p class="field__error t-small" id="e-email" hidden></p>
+        </div>
+        <div class="field">
+          <label class="field__label t-label" for="f-work">対象の作品</label>
+          <div class="select">
+            <select class="input" id="f-work" name="work">
+              <option value="">指定なし</option>
+              {works.map((w) => <option value={label(w)}>{label(w)} {w.series.name}</option>)}
+            </select>
+          </div>
+        </div>
+        <div class="field">
+          <label class="field__label t-label" for="f-message">お問い合わせ内容<span class="req">必須</span></label>
+          <textarea class="textarea" id="f-message" name="message" maxlength="5000" required data-required="お問い合わせ内容を入力してください" data-error-id="e-message" aria-describedby="e-message f-message-hint"></textarea>
+          <p class="t-small" id="f-message-hint">時期・媒体・ご予算など、わかる範囲でご記入ください。</p>
+          <p class="field__error t-small" id="e-message" hidden></p>
+        </div>
+
+        <div class="privacy" id="privacy">
+          <p class="t-label">個人情報の取り扱い</p>
+          <p class="t-small">いただいた個人情報は、お問い合わせへの回答と、そのためのご連絡にだけ使います。法令に基づく場合を除き、ご本人の同意なく第三者に提供しません。運営：Casterisk</p>
+          <label class="check t-small">
+            <input type="checkbox" name="privacy" value="yes" required data-required="個人情報の取り扱いへの同意が必要です" data-error-id="e-privacy" aria-describedby="e-privacy">
+            <span>個人情報の取り扱いに同意する</span>
+          </label>
+          <p class="field__error t-small" id="e-privacy" hidden></p>
+        </div>
+
+        <input class="hp" type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">
+        {siteKey && <div class="cf-turnstile" data-sitekey={siteKey} data-language="ja"></div>}
+
+        <div class="contact__submit">
+          <button class="pill t-label" type="submit">送信する</button>
+          <p class="field__error t-small" role="alert" data-status hidden></p>
+        </div>
+      </form>
+    </div>
+  </section>
+
+  <NightBlock to="about" />
+</Base>
+
+<script>
+  // prefill from links like /contact/?work=003 (work pages) and show a no-JavaScript error (?error=)
+  const q = new URLSearchParams(location.search);
+  const work = q.get('work');
+  const sel = document.querySelector<HTMLSelectElement>('#f-work');
+  if (work && sel) {
+    const opt = [...sel.options].find((o) => o.value === `No.${work}`);
+    if (opt) { sel.value = opt.value; document.querySelector<HTMLInputElement>('input[name="kind"][value="作品の利用"]')!.checked = true; }
+  }
+  const err = q.get('error');
+  const status = document.querySelector<HTMLElement>('[data-status]');
+  if (err && status) { status.textContent = err; status.hidden = false; }
+</script>
+
+<style>
+  .contact { padding-top: 0; }
+  .contact__form { grid-column: 1 / -1; display: grid; gap: var(--space-5); }
+  @media (min-width: 768px) { .contact__form { grid-column: 2 / span 6; } }
+  @media (min-width: 1200px) { .contact__form { grid-column: 4 / span 6; } }
+  .contact__form fieldset { border: 0; margin: 0; padding: 0; display: grid; gap: var(--space-2); min-width: 0; }
+  .contact__form legend { padding: 0; margin-bottom: var(--space-2); }
+  .req { margin-left: var(--space-2); padding: 0 var(--space-1); border: 1px solid currentColor; font-size: var(--fs-label); line-height: var(--lh-label); font-weight: 400; letter-spacing: var(--ls-none); }
+  .field__error[hidden] { display: none; }
+  .select { position: relative; }
+  .select select { appearance: none; padding-right: var(--space-6); }
+  .select::after { content: ""; position: absolute; right: var(--space-3); top: 50%; width: 8px; height: 8px; border-right: 1px solid currentColor; border-bottom: 1px solid currentColor; transform: translateY(-75%) rotate(45deg); pointer-events: none; }
+  .privacy { display: grid; gap: var(--space-2); padding-top: var(--space-4); border-top: 1px solid var(--color-rule-soft); }
+  .check { display: inline-flex; align-items: center; gap: var(--space-2); min-height: 48px; cursor: pointer; justify-self: start; }
+  .check input { width: 24px; height: 24px; margin: 0; accent-color: var(--color-ink); }
+  .hp { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
+  .contact__submit { display: grid; gap: var(--space-3); justify-items: start; }
+</style>
