@@ -21,7 +21,10 @@ const keysOf = (w: (typeof works)[number]) =>
   [filterKey.series(w.series), filterKey.kind(w.kind), ...w.gear.map(filterKey.gear)].join(' ');
 // first paint (no JavaScript): the same rhythm the filter script applies
 const RHYTHM = ['w-center', 'w-pair-a', 'w-pair-b', 'w-bleed-right', 'w-center', 'w-pair-a', 'w-pair-b', 'w-bleed-left'];
-const layoutOf = (i: number) => (RHYTHM[i % RHYTHM.length] === 'w-pair-a' && i === works.length - 1 ? 'w-solo' : RHYTHM[i % RHYTHM.length]);
+const layoutOf = (i: number) => {
+  const cls = works.length === 2 ? ['w-pair-a', 'w-pair-b'][i] : RHYTHM[i % RHYTHM.length];
+  return cls === 'w-pair-a' && i === works.length - 1 ? 'w-solo' : cls;
+};
 
 const base = Astro.site!.href;
 const jsonLd = {

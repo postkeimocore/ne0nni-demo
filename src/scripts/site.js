@@ -148,7 +148,7 @@ export default function site() {
       const shown = items.filter((el) => key === 'all' || el.dataset.keys.split(' ').includes(key));
       items.forEach((el) => { el.hidden = !shown.includes(el); el.classList.remove(...ALL); });
       shown.forEach((el, i) => {
-        let cls = RHYTHM[i % RHYTHM.length];
+        let cls = shown.length === 2 ? ['w-pair-a', 'w-pair-b'][i] : RHYTHM[i % RHYTHM.length];
         if (cls === 'w-pair-a' && i === shown.length - 1) cls = 'w-solo';    // a pair needs a partner
         el.classList.add(cls);
       });
@@ -213,7 +213,12 @@ export default function site() {
       showError(el, msg);
       return !msg;
     };
-    fields.forEach((el) => el.addEventListener('change', () => check(el)));
+    // Errors clear while typing (input), not on blur (change): hiding a message on blur moves the layout
+    // between mousedown and mouseup, and the click the user was making (e.g. on the checkbox) gets lost.
+    fields.forEach((el) => {
+      if (el.matches('fieldset') || el.type === 'checkbox') el.addEventListener('change', () => check(el));
+      else el.addEventListener('input', () => { if (el.getAttribute('aria-invalid') === 'true') check(el); });
+    });
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
       const bad = fields.filter((el) => !check(el));
