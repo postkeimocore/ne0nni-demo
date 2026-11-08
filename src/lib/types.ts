@@ -51,10 +51,10 @@ export type WorkKind = 'original' | 'tribute';
 export type PostLink = { platform: 'tiktok' | 'instagram' | 'youtube'; url: string };
 
 /**
- * One post about the work, usually put up on TikTok and Instagram at the same time.
+ * One post about the work, put up on TikTok and Instagram (shorts also on YouTube) at the same time.
  * short: vertical video (9:16). photo: feed image (4:5).
- * The site shows the video or image in its own frame (TikTok's Embed Player always shows the account bar and
- * like counts) and links to each platform with an icon.
+ * The site shows it on a phone: a short plays as an embed of the platform Site.player names. Under the phone,
+ * an icon for each platform.
  */
 export type Post = {
   kind: 'short' | 'photo';
@@ -97,4 +97,8 @@ export type Site = {
   /** the newest three, in order of number (oldest of them first), for the HOME chapters */
   latest: Work[];
   description: string;
+  /** which platform plays the shorts (the one with the most plays); the other is used when a post lacks it */
+  player: Player;
 };
+
+export type Player = 'tiktok' | 'youtube';

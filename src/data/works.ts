@@ -24,6 +24,7 @@ import f3 from '../assets/art/003-face.webp';
 const img = (src: ImageMetadata, alt: string) => ({ src, width: src.width, height: src.height, alt });
 const tiktok = (path: string) => ({ platform: 'tiktok' as const, url: `https://www.tiktok.com/@ne0nni/${path}` });
 const instagram = (path: string) => ({ platform: 'instagram' as const, url: `https://www.instagram.com/${path}/` });
+const youtube = (id: string) => ({ platform: 'youtube' as const, url: `https://www.youtube.com/shorts/${id}` });
 
 export const series: Series[] = [{ id: 'headphones-girl', name: 'Headphones Girl' }];
 const HG = series[0];
@@ -78,7 +79,7 @@ export const works: Work[] = [
       {
         kind: 'short',
         image: img(p1, '雨の夜の部屋で、うつぶせでスマートフォンを見る女の子のショート動画'),
-        links: [tiktok('video/7703174687689559317'), instagram('reel/DfMuF0Rh-FX')],
+        links: [tiktok('video/7703174687689559317'), instagram('reel/DfMuF0Rh-FX'), youtube('gaGauU1kXLc')],
       },
       {
         kind: 'photo',
@@ -104,7 +105,7 @@ export const works: Work[] = [
       {
         kind: 'short',
         image: img(p2, '屋上で夜の街を背にした女の子のショート動画'),
-        links: [tiktok('video/7704655287642262836'), instagram('reel/DfW-wUqPzyd')],
+        links: [tiktok('video/7704655287642262836'), instagram('reel/DfW-wUqPzyd'), youtube('9Y-M0b5ffgM')],
       },
       {
         kind: 'photo',
@@ -131,6 +132,8 @@ export const works: Work[] = [
 
 export const site = {
   hero: '002',
+  /** which platform plays the shorts on the site (the one with the most plays); the other is used when a post lacks it */
+  player: 'tiktok' as const,
   description:
     'NE0NNi（ネオンニ）は、ヘッドホンで音楽を聴く女の子を描くイラストレーションです。作品ごとに、キャラクター、曲、描いたヘッドホンなどのギアを掲載しています。',
 };

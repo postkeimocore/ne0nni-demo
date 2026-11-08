@@ -1,6 +1,7 @@
 ---
 /**
- * The way on, as a button: a 48px round arrow and its label (design-system.md 5「導線」).
+ * The way on, as a button: a label and a 48px round arrow on its right (design-system.md 5「導線」).
+ * back: the arrow points left and sits left of the label, so it points the way it goes.
  * Used instead of underlined text links. The page's main action stays the pill.
  * icon: only the round arrow, the label goes to aria-label.
  */
@@ -8,8 +9,9 @@ interface Props { href: string; label: string; back?: boolean; icon?: boolean; c
 const { href, label, back = false, icon = false, class: cls, ariaLabel } = Astro.props;
 ---
 <a class:list={['go', back && 'go--back', icon && 'go--icon', cls]} href={href} aria-label={icon ? (ariaLabel ?? label) : ariaLabel}>
+  {!icon && !back && <span class="go__label t-label">{label}</span>}
   <span class="go__icon" aria-hidden="true">
     <svg viewBox="0 0 24 24" focusable="false"><path d={back ? 'M19 12H5M11 6l-6 6 6 6' : 'M5 12h14M13 6l6 6-6 6'} /></svg>
   </span>
-  {!icon && <span class="go__label t-label">{label}</span>}
+  {!icon && back && <span class="go__label t-label">{label}</span>}
 </a>

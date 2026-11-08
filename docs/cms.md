@@ -34,7 +34,7 @@
 | | `artists` | 好きなアーティスト。CMS では1行に1組 |
 | | `image` | 寄りの画像（作品の face から） |
 | ギア Gear | `brand` `model` `thumb` | 同じ製品を複数の作品から参照する。WORKS の絞り込みと「このギアを描いた作品」のボタンになる |
-| サイト Site | `heroWork` `description` | HOME のヒーローに出す作品（切り抜きがある作品）、サイトの説明文 |
+| サイト Site | `heroWork` `description` `player` | HOME のヒーローに出す作品（切り抜きがある作品）、サイトの説明文、ショート動画を再生する媒体 |
 
 - WORKS の絞り込みのキー：`kind-original` `kind-tribute` `character-a` `music-{アーティストのキー}` `gear-{ギアのID}`。アーティストのキーは名前から作る（英数字の名前はそのまま小文字のスラッグ、それ以外は短いハッシュ。`keyOf()`）。
 
@@ -46,7 +46,7 @@
 |---|---|
 | `kind` | `short`（縦動画 9:16）／`photo`（写真投稿 4:5） |
 | `image` | 写真投稿の1枚目、またはショート動画の1コマ（再生前に見せるポスター） |
-| `links` | 媒体とURL（TikTok・Instagram・YouTube）。ショート動画は YouTube の URL があれば YouTube ショートを、なければ TikTok を埋め込む |
+| `links` | 媒体とURL（TikTok・Instagram・YouTube）。ショート動画は、サイト設定の `player` で選んだ媒体（TikTok か YouTube）で埋め込む。その URL がない投稿はもう一方 |
 
 ## microCMS のスキーマ（作るとき）
 
@@ -59,7 +59,7 @@ API は4つ（Hobby プランの上限5つの中に収める）。シリーズ�
 | `post`（カスタムフィールド） | — | `kind`（セレクト short / photo）、`image`（画像）、`alt`（テキスト）、`tiktokUrl` `instagramUrl` `youtubeUrl`（テキスト） |
 | `characters` | リスト | `name`（テキスト）、`personality` `taste`（テキストエリア）、`genre`（テキスト）、`artists`（テキストエリア、1行に1組）、`image`（画像）、`imageAlt`（テキスト） |
 | `gear` | リスト | `brand` `model`（テキスト）、`thumb`（画像） |
-| `site` | オブジェクト | `heroWork`（コンテンツ参照 works）、`description`（テキストエリア） |
+| `site` | オブジェクト | `heroWork`（コンテンツ参照 works）、`description`（テキストエリア）、`player`（セレクト tiktok / youtube。再生数が多い方を選ぶ。空なら tiktok） |
 
 - 画像は microCMS から直接配信しない。ビルド時に長辺2400px・WebP で取り込み、Pages から配信する（無料プランの転送量を超えると API ごと止まるため）。
 - 共有画像（OGP）は今は `scripts/make-og.mjs` で作った `public/og/{号数}.jpg`。microCMS にしたら、作品の `key` を画像 API で 1200×630 に切った URL に替える。

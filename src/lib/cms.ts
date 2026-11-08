@@ -3,7 +3,7 @@
  * microCMS when MICROCMS_SERVICE_DOMAIN and MICROCMS_API_KEY are set, otherwise src/data/works.ts.
  * Field IDs follow docs/cms.md. Swapping the CMS means rewriting this file only.
  */
-import type { Character, Gear, Img, Post, PostLink, Series, Site, Track, Work, WorkKind } from './types';
+import type { Character, Gear, Img, Player, Post, PostLink, Series, Site, Track, Work, WorkKind } from './types';
 import * as local from '../data/works';
 
 const DOMAIN = import.meta.env.MICROCMS_SERVICE_DOMAIN as string | undefined;
@@ -127,16 +127,21 @@ export async function getMusic(): Promise<{ work: Work; track: Track }[]> {
   return works.flatMap((work) => work.music.map((track) => ({ work, track })));
 }
 
-export async function getSite(): Promise<Site> {
-  const works = await getWorks();
-  const raw = usingCms
-    ? await request<{ heroWork?: { number?: number }; description?: string }>('site', { depth: '1' })
-    : { heroWork: { number: Number(local.site.hero) }, description: local.site.description };
-  // the chosen work, or the newest original that has a cutout
-  const newest = [...works].reverse();
-  const hero = works.find((w) => w.no === raw.heroWork?.number && w.cut)
-    ?? newest.find((w) => w.kind === 'original' && w.cut) ?? newest[0];
-  return { hero, latest: works.slice(-3), description: raw.description ?? '' };
+let siteCache: Promise<Site> | undefined;
+export function getSite(): Promise<Site> {
+  siteCache ??= (async () => {
+    const works = await getWorks();
+    const raw = usingCms
+      ? await request<{ heroWork?: { number?: number }; description?: string; player?: string[] | string }>('site', { depth: '1' })
+      : { heroWork: { number: Number(local.site.hero) }, description: local.site.description, player: local.site.player };
+    // the chosen work, or the newest original that has a cutout
+    const newest = [...works].reverse();
+    const hero = works.find((w) => w.no === raw.heroWork?.number && w.cut)
+      ?? newest.find((w) => w.kind === 'original' && w.cut) ?? newest[0];
+    const player: Player = first(raw.player) === 'youtube' ? 'youtube' : 'tiktok';
+    return { hero, latest: works.slice(-3), description: raw.description ?? '', player };
+  })();
+  return siteCache;
 }
 
 export const label = (w: Work) => `No.${w.id}`;

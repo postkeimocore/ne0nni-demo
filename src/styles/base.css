@@ -470,7 +470,7 @@ section[id], [id^="look-"] { scroll-margin-top: var(--header-h); }
 .site-footer__legal { margin-top: var(--space-5); }
 .site-footer small { font-size: inherit; }
 
-/* ---------- the way on (Go): a round arrow and its label, used instead of text links ----------
+/* ---------- the way on (Go): a label and a round arrow on its right, used instead of text links ----------
    The circle is 48px (the hit area). It fills on hover; on night sections the colors swap. */
 .go { display: inline-flex; align-items: center; gap: var(--space-3); min-height: 48px; text-decoration: none; color: inherit; cursor: pointer; }
 .go__icon {

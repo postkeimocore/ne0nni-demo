@@ -1,28 +1,37 @@
 ---
 /**
  * SNS posts of a work, each shown on a black phone (design-system.md 5「SNS投稿の取り込み」).
- * Shorts play as an embed, not a file of ours:
- *   - YouTube Shorts when the post has a YouTube URL — nothing sits over the picture while it plays
- *   - otherwise TikTok's Embed Player (it always shows the account bar and the like counts)
+ * Shorts play as an embed, not a file of ours, on the platform the site setting `player` names
+ * (the one with the most plays; the other when the post has no URL there):
+ *   - TikTok's Embed Player: the account bar and the like counts always show
+ *   - YouTube Shorts: nothing sits over the picture while it plays
  * The player loads only when the screen is pressed; until then the poster frame shows.
  * Photo posts show the picture on the phone. Under each phone: the kind and an icon for each platform.
  */
-import type { Post, PostLink } from '../lib/types';
+import type { Player, Post, PostLink } from '../lib/types';
+import { getSite } from '../lib/cms';
 import Art from './Art.astro';
 import SnsIcon from './SnsIcon.astro';
 interface Props { posts: Post[]; label: string }
 const { posts, label } = Astro.props;
+const { player } = await getSite();
 
 const youtubeId = (u: string) => u.match(/(?:shorts\/|youtu\.be\/|[?&]v=|embed\/)([\w-]{11})/)?.[1];
 const tiktokId = (u: string) => u.match(/\/video\/(\d+)/)?.[1];
-const embedOf = (links: PostLink[]) => {
-  const yt = links.find((l) => l.platform === 'youtube');
-  const y = yt && youtubeId(yt.url);
-  if (y) return `https://www.youtube-nocookie.com/embed/${y}?autoplay=1&mute=1&controls=0&loop=1&playlist=${y}&playsinline=1&rel=0&iv_load_policy=3&disablekb=1`;
-  const tt = links.find((l) => l.platform === 'tiktok');
-  const t = tt && tiktokId(tt.url);
-  if (t) return `https://www.tiktok.com/player/v1/${t}?autoplay=1&loop=1&controls=0&progress_bar=0&play_button=1&volume_control=0&fullscreen_button=0&timestamp=0&music_info=0&description=0&rel=0&native_context_menu=0&closed_caption=0`;
+const PLAYERS: Record<Player, (links: PostLink[]) => string | undefined> = {
+  youtube: (links) => {
+    const yt = links.find((l) => l.platform === 'youtube');
+    const y = yt && youtubeId(yt.url);
+    if (y) return `https://www.youtube-nocookie.com/embed/${y}?autoplay=1&mute=1&controls=0&loop=1&playlist=${y}&playsinline=1&rel=0&iv_load_policy=3&disablekb=1`;
+  },
+  tiktok: (links) => {
+    const tt = links.find((l) => l.platform === 'tiktok');
+    const t = tt && tiktokId(tt.url);
+    if (t) return `https://www.tiktok.com/player/v1/${t}?autoplay=1&loop=1&controls=0&progress_bar=0&play_button=1&volume_control=0&fullscreen_button=0&timestamp=0&music_info=0&description=0&rel=0&native_context_menu=0&closed_caption=0`;
+  },
 };
+const other: Record<Player, Player> = { tiktok: 'youtube', youtube: 'tiktok' };
+const embedOf = (links: PostLink[]) => PLAYERS[player](links) ?? PLAYERS[other[player]](links);
 ---
 <div class="posts">
   <ul class="posts__list">
