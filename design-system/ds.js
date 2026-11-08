@@ -49,15 +49,19 @@
     });
   });
 
-  // post play button — controls the video in the same post (kept outside the player)
-  document.querySelectorAll('.post').forEach((post) => {
-    const btn = post.querySelector('.post__play');
-    const video = post.querySelector('video');
-    if (!btn || !video) return;
+  // posts: the player loads only when the phone's screen is pressed (same as the site)
+  document.querySelectorAll('[data-embed]').forEach((btn) => {
     btn.addEventListener('click', () => {
-      if (video.paused) { video.play(); btn.setAttribute('aria-label', '動画を一時停止'); btn.classList.add('is-playing'); }
-      else { video.pause(); btn.setAttribute('aria-label', '動画を再生'); btn.classList.remove('is-playing'); }
-    });
+      const f = document.createElement('iframe');
+      f.className = 'phone__player';
+      f.src = btn.dataset.embed;
+      f.title = btn.dataset.title;
+      f.allow = 'autoplay; encrypted-media; picture-in-picture';
+      f.referrerPolicy = 'strict-origin-when-cross-origin';
+      btn.after(f);
+      btn.hidden = true;
+      f.focus();
+    }, { once: true });
   });
 
   // masthead — hide the header logo while the large hero logo is on screen

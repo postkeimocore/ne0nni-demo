@@ -58,8 +58,6 @@ export type PostLink = { platform: 'tiktok' | 'instagram' | 'youtube'; url: stri
  */
 export type Post = {
   kind: 'short' | 'photo';
-  /** the video file of a short */
-  video?: string;
   /** the photo, or the poster frame of a short */
   image?: Img;
   links: PostLink[];
@@ -78,8 +76,6 @@ export type Work = {
   tribute?: { character: string; title: string };
   /** YYYY-MM-DD, when known */
   date?: string;
-  /** one plain line about the picture (Mincho) */
-  lead?: string;
   /** the full picture with its background */
   key: Img;
   /** the figure cut out of the background */
@@ -98,7 +94,7 @@ export type Work = {
 export type Site = {
   /** the work whose cutout fills the HOME hero */
   hero: Work;
-  /** newest first, for the HOME chapters */
+  /** the newest three, in order of number (oldest of them first), for the HOME chapters */
   latest: Work[];
   description: string;
 };

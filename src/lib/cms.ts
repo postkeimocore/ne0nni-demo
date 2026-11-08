@@ -24,15 +24,14 @@ export function keyOf(name: string): string {
 
 // ---------- microCMS ----------
 type RawImage = { url: string; width: number; height: number };
-type RawFile = { url: string } | string;
 type RawRef = { id: string };
 type RawCharacter = RawRef & { name: string; personality?: string; taste?: string; genre?: string; artists?: string; image?: RawImage; imageAlt?: string };
 type RawGear = RawRef & { brand: string; model: string; thumb?: RawImage };
 type RawTrack = { fieldId: 'track'; artist: string; title: string };
-type RawPost = { fieldId: 'post'; kind: string[]; video?: RawFile; image?: RawImage; alt?: string; tiktokUrl?: string; instagramUrl?: string; youtubeUrl?: string };
+type RawPost = { fieldId: 'post'; kind: string[]; image?: RawImage; alt?: string; tiktokUrl?: string; instagramUrl?: string; youtubeUrl?: string };
 type RawWork = RawRef & {
   number: number; series: string[]; kind: string[]; character?: RawCharacter;
-  tributeCharacter?: string; tributeTitle?: string; date?: string; lead?: string;
+  tributeCharacter?: string; tributeTitle?: string; date?: string;
   key: RawImage; keyAlt: string; cut?: RawImage; cutAlt?: string; face?: RawImage; faceAlt?: string;
   scene?: RawImage; sceneAlt?: string; focus?: string; music?: RawTrack[]; gear?: RawGear[]; posts?: RawPost[];
 };
@@ -78,7 +77,6 @@ const toPost = (p: RawPost): Post => {
   if (p.youtubeUrl) links.push({ platform: 'youtube', url: p.youtubeUrl });
   return {
     kind: first(p.kind) === 'photo' ? 'photo' : 'short',
-    video: p.video ? (typeof p.video === 'string' ? p.video : p.video.url) : undefined,
     image: p.image ? toImg(p.image, p.alt ?? '') : undefined,
     links,
   };
@@ -90,7 +88,7 @@ const toWork = (w: RawWork): Work => {
     series: toSeries(first(w.series)), kind,
     character: kind === 'original' && w.character ? toCharacter(w.character) : undefined,
     tribute: kind === 'tribute' && w.tributeCharacter ? { character: w.tributeCharacter, title: w.tributeTitle ?? '' } : undefined,
-    date: w.date?.slice(0, 10), lead: w.lead || undefined,
+    date: w.date?.slice(0, 10),
     key: toImg(w.key, w.keyAlt), cut: w.cut ? toImg(w.cut, w.cutAlt) : undefined,
     face: w.face ? toImg(w.face, w.faceAlt) : undefined, scene: w.scene ? toImg(w.scene, w.sceneAlt) : undefined,
     focus: w.focus || undefined,
@@ -100,10 +98,10 @@ const toWork = (w: RawWork): Work => {
 
 // ---------- public API ----------
 let worksCache: Promise<Work[]> | undefined;
-/** Newest first. */
+/** In order of number (= order of publication), No.001 first. Every list on the site keeps this order. */
 export function getWorks(): Promise<Work[]> {
   worksCache ??= (usingCms ? list<RawWork>('works').then((r) => r.map(toWork)) : Promise.resolve(local.works))
-    .then((w) => [...w].sort((a, b) => b.no - a.no));
+    .then((w) => [...w].sort((a, b) => a.no - b.no));
   return worksCache;
 }
 
@@ -123,9 +121,9 @@ export async function getGear(): Promise<Gear[]> {
   return usingCms ? (await list<RawGear>('gear')).map(toGear) : local.gear;
 }
 
-/** Every track tied to a work, oldest work first. */
+/** Every track tied to a work, in order of number. */
 export async function getMusic(): Promise<{ work: Work; track: Track }[]> {
-  const works = [...(await getWorks())].reverse();
+  const works = await getWorks();
   return works.flatMap((work) => work.music.map((track) => ({ work, track })));
 }
 
@@ -135,15 +133,16 @@ export async function getSite(): Promise<Site> {
     ? await request<{ heroWork?: { number?: number }; description?: string }>('site', { depth: '1' })
     : { heroWork: { number: Number(local.site.hero) }, description: local.site.description };
   // the chosen work, or the newest original that has a cutout
+  const newest = [...works].reverse();
   const hero = works.find((w) => w.no === raw.heroWork?.number && w.cut)
-    ?? works.find((w) => w.kind === 'original' && w.cut) ?? works[0];
-  return { hero, latest: works.slice(0, 3), description: raw.description ?? '' };
+    ?? newest.find((w) => w.kind === 'original' && w.cut) ?? newest[0];
+  return { hero, latest: works.slice(-3), description: raw.description ?? '' };
 }
 
 export const label = (w: Work) => `No.${w.id}`;
 export const pathOf = (w: Work) => `/works/${w.id}/`;
 export const characterName = (c: Character) => `Character ${c.name}`;
-/** "ずっと真夜中でいいのに。「akanesasu」" */
+/** "ずっと真夜中でいいのに。「あかねさす頃」" */
 export const trackName = (t: Track) => `${t.artist}「${t.title}」`;
 
 /** Filter keys shared by the WORKS filter and the buttons that open it. */

@@ -194,8 +194,12 @@ export default function fx() {
     build();
     if (reduce) draw(0);
     document.addEventListener('visibilitychange', () => (document.hidden ? stop() : start()));
+    // a phone's address bar sliding in and out fires resize without changing these sizes: keep the glints where they are
     let rt = 0;
-    window.addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(() => { build(); if (reduce) draw(0); }, 200); });
+    window.addEventListener('resize', () => {
+      clearTimeout(rt);
+      rt = setTimeout(() => { const [w, h] = sizeOf(); if (w !== W || h !== H) { build(); if (reduce) draw(0); } }, 200);
+    });
     return { start, stop, setVisible: (vis) => { visible = vis; vis ? start() : stop(); } };
   };
 
@@ -204,7 +208,11 @@ export default function fx() {
   pageCv.className = 'glints glints--page';
   pageCv.setAttribute('aria-hidden', 'true');
   document.body.prepend(pageCv);
-  field(pageCv, 'day', () => [window.innerWidth, window.innerHeight], 42000).start();
+  // sized to the large viewport (100lvh, CSS), which stays put while the address bar moves
+  const lvh = document.createElement('div');
+  lvh.style.cssText = 'position:absolute;top:0;left:0;width:0;height:100lvh;visibility:hidden;pointer-events:none';
+  document.body.append(lvh);
+  field(pageCv, 'day', () => [window.innerWidth, lvh.offsetHeight || window.innerHeight], 42000).start();
 
   // sections with their own background (mist, night) get their own field
   document.querySelectorAll('[data-glints]').forEach((host) => {
@@ -226,6 +234,13 @@ export default function fx() {
     cv.setAttribute('aria-hidden', 'true');
     host.prepend(cv);
     const ctx = cv.getContext('2d');
+    // the hero's first view is 100svh (CSS). On phones window.innerHeight grows and shrinks while the
+    // address bar slides in and out on scroll; measuring svh keeps the wave on its row under the picture.
+    const probe = document.createElement('div');
+    probe.style.cssText = 'position:absolute;top:0;left:0;width:0;height:100svh;visibility:hidden;pointer-events:none';
+    host.append(probe);
+    const svh = () => probe.offsetHeight || window.innerHeight;
+    let builtW = 0, builtS = 0;
     const color = token('--color-ink-sub');
     const HEAD = .13;                          // middle of the first "N" (share of the logo width)
     const STEP = 2;                            // px per sample
@@ -274,7 +289,8 @@ export default function fx() {
     const build = () => {
       const dpr = Math.min(2, window.devicePixelRatio || 1);
       const header = document.querySelector('.site-header');
-      const first = Math.min(host.clientHeight, window.innerHeight - (header ? header.offsetHeight : 0));
+      builtW = host.clientWidth; builtS = svh();
+      const first = Math.min(host.clientHeight, builtS - (header ? header.offsetHeight : 0));
       // stacked (SP / TB portrait): the wave runs in the empty row right under the illustration
       const stacked = host.clientHeight - first > 120;
       W = host.clientWidth; H = stacked ? first + 48 : first;
@@ -328,6 +344,11 @@ export default function fx() {
       document.addEventListener('visibilitychange', () => (document.hidden ? stop() : start()));
     }
     let rt = 0;
-    window.addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(() => { build(); if (reduce) still(); }, 200); });
+    // rebuild only when the layout really changes (width, or the svh on rotation / window resize),
+    // not when a phone's address bar slides in or out
+    window.addEventListener('resize', () => {
+      clearTimeout(rt);
+      rt = setTimeout(() => { if (host.clientWidth !== builtW || svh() !== builtS) { build(); if (reduce) still(); } }, 200);
+    });
   });
 }

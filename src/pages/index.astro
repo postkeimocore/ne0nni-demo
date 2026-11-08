@@ -46,11 +46,11 @@ const jsonLd = [
     )}
   </section>
 
-  <!-- WORKS: the newest works as chapters, threaded on one cable (4-2) -->
+  <!-- WORKS: the newest three works as chapters, in order of number, threaded on one cable (4-2) -->
   <section class="l-section l-mist l-container home-works" aria-labelledby="works-h" data-glints="day">
     <div class="home-works__head l-grid">
       <h2 class="t-display-2 home-works__title" id="works-h">Works</h2>
-      <p class="t-body home-works__lead">{latest[0]?.series.name.toUpperCase()} の新しい作品から。号数は公開順の通し番号です。</p>
+      <p class="t-body home-works__lead">{latest[0]?.series.name.toUpperCase()} の新しい作品です。号数は、公開した順の通し番号です。</p>
     </div>
 
     <div class="looks" data-cable>
@@ -72,7 +72,6 @@ const jsonLd = [
                     </div>}
               </a>
               <div class="look__info" data-reveal="up">
-                {w.lead && <p class="t-lead">{w.lead}</p>}
                 <WorkData work={w} />
                 <Go href={pathOf(w)} label={`View ${label(w)}`} />
               </div>
@@ -185,7 +184,7 @@ const jsonLd = [
   .look__art { display: block; grid-column: 1 / -1; }
   .look__info { grid-column: 1 / -1; display: grid; gap: var(--space-5); align-content: end; }
   .look--c .look__art { margin-right: calc(var(--grid-margin) * -1); }
-  /* TB: half and half, so a one-line lead (up to 14 characters) never breaks */
+  /* TB: half and half */
   @media (min-width: 768px) {
     .look--a .look__art { grid-column: 1 / span 4; }
     .look--a .look__info { grid-column: 5 / -1; }

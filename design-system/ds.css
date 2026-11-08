@@ -194,26 +194,56 @@ ul, ol { list-style: none; }
 /* vertical word (garni) */
 .v-word { writing-mode: vertical-rl; white-space: nowrap; }
 
-/* ---------- SNS posts (work detail) — the only rounded shape on a page ---------- */
-.posts { width: fit-content; max-width: 100%; background: var(--color-mist); border-radius: var(--radius-frame); padding: var(--space-4); }
-.posts__list { display: flex; align-items: flex-end; gap: var(--grid-gutter); overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: thin; }
-.post { flex: none; display: grid; gap: var(--space-3); scroll-snap-align: start; }
-.post__media { position: relative; height: var(--post-h); overflow: hidden; }
-.post__media--short { aspect-ratio: 9 / 16; }
-.post__media--photo { aspect-ratio: 4 / 5; }
-.post__media img, .post__media video, .post__media iframe { width: 100%; height: 100%; object-fit: cover; border: 0; }
+/* ---------- SNS posts (work detail): each post on a black phone, on the mist frame ----------
+   The frame is the only rounded shape of a page besides the phones. Light comes from the upper left:
+   the metal frame catches it there, the thickness and the shadow fall to the lower right. */
+.posts { width: fit-content; max-width: 100%; background: var(--color-mist); border-radius: var(--radius-frame); padding: var(--space-3); }
+/* room inside the scroller for the phones' side buttons and shadows */
+.posts__list { display: flex; align-items: flex-start; gap: var(--space-5); overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: thin;
+  padding: var(--space-2) var(--space-4) var(--space-6) var(--space-2); margin: calc(var(--space-2) * -1) calc(var(--space-4) * -1) calc(var(--space-5) * -1) calc(var(--space-2) * -1); }
+/* TB / PC: the phones fit side by side, so nothing scrolls and nothing clips their shadows */
+@media (min-width: 768px) { .posts__list { flex-wrap: wrap; overflow: visible; padding: 0; margin: 0; } }
+.post { flex: none; display: grid; gap: var(--space-4); width: var(--phone-w); scroll-snap-align: start; }
 .post__meta { display: flex; justify-content: space-between; align-items: center; gap: var(--space-3); }
-.post__ctrl { display: inline-flex; align-items: center; gap: var(--space-3); }
-.post__play {
-  display: grid; place-items: center; width: 48px; height: 48px; padding: 0; flex: none;
-  border: 1px solid var(--color-ink); border-radius: 50%;
-  background: var(--color-paper); color: var(--color-ink); cursor: pointer;
-  transition: background-color var(--dur-1) var(--ease-out), color var(--dur-1) var(--ease-out);
+@media (min-width: 768px) { .posts { padding: var(--space-6) var(--space-6) var(--space-7); } .posts__list { gap: var(--space-6); } }
+
+.phone {
+  position: relative; width: var(--phone-w); padding: 3px; border-radius: var(--phone-r);
+  background: linear-gradient(135deg, var(--phone-frame-hi) 0%, var(--phone-frame) 16%, var(--phone-body) 46%, var(--phone-frame) 100%);
+  box-shadow:
+    1px 1px 0 var(--phone-side), 2px 2px 0 var(--phone-side), 3px 3px 0 var(--phone-side),
+    8px 16px 16px -8px var(--phone-shadow-near), 24px 40px 48px -16px var(--phone-shadow);
 }
-.post__play span { width: 12px; height: 16px; margin-left: var(--space-1); background: currentColor; clip-path: polygon(0 0, 100% 50%, 0 100%); }
-.post__play:hover { background: var(--color-ink); color: var(--color-paper); }
-.post__play.is-playing span { width: 12px; height: 14px; margin-left: 0; clip-path: polygon(0 0, 35% 0, 35% 100%, 0 100%, 0 0, 65% 0, 100% 0, 100% 100%, 65% 100%, 65% 0); }
-@media (min-width: 768px) { .posts { padding: var(--space-6); } }
+/* side buttons: action + volume on the left, power on the right */
+.phone::before, .phone::after { content: ""; position: absolute; width: 3px; border-radius: 2px; }
+.phone::before { left: -2px; top: 17%; height: 25%;
+  background: linear-gradient(to bottom, var(--phone-frame) 0 13%, transparent 13% 26%, var(--phone-frame) 26% 58%, transparent 58% 68%, var(--phone-frame) 68% 100%); }
+.phone::after { right: -4px; top: 26%; height: 15%; background: var(--phone-side); }
+.phone__body { padding: 6px; border-radius: calc(var(--phone-r) - 3px); background: var(--phone-body); box-shadow: inset 0 0 0 1px var(--phone-glass-edge); }
+.phone__screen { position: relative; overflow: hidden; aspect-ratio: 9 / 19.5; border-radius: calc(var(--phone-r) - 9px); background: var(--phone-screen); isolation: isolate; }
+/* the picture across the full width of the screen, in the middle — like a short or a photo post on a real phone */
+.phone__media, .phone__player { position: absolute; left: 0; top: 50%; width: 100%; transform: translateY(-50%); }
+.phone__media { height: auto; z-index: 1; }
+/* the rest of the screen: the same picture, blurred and dimmed, as the apps do for media that doesn't fill it */
+.phone__backdrop { position: absolute; inset: -12%; width: 124%; height: 124%; object-fit: cover; filter: blur(16px) brightness(.5); }
+.phone__player { aspect-ratio: 9 / 16; height: auto; border: 0; z-index: 1; background: var(--phone-screen); }
+/* glass: a soft reflection across the upper left; it never takes a click */
+.phone__screen::after { content: ""; position: absolute; inset: 0; z-index: 3; pointer-events: none;
+  background: linear-gradient(118deg, var(--phone-glass) 0%, transparent 36%); }
+.phone__island { position: absolute; z-index: 2; top: 3%; left: 50%; width: 32%; height: 4.4%; transform: translateX(-50%); border-radius: 999px; background: var(--phone-screen); }
+/* the whole screen is the play button; the visible part is the circle in the middle */
+.phone__play { position: absolute; inset: 0; z-index: 2; display: grid; place-items: center; padding: 0; border: 0; background: transparent; cursor: pointer; color: var(--color-ink); }
+.phone__play-icon {
+  display: grid; place-items: center; width: 64px; height: 64px; border-radius: 50%;
+  background: var(--color-paper); border: 1px solid var(--color-ink);
+  transition: background-color var(--dur-1) var(--ease-out), color var(--dur-1) var(--ease-out), transform var(--dur-1) var(--ease-out);
+}
+.phone__play-icon span { width: 16px; height: 20px; margin-left: var(--space-1); background: currentColor; clip-path: polygon(0 0, 100% 50%, 0 100%); }
+.phone__play:hover .phone__play-icon { background: var(--color-ink); color: var(--color-paper); }
+.phone__play:active .phone__play-icon { transform: scale(.96); }
+.phone__play:focus-visible { outline: none; }
+.phone__play:focus-visible .phone__play-icon { outline: 2px solid var(--color-paper); outline-offset: 4px; }
+.phone__play[hidden] { display: none; }
 
 /* ---------- filter (works) ---------- */
 .filter { display: flex; flex-wrap: wrap; gap: var(--space-2); }
@@ -331,3 +361,6 @@ body, .site-header, .l-mist, .posts {
   .stack__layer { display: none; }
   [data-reveal="chars"] .ch { opacity: 1; transform: none; }
 }
+
+/* ---------- posts: an icon for each platform the post is on ---------- */
+.post__links { display: inline-flex; margin-right: calc(var(--space-1) * -3); }

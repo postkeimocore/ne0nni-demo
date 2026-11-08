@@ -5,7 +5,7 @@ Run from web/:  python3 scripts/make-assets.py
 
 Writes
   src/assets/art/{no}-{kind}.webp   images Astro resizes into srcsets (long side up to 2400px)
-  public/video/{no}-short.mp4       the short videos shown in the posts frame (same as the TikTok / Instagram posts)
+  (the short videos are not copied: they play as YouTube Shorts / TikTok embeds; only a poster frame is kept)
 Originals are never modified. Crops are written as boxes on the original image (left, top, right, bottom).
 """
 import os
@@ -15,9 +15,7 @@ from PIL import Image, ImageDraw, ImageFilter
 WEB = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SRC = os.path.dirname(WEB)
 ART = os.path.join(WEB, 'src', 'assets', 'art')
-VID = os.path.join(WEB, 'public', 'video')
 os.makedirs(ART, exist_ok=True)
-os.makedirs(VID, exist_ok=True)
 
 MAX = 2400
 
@@ -90,20 +88,16 @@ save(trim(cut_flat_bg(k3)), '003-cut')
 save(k3.convert('RGB').crop((620, 560, 1700, 1910)), '003-face')
 
 
-# ---------------- stand-in clips + posters ----------------
-def clip(src_path, name, audio):
-    out = os.path.join(VID, f'{name}.mp4')
-    args = ['ffmpeg', '-y', '-loglevel', 'error', '-i', src_path, '-vf', 'scale=720:-2', '-c:v', 'libx264',
-            '-preset', 'slow', '-crf', '26', '-pix_fmt', 'yuv420p', '-movflags', '+faststart']
-    args += ['-c:a', 'aac', '-b:a', '96k'] if audio else ['-an']
-    subprocess.run(args + [out], check=True)
-    poster = os.path.join(ART, f'{name}-poster.png')
-    subprocess.run(['ffmpeg', '-y', '-loglevel', 'error', '-ss', '0.5', '-i', out, '-frames:v', '1', poster], check=True)
-    im = Image.open(poster).convert('RGB')
-    os.remove(poster)
-    save(im, f'{name}-poster')
-    print(f'{name}.mp4 {os.path.getsize(out) // 1024}KB')
+# ---------------- posters of the short videos ----------------
+# The shorts themselves play as embeds (YouTube Shorts / TikTok); the site keeps only a frame of each.
+def poster(src_path, name):
+    tmp = os.path.join(ART, f'{name}.png')
+    subprocess.run(['ffmpeg', '-y', '-loglevel', 'error', '-ss', '0.5', '-i', src_path, '-vf', 'scale=720:-2',
+                    '-frames:v', '1', tmp], check=True)
+    im = Image.open(tmp).convert('RGB')
+    os.remove(tmp)
+    save(im, name)
 
 
-clip(src('01', 'rain_btee_ztmy_chara_v5_6fps.MP4'), '001-short', audio=False)
-clip(src('02', 'ne0nni-rooftop_city-ambience-test.MP4'), '002-short', audio=True)
+poster(src('01', 'rain_btee_ztmy_chara_v5_6fps.MP4'), '001-short-poster')
+poster(src('02', 'ne0nni-rooftop_city-ambience-test.MP4'), '002-short-poster')

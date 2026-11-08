@@ -14,8 +14,6 @@ const music = await getMusic();
 const gear = (await getGear()).filter((g) => works.some((w) => w.gear.some((x) => x.id === g.id)));
 const gearCount = Object.fromEntries(gear.map((g) => [g.id, works.filter((w) => w.gear.some((x) => x.id === g.id)).length]));
 const charaCount = (id: string) => works.filter((w) => w.character?.id === id).length;
-const originals = works.filter((w) => w.kind === 'original');
-const tributes = works.filter((w) => w.kind === 'tribute');
 
 // chapters in the order of the site's groups: Series (works) / Character / Music / Gear, then SNS and business
 const sections = ['series', ...(characters.length ? ['character'] : []), ...(music.length ? ['music'] : []), ...(gear.length ? ['gear'] : []), 'sns', 'business'];
@@ -53,7 +51,7 @@ const jsonLd = {
         <Go href="/works/" label="View all works" />
       </div>
       <ul class="about-thumbs">
-        {[...originals, ...tributes].map((w) => (
+        {works.map((w) => (
           <li>
             <a href={pathOf(w)} class="about-thumbs__link">
               <span class="about-thumbs__art"><Art img={w.face ?? w.key} sizes="(min-width: 1200px) 16vw, (min-width: 768px) 20vw, 33vw" decorative /></span>

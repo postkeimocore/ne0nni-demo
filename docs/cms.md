@@ -18,7 +18,7 @@
 
 | まとまり | 項目 | 内容 |
 |---|---|---|
-| 作品 Work | 号数 `no` | 1, 2, 3 …。シリーズをまたいだ公開順の通し番号。URL は `/works/001/` |
+| 作品 Work | 号数 `no` | 1, 2, 3 …。シリーズをまたいだ公開順の通し番号。URL は `/works/001/`。サイトのどの一覧も号数の順（No.001 が先）。作品にタイトルや一言は持たせない |
 | | シリーズ `series` | 現在は Headphones Girl |
 | | 種類 `kind` | `original`（NE0NNi のキャラクター A／B）／`tribute`（アニメ・漫画・映画のキャラクターを描いた作品）。表示する言葉は `KIND_LABEL`（`src/lib/cms.ts`）の1か所 |
 | | キャラクター `character` | original のとき。Character を参照 |
@@ -26,7 +26,6 @@
 | | 曲 `music` | 繰り返し。アーティストと曲名 |
 | | ギア `gear` | 複数参照 |
 | | 公開日 `date` | 分かれば。あるときだけ表示 |
-| | 一言 `lead` | 明朝の1行。14字まで（スマホ・タブレットで1行に収まる長さ） |
 | | 画像 | `key`（背景つきの全体）必須、`cut`（切り抜き）、`face`（顔などの寄り）、`scene`（背景を描いた場面）。それぞれ alt つき |
 | | `focus` | 一覧で 4:5 に切るときの位置（例 `50% 18%`） |
 | | 投稿 `posts` | 繰り返し。下の「投稿」 |
@@ -41,14 +40,13 @@
 
 ### 投稿（posts）
 
-1つの投稿を TikTok と Instagram に同時に出しているので、1件に媒体ごとのURLを持たせる。サイトは動画・画像を自前の枠で見せ、下に媒体のアイコンを置く（design-system.md 5「SNS投稿の取り込み」）。
+1つの投稿を TikTok・Instagram・YouTube に出しているので、1件に媒体ごとのURLを持たせる。サイトは各投稿を黒いスマホの画面に入れて見せ、下に媒体のアイコンを置く（design-system.md 5「SNS投稿の取り込み」）。動画ファイルはサイトに置かない。
 
 | 項目 | 内容 |
 |---|---|
 | `kind` | `short`（縦動画 9:16）／`photo`（写真投稿 4:5） |
-| `video` | short の動画ファイル。作品のアニメーションで、曲は入れない（サイトではミュートで再生） |
-| `image` | 写真投稿の1枚目、または動画のポスター |
-| `links` | 媒体とURL（TikTok・Instagram・YouTube） |
+| `image` | 写真投稿の1枚目、またはショート動画の1コマ（再生前に見せるポスター） |
+| `links` | 媒体とURL（TikTok・Instagram・YouTube）。ショート動画は YouTube の URL があれば YouTube ショートを、なければ TikTok を埋め込む |
 
 ## microCMS のスキーマ（作るとき）
 
@@ -56,9 +54,9 @@ API は4つ（Hobby プランの上限5つの中に収める）。シリーズ�
 
 | API | 種類 | フィールドID |
 |---|---|---|
-| `works` | リスト | `number`（数字）、`series`（セレクト Headphones Girl）、`kind`（セレクト original / tribute）、`character`（コンテンツ参照 characters）、`tributeCharacter` `tributeTitle`（テキスト）、`music`（繰り返し：カスタムフィールド `track`）、`gear`（複数コンテンツ参照 gear）、`date`（日時）、`lead`（テキスト）、`key` `cut` `face` `scene`（画像）と `keyAlt` `cutAlt` `faceAlt` `sceneAlt`（テキスト）、`focus`（テキスト）、`posts`（繰り返し：カスタムフィールド `post`） |
+| `works` | リスト | `number`（数字）、`series`（セレクト Headphones Girl）、`kind`（セレクト original / tribute）、`character`（コンテンツ参照 characters）、`tributeCharacter` `tributeTitle`（テキスト）、`music`（繰り返し：カスタムフィールド `track`）、`gear`（複数コンテンツ参照 gear）、`date`（日時）、`key` `cut` `face` `scene`（画像）と `keyAlt` `cutAlt` `faceAlt` `sceneAlt`（テキスト）、`focus`（テキスト）、`posts`（繰り返し：カスタムフィールド `post`） |
 | `track`（カスタムフィールド） | — | `artist` `title`（テキスト） |
-| `post`（カスタムフィールド） | — | `kind`（セレクト short / photo）、`video`（ファイル。使えないプランなら動画のURLをテキストで）、`image`（画像）、`alt`（テキスト）、`tiktokUrl` `instagramUrl` `youtubeUrl`（テキスト） |
+| `post`（カスタムフィールド） | — | `kind`（セレクト short / photo）、`image`（画像）、`alt`（テキスト）、`tiktokUrl` `instagramUrl` `youtubeUrl`（テキスト） |
 | `characters` | リスト | `name`（テキスト）、`personality` `taste`（テキストエリア）、`genre`（テキスト）、`artists`（テキストエリア、1行に1組）、`image`（画像）、`imageAlt`（テキスト） |
 | `gear` | リスト | `brand` `model`（テキスト）、`thumb`（画像） |
 | `site` | オブジェクト | `heroWork`（コンテンツ参照 works）、`description`（テキストエリア） |
@@ -72,6 +70,6 @@ API は4つ（Hobby プランの上限5つの中に収める）。シリーズ�
 手元の元画像（`../01` `../02` `../amgw5_2.PNG` `../SNS`）から作る。
 
 ```
-python3 scripts/make-assets.py   # src/assets/art/*.webp と public/video/*.mp4
+python3 scripts/make-assets.py   # src/assets/art/*.webp（ショート動画は1コマだけ）
 node scripts/make-og.mjs         # public/og/*.jpg
 ```

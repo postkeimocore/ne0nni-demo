@@ -23,7 +23,6 @@ const description = [
   `NE0NNi（ネオンニ）の作品 ${label(work)}。シリーズ ${work.series.name.toUpperCase()}。`,
   work.character ? `${characterName(work.character)}。` : '',
   work.tribute ? `${work.tribute.title}の${work.tribute.character}を描いた ${KIND_LABEL.tribute}。` : '',
-  work.lead ?? '',
   work.music.length ? `曲：${work.music.map(trackName).join('、')}。` : '',
   work.gear.length ? `ギア：${work.gear.map((g) => `${g.brand} ${g.model}`).join('、')}。` : '',
 ].join('');
@@ -87,7 +86,6 @@ const jsonLd = [
             <>
               <div class="cut-copy" data-reveal="up">
                 <span class="t-number">{label(work)}</span>
-                {work.lead && <p class="t-lead">{work.lead}</p>}
               </div>
               <figure class="w-cutout"><Art img={work.cut} sizes="(min-width: 1200px) 58vw, (min-width: 768px) 75vw, 100vw" /></figure>
             </>
@@ -121,7 +119,7 @@ const jsonLd = [
           <h2 class="t-display-3" id="posts-h">Posts</h2>
           <p class="t-small">{label(work)} を SNS で公開した投稿です。</p>
         </div>
-        <Posts posts={work.posts} />
+        <Posts posts={work.posts} label={label(work)} />
       </section>
     )}
 

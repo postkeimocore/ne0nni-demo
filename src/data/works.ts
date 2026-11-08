@@ -51,7 +51,7 @@ export const characters: Character[] = [
 const [A, B] = characters;
 
 const music: Record<string, Track> = {
-  akanesasu: { id: 'zutomayo', artist: 'ずっと真夜中でいいのに。', title: 'akanesasu' },
+  akanesasu: { id: 'zutomayo', artist: 'ずっと真夜中でいいのに。', title: 'あかねさす頃' },
   musubi: { id: 'ayumu-imazu', artist: 'Ayumu Imazu', title: '結び' },
 };
 
@@ -68,7 +68,6 @@ export const works: Work[] = [
     series: HG,
     kind: 'original',
     character: A,
-    lead: 'うつぶせで、スマホを見る。',
     key: img(k1, '枕に頬をのせ、うつぶせでスマートフォンを見る、黒いヘッドホンの女の子'),
     cut: img(c1, '枕に頬をのせ、うつぶせでスマートフォンを見る女の子'),
     face: img(f1, 'スマートフォンの光に照らされた、黒いヘッドホンの女の子の顔'),
@@ -77,7 +76,7 @@ export const works: Work[] = [
     gear: [HL7BT],
     posts: [
       {
-        kind: 'short', video: '/video/001-short.mp4',
+        kind: 'short',
         image: img(p1, '雨の夜の部屋で、うつぶせでスマートフォンを見る女の子のショート動画'),
         links: [tiktok('video/7703174687689559317'), instagram('reel/DfMuF0Rh-FX')],
       },
@@ -94,7 +93,6 @@ export const works: Work[] = [
     series: HG,
     kind: 'original',
     character: B,
-    lead: '屋上で、首にヘッドホン。',
     key: img(k2, 'ラベンダーの背景に、首にオレンジのヘッドホンをかけた長い髪の女の子'),
     cut: img(c2, '首にオレンジのヘッドホンをかけ、手すりにもたれる女の子'),
     face: img(f2, '首にヘッドホンをかけて微笑む女の子の顔'),
@@ -104,7 +102,7 @@ export const works: Work[] = [
     gear: [EH11],
     posts: [
       {
-        kind: 'short', video: '/video/002-short.mp4',
+        kind: 'short',
         image: img(p2, '屋上で夜の街を背にした女の子のショート動画'),
         links: [tiktok('video/7704655287642262836'), instagram('reel/DfW-wUqPzyd')],
       },
@@ -121,7 +119,6 @@ export const works: Work[] = [
     series: HG,
     kind: 'tribute',
     tribute: { character: 'シャンプー', title: 'らんま1/2' },
-    lead: '両手でヘッドホンを押さえる。',
     key: img(k3, '紫の背景に、お団子髪とチャイナ服の女の子が両手でヘッドホンを押さえる'),
     cut: img(c3, 'お団子髪とチャイナ服の女の子が、両手でヘッドホンを押さえる'),
     face: img(f3, 'ヘッドホンを押さえて舌を出す、お団子髪の女の子の顔'),

@@ -1,4 +1,4 @@
-// NE0NNi site behaviour: menu, reveals, stacked images, cable line, works filter, posts, contact form.
+// NE0NNi site behaviour: menu, reveals, stacked images, cable line, works filter, post players, contact form.
 // Spec: design-system.md 5, 6
 export default function site() {
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -167,18 +167,19 @@ export default function site() {
     apply(start && filter.querySelector(`[data-key="${CSS.escape(start)}"]`) ? start : 'all', false);
   }
 
-  // ---------- posts: play / pause sit under the frame, never on the video ----------
-  document.querySelectorAll('.post').forEach((post) => {
-    const btn = post.querySelector('.post__play');
-    const video = post.querySelector('video');
-    if (!btn || !video) return;
-    const set = (playing) => {
-      btn.classList.toggle('is-playing', playing);
-      btn.setAttribute('aria-label', playing ? '動画を一時停止' : '動画を再生');
-    };
-    btn.addEventListener('click', () => (video.paused ? video.play() : video.pause()));
-    video.addEventListener('play', () => set(true));
-    video.addEventListener('pause', () => set(false));
+  // ---------- posts: the player (YouTube Shorts / TikTok) loads only when the phone's screen is pressed ----------
+  document.querySelectorAll('[data-embed]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const f = document.createElement('iframe');
+      f.className = 'phone__player';
+      f.src = btn.dataset.embed;
+      f.title = btn.dataset.title;
+      f.allow = 'autoplay; encrypted-media; picture-in-picture';
+      f.referrerPolicy = 'strict-origin-when-cross-origin';
+      btn.after(f);
+      btn.hidden = true;
+      f.focus();
+    }, { once: true });
   });
 
   // ---------- contact form ----------

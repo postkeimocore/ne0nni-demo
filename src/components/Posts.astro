@@ -1,39 +1,57 @@
 ---
 /**
- * SNS posts of a work: short videos (9:16) and photo posts (4:5) at the same height, in the one rounded frame
- * of the page. The video or photo plays in our own frame; under it, the play button and an icon for each
- * platform the post is on (design-system.md 5, "SNS投稿の取り込み").
- * TikTok's Embed Player was tried and dropped: it always shows the account bar and the like counts.
+ * SNS posts of a work, each shown on a black phone (design-system.md 5「SNS投稿の取り込み」).
+ * Shorts play as an embed, not a file of ours:
+ *   - YouTube Shorts when the post has a YouTube URL — nothing sits over the picture while it plays
+ *   - otherwise TikTok's Embed Player (it always shows the account bar and the like counts)
+ * The player loads only when the screen is pressed; until then the poster frame shows.
+ * Photo posts show the picture on the phone. Under each phone: the kind and an icon for each platform.
  */
-import { getImage } from 'astro:assets';
-import type { Post } from '../lib/types';
+import type { Post, PostLink } from '../lib/types';
 import Art from './Art.astro';
 import SnsIcon from './SnsIcon.astro';
-interface Props { posts: Post[] }
-const { posts } = Astro.props;
-// poster frames for the videos, resized like any other image
-const posters = await Promise.all(posts.map((p) =>
-  p.kind === 'short' && p.video && p.image ? getImage({ src: p.image.src, width: 720, format: 'webp', quality: 82, ...(typeof p.image.src === 'string' ? { height: Math.round(720 * p.image.height / p.image.width) } : {}) }) : undefined));
+interface Props { posts: Post[]; label: string }
+const { posts, label } = Astro.props;
+
+const youtubeId = (u: string) => u.match(/(?:shorts\/|youtu\.be\/|[?&]v=|embed\/)([\w-]{11})/)?.[1];
+const tiktokId = (u: string) => u.match(/\/video\/(\d+)/)?.[1];
+const embedOf = (links: PostLink[]) => {
+  const yt = links.find((l) => l.platform === 'youtube');
+  const y = yt && youtubeId(yt.url);
+  if (y) return `https://www.youtube-nocookie.com/embed/${y}?autoplay=1&mute=1&controls=0&loop=1&playlist=${y}&playsinline=1&rel=0&iv_load_policy=3&disablekb=1`;
+  const tt = links.find((l) => l.platform === 'tiktok');
+  const t = tt && tiktokId(tt.url);
+  if (t) return `https://www.tiktok.com/player/v1/${t}?autoplay=1&loop=1&controls=0&progress_bar=0&play_button=1&volume_control=0&fullscreen_button=0&timestamp=0&music_info=0&description=0&rel=0&native_context_menu=0&closed_caption=0`;
+};
 ---
 <div class="posts">
   <ul class="posts__list">
-    {posts.map((p, i) => (
-      <li class="post">
-        <div class:list={['post__media', p.kind === 'short' ? 'post__media--short' : 'post__media--photo']}>
-          {p.kind === 'short' && p.video
-            ? <video src={p.video} poster={posters[i]?.src} muted loop playsinline preload="none" aria-label={p.image?.alt} />
-            : p.image && <Art img={p.image} sizes="(min-width: 1200px) 448px, (min-width: 768px) 384px, 320px" />}
-        </div>
-        <div class="post__meta">
-          <span class="post__ctrl">
-            {p.kind === 'short' && p.video && <button class="post__play" type="button" aria-label="動画を再生"><span></span></button>}
+    {posts.map((p) => {
+      const embed = p.kind === 'short' ? embedOf(p.links) : undefined;
+      return (
+        <li class="post">
+          <div class="phone">
+            <div class="phone__body">
+              <div class:list={['phone__screen', `phone__screen--${p.kind}`]}>
+                {p.image && <Art img={p.image} class="phone__backdrop" sizes="160px" decorative />}
+                {p.image && <Art img={p.image} class="phone__media" sizes="(min-width: 1200px) 288px, (min-width: 768px) 256px, 232px" decorative={Boolean(embed)} />}
+                {embed && (
+                  <button class="phone__play" type="button" data-embed={embed} data-title={`${label} のショート動画`} aria-label={`${label} のショート動画を再生`}>
+                    <span class="phone__play-icon"><span></span></span>
+                  </button>
+                )}
+                <span class="phone__island" aria-hidden="true"></span>
+              </div>
+            </div>
+          </div>
+          <div class="post__meta">
             <span class="t-label">{p.kind === 'short' ? 'Short' : 'Photo'}</span>
-          </span>
-          {p.links.length > 0 && (
-            <span class="post__links">{p.links.map((l) => <SnsIcon platform={l.platform} href={l.url} post />)}</span>
-          )}
-        </div>
-      </li>
-    ))}
+            {p.links.length > 0 && (
+              <span class="post__links">{p.links.map((l) => <SnsIcon platform={l.platform} href={l.url} post />)}</span>
+            )}
+          </div>
+        </li>
+      );
+    })}
   </ul>
 </div>
