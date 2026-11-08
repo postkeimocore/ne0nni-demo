@@ -205,12 +205,15 @@ const jsonLd = [
 
   .wd-pager { padding-bottom: var(--section-gap); }
   .wd-pager__grid { align-items: center; row-gap: var(--space-4); }
+  /* flex, so the links don't sit on a line of text: a line adds the space under the letters to the Prev side
+     only (its first item is the picture), and the two sides no longer line up */
+  .wd-pager__prev, .wd-pager__next { display: flex; }
   .wd-pager__prev { grid-column: 1 / span 2; }
   .wd-pager__all { display: none; }
   .wd-pager__next { grid-column: 3 / span 2; justify-self: end; }
   @media (min-width: 768px) {
     .wd-pager__prev { grid-column: 1 / span 3; }
-    .wd-pager__all { display: block; grid-column: 4 / span 2; justify-self: center; }
+    .wd-pager__all { display: flex; grid-column: 4 / span 2; justify-self: center; }
     .wd-pager__next { grid-column: 6 / span 3; }
   }
   @media (min-width: 1200px) {
