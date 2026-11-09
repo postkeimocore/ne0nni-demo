@@ -6,12 +6,12 @@ import type { IconName } from './icons';
  */
 export const TOPIC_ICON = {
   series: 'books',
-  works: 'stylus',            // the Works headings and the "Work" label (Original / Tribute)
+  works: 'stylus-hand',       // the Works headings and the "Work" label (Original / Tribute): the hand drawing (2026-11-09)
   character: 'character',
   music: 'cd',
   gear: 'headphones',         // turned slightly, with the cable
   posts: 'phone',             // the posts of a work, and SNS
   contact: 'letter',
-  business: 'stylus-hand',
+  business: 'stylus',        // the pen alone: the hand went to Works (2026-11-09)
 } as const satisfies Record<string, IconName>;
 export type Topic = keyof typeof TOPIC_ICON;

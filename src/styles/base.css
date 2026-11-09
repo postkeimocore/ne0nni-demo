@@ -97,7 +97,7 @@ ul, ol { list-style: none; }
    No fill, no blur (2026-11-09). The logo and nav sit straight on the page with a 2px keyline in the color of the
    ground under the header (paper / mist / night, set by site.js). On plain ground the keyline is not seen; where a
    picture or a line passes behind, the letters keep a gap round them, as lines do where they cross in the drawings
-   (4-10). On a night ground the logo and nav turn paper. */
+   (4-10). On a night ground the logo and nav turn paper. Round the keyline runs the edge line (below). */
 .site-header {
   position: sticky; top: 0; z-index: 20;
   height: var(--header-h);
@@ -111,6 +111,13 @@ ul, ol { list-style: none; }
   filter: drop-shadow(var(--keyline-w) 0 0 var(--keyline)) drop-shadow(calc(var(--keyline-w) * -1) 0 0 var(--keyline))
           drop-shadow(0 var(--keyline-w) 0 var(--keyline)) drop-shadow(0 calc(var(--keyline-w) * -1) 0 var(--keyline));
 }
+/* the edge (2026-11-09): one 1px line just outside the keyline, in difference, so it turns to the opposite of what
+   is behind it: dark on paper and mist, light on night, the inverse colours on a drawing. Like the cable, the logo
+   reads as drawn with two lines. A copy of the header (site.js) laid over it; the line is the SVG filter #edge-line
+   (radius 2 = --keyline-w, radius 3 = the keyline and the 1px line). */
+.site-edge { margin-top: calc(var(--header-h) * -1); mix-blend-mode: difference; pointer-events: none; }
+.site-edge > * { filter: url(#edge-line); }
+.edge-defs { position: absolute; width: 0; height: 0; overflow: hidden; }
 .site-header .logo { height: var(--logo-h); transition: opacity var(--dur-1) var(--ease-out); }
 .site-header.is-masthead .logo { opacity: 0; }
 .site-nav { display: flex; gap: var(--space-5); }

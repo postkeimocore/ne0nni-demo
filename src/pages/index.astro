@@ -181,7 +181,10 @@ const jsonLd = [
   .looks__start { position: absolute; right: calc(var(--grid-margin) * -1 - var(--space-6)); top: calc(var(--block-gap) * -1); width: 1px; height: 1px; }
   /* no ground under the headings and the data: the cable shows behind them (2026-11-09). Where it crosses a letter,
      the letter keeps a 2px gap of the ground round it, as one line passes behind another in the drawings */
-  .look :global(.chapter), .look__info { -webkit-text-stroke: 4px var(--color-mist); paint-order: stroke fill; }
+  .look :global(.chapter), .look__info, .look__info :global(.go) { -webkit-text-stroke: 4px var(--color-mist); paint-order: stroke fill; }
+  /* Safari paints a visited link's stroke with the link's own visited colour, which the parent's stroke leaves at
+     the text colour: the label of a work already seen turned into black blobs (2026-11-09). Set it on the link. */
+  .look__info :global(.go:visited) { -webkit-text-stroke-color: var(--color-mist); }
   .look__body { margin-top: var(--block-gap); row-gap: var(--space-6); align-items: end; }
   .look__art { display: block; grid-column: 1 / -1; }
   .look__info { grid-column: 1 / -1; display: grid; gap: var(--space-5); align-content: end; }

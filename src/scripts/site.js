@@ -92,9 +92,23 @@ export default function site() {
     window.addEventListener('scroll', queue, { passive: true });
     window.addEventListener('resize', queue);
     ground();
+
+    // the edge line (4-10): a copy of the header laid over it, each mark drawn by #edge-line as one 1px line, in difference
+    const edge = hdr.cloneNode(true);
+    edge.removeAttribute('data-ground');
+    edge.classList.add('site-edge');
+    edge.setAttribute('aria-hidden', 'true');
+    edge.inert = true;
+    edge.querySelectorAll('[id], [data-menu-open], [role], [aria-label]').forEach((el) => {
+      ['id', 'data-menu-open', 'role', 'aria-label'].forEach((a) => el.removeAttribute(a));
+    });
+    hdr.after(edge);
+    new MutationObserver(() => edge.classList.toggle('is-masthead', hdr.classList.contains('is-masthead')))
+      .observe(hdr, { attributes: true, attributeFilter: ['class'] });
   }
 
   // ---------- cable line: one line threads behind the works, drawn with scroll ----------
+  const HEAD_SP = 0.35;
   document.querySelectorAll('[data-cable]').forEach((host) => {
     const NS = 'http://www.w3.org/2000/svg';
     const svg = document.createElementNS(NS, 'svg');
@@ -136,7 +150,9 @@ export default function site() {
       if (!len) return;
       const r = host.getBoundingClientRect();
       const vh = window.innerHeight;
-      let t = (vh * 0.7 - r.top) / r.height;
+      // the line's head sits 70% down the screen; on phones the words run over the line, so it sits higher and
+      // the part you read next is still clear (2026-11-09)
+      let t = (vh * (window.innerWidth < 768 ? HEAD_SP : 0.7) - r.top) / r.height;
       t = reduce ? 1 : Math.min(1, Math.max(0, t));
       [out, inn].forEach((p) => { p.style.strokeDashoffset = `${len * (1 - t)}`; });
       const pt = out.getPointAtLength(len * t);
