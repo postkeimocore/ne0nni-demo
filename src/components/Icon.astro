@@ -1,16 +1,19 @@
 ---
 /**
- * A NE0NNi* icon, drawn inline so its colors come from tokens.css (design-system.md 4-9).
- * Decorative: the words next to it say the same thing. night: the version drawn for black grounds.
- * Path data: src/lib/icons.ts (scripts/make-icons.py from ../SNS/icons/svg).
+ * A NE0NNi* icon (drawn in Illustrator; scripts/make-icons.py → public/icons/{name}.svg), shown beside a heading
+ * or a label. Decorative: the words next to it say the same thing.
+ * The drawing is referenced with <use>, so a page that repeats an icon (the work data on HOME) loads it once.
+ * Colors come from tokens.css through --icon-fill / --icon-ink. The lines are as drawn (never thickened here).
+ *   topic  the heading it stands beside (src/lib/icon-topics.ts), or name for a drawing by its own name
+ *   size   label (16px) / title (24px) / display (32px, 40px from TB): the height of the drawn shape
+ *   night  the version drawn for black grounds
  */
 import { ICONS, type IconName } from '../lib/icons';
-interface Props { name: IconName; night?: boolean; class?: string }
-const { name, night = false, class: cls } = Astro.props;
-const s = ICONS[name][night ? 'night' : 'day'];
-const [x, y, w, h] = s.box;
+import { TOPIC_ICON, type Topic } from '../lib/icon-topics';
+interface Props { topic?: Topic; name?: IconName; size?: 'label' | 'title' | 'display'; night?: boolean; class?: string }
+const { topic, name, size, night = false, class: cls } = Astro.props;
+const icon: IconName = name ?? TOPIC_ICON[topic!];
+const variant = night ? 'night' : 'day';
+const [x, y, w, h] = ICONS[icon][variant];
 ---
-<svg class:list={['icon', night && 'icon--night', cls]} viewBox={`${x} ${y} ${w} ${h}`} style={`aspect-ratio: ${w} / ${h}`} aria-hidden="true" focusable="false">
-  <path class="icon__fill" d={s.fill} />
-  <path class="icon__ink" d={s.ink} />
-</svg>
+<svg class:list={['icon', size && `icon--${size}`, night && 'icon--night', cls]} viewBox={`${x} ${y} ${w} ${h}`} style={`aspect-ratio: ${w} / ${h}`} aria-hidden="true" focusable="false"><use href={`/icons/${icon}.svg#${variant}`} /></svg>

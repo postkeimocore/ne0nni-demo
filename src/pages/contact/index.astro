@@ -1,6 +1,7 @@
 ---
 import Base from '../../layouts/Base.astro';
 import NightBlock from '../../components/NightBlock.astro';
+import Icon from '../../components/Icon.astro';
 import { getWorks, label } from '../../lib/cms';
 
 const works = await getWorks();
@@ -12,7 +13,7 @@ const siteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY as string | undefined;
 
   <header class="page-head l-container">
     <div class="l-grid page-head__grid">
-      <h1 class="t-display-1 page-head__title">Contact</h1>
+      <h1 class="t-display-1 page-head__title with-icon with-icon--display">Contact<Icon topic="contact" size="display" /></h1>
       <div class="page-head__lead">
         <p class="t-body">制作のご依頼、PR、コラボレーション、作品の利用について、企業・アーティストの方からのお問い合わせを受け付けています。内容を確認のうえ、メールでご連絡します。</p>
       </div>

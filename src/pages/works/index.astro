@@ -2,6 +2,8 @@
 import Base from '../../layouts/Base.astro';
 import Art from '../../components/Art.astro';
 import NightBlock from '../../components/NightBlock.astro';
+import Icon from '../../components/Icon.astro';
+import type { Topic } from '../../lib/icon-topics';
 import { getWorks, getSeries, getCharacters, getGear, characterName, filterKey, keysOf, KIND_LABEL, label, pathOf } from '../../lib/cms';
 import type { Track, WorkKind } from '../../lib/types';
 
@@ -17,11 +19,11 @@ const gear = await getGear();
 // A button that would show every work (or none) is left out: it would not narrow anything.
 // name: brand and artist names keep their own capitals.
 const groups = [
-  { title: 'Series', items: series.map((s) => ({ key: filterKey.series(s), label: s.name, n: count((w) => w.series.id === s.id) })) },
-  { title: 'Work', items: kinds.map((k) => ({ key: filterKey.kind(k), label: KIND_LABEL[k], n: count((w) => w.kind === k) })) },
-  { title: 'Character', items: characters.map((c) => ({ key: filterKey.character(c), label: characterName(c), n: count((w) => w.character?.id === c.id) })) },
-  { title: 'Music', name: true, items: artists.map((t) => ({ key: filterKey.music(t), label: t.artist, n: count((w) => w.music.some((x) => x.id === t.id)) })) },
-  { title: 'Gear', name: true, items: gear.map((g) => ({ key: filterKey.gear(g), label: `${g.brand} ${g.model}`, n: count((w) => w.gear.some((x) => x.id === g.id)) })) },
+  { title: 'Series', icon: 'series' as Topic, items: series.map((s) => ({ key: filterKey.series(s), label: s.name, n: count((w) => w.series.id === s.id) })) },
+  { title: 'Work', icon: 'works' as Topic, items: kinds.map((k) => ({ key: filterKey.kind(k), label: KIND_LABEL[k], n: count((w) => w.kind === k) })) },
+  { title: 'Character', icon: 'character' as Topic, items: characters.map((c) => ({ key: filterKey.character(c), label: characterName(c), n: count((w) => w.character?.id === c.id) })) },
+  { title: 'Music', icon: 'music' as Topic, name: true, items: artists.map((t) => ({ key: filterKey.music(t), label: t.artist, n: count((w) => w.music.some((x) => x.id === t.id)) })) },
+  { title: 'Gear', icon: 'gear' as Topic, name: true, items: gear.map((g) => ({ key: filterKey.gear(g), label: `${g.brand} ${g.model}`, n: count((w) => w.gear.some((x) => x.id === g.id)) })) },
 ]
   .map((g) => ({ ...g, items: g.items.filter((it) => it.n > 0 && it.n < works.length) }))
   .filter((g) => g.items.length);
@@ -42,7 +44,7 @@ const jsonLd = {
 
   <header class="page-head l-container">
     <div class="l-grid page-head__grid">
-      <h1 class="t-display-1 page-head__title">Works</h1>
+      <h1 class="t-display-1 page-head__title with-icon with-icon--display">Works<Icon topic="works" size="display" /></h1>
       <div class="page-head__lead">
         <p class="t-body">号数は、シリーズをまたいだ公開順の通し番号です。Work・Character・Music・Gear で絞り込めます。</p>
       </div>
@@ -57,7 +59,7 @@ const jsonLd = {
         </div>
         {groups.map((g) => (
           <div class="filter__group">
-            <span class="filter__title t-label" aria-hidden="true">{g.title}</span>
+            <span class="filter__title t-label with-icon" aria-hidden="true">{g.title}<Icon topic={g.icon} size="label" /></span>
             <span class="filter__items">
               {g.items.map((it) => (
                 <button class:list={['filter__btn t-label', g.name && 'is-name']} type="button" aria-pressed="false" data-key={it.key} aria-label={`${g.title}：${it.label}（${it.n}）`}>{it.label}<span class="filter__count">{it.n}</span></button>
@@ -98,7 +100,7 @@ const jsonLd = {
   .filter__group { display: grid; gap: var(--space-2); align-items: center; }
   .filter__items { display: flex; flex-wrap: wrap; gap: var(--space-2); }
   @media (min-width: 768px) {
-    .filter__group { grid-template-columns: 96px minmax(0, 1fr); column-gap: var(--space-3); }
+    .filter__group { grid-template-columns: 112px minmax(0, 1fr); column-gap: var(--space-3); }
     .filter__group--all { grid-template-columns: none; justify-items: start; }
   }
   .works__count span { font-variant-numeric: tabular-nums; }

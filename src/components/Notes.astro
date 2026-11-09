@@ -8,6 +8,7 @@ import { characterName, filterKey, KIND_LABEL, worksWith } from '../lib/cms';
 import Art from './Art.astro';
 import Go from './Go.astro';
 import GearList from './GearList.astro';
+import Icon from './Icon.astro';
 interface Props { work: Work; works: Work[] }
 const { work, works } = Astro.props;
 const n = (pred: (w: Work) => boolean) => works.filter(pred).length;
@@ -19,7 +20,7 @@ const gearCount = Object.fromEntries(work.gear.map((g) => [g.id, n((w) => w.gear
 <div class="notes l-grid">
   {(c || work.tribute) && (
     <section class="note" aria-labelledby="note-character">
-      <h2 class="note__h t-grotesk-title" id="note-character">Character</h2>
+      <h2 class="note__h t-grotesk-title with-icon" id="note-character">Character<Icon topic="character" size="title" /></h2>
       {c && (
         <div class="note__chara">
           {c.image && <span class="note__thumb"><Art img={c.image} sizes="96px" decorative /></span>}
@@ -47,7 +48,7 @@ const gearCount = Object.fromEntries(work.gear.map((g) => [g.id, n((w) => w.gear
 
   {work.music.length > 0 && (
     <section class="note" aria-labelledby="note-music">
-      <h2 class="note__h t-grotesk-title" id="note-music">Music</h2>
+      <h2 class="note__h t-grotesk-title with-icon" id="note-music">Music<Icon topic="music" size="title" /></h2>
       <ul class="data-list">
         {work.music.map((t) => {
           const count = n((w) => w.music.some((x) => x.id === t.id));
@@ -66,7 +67,7 @@ const gearCount = Object.fromEntries(work.gear.map((g) => [g.id, n((w) => w.gear
 
   {work.gear.length > 0 && (
     <section class="note" aria-labelledby="note-gear">
-      <h2 class="note__h t-grotesk-title" id="note-gear">Gear</h2>
+      <h2 class="note__h t-grotesk-title with-icon" id="note-gear">Gear<Icon topic="gear" size="title" /></h2>
       <GearList gear={work.gear} counts={gearCount} min={2} />
     </section>
   )}

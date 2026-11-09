@@ -15,7 +15,7 @@ const { gear, counts = {}, min = 1 } = Astro.props;
 <ul class="data-list">
   {gear.map((g) => (
     <li class="data-item">
-      {g.thumb ? <Art img={g.thumb} sizes="64px" class="data-item__thumb" decorative /> : <span class="data-item__thumb data-item__thumb--type" aria-hidden="true"><Icon name="headphones" /></span>}
+      {g.thumb ? <Art img={g.thumb} sizes="64px" class="data-item__thumb" decorative /> : <span class="data-item__thumb data-item__thumb--type" aria-hidden="true"><Icon topic="gear" /></span>}
       <div class="data-item__body">
         <dl class="t-grotesk-data"><dt class="t-label">Brand</dt><dd>{g.brand}</dd><dt class="t-label">Model</dt><dd>{g.model}</dd></dl>
         {(counts[g.id] ?? 0) >= min && (

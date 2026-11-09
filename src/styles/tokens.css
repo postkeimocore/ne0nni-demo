@@ -100,7 +100,7 @@
   --radius-frame: 48px;
   --thumb: 64px;
   /* NE0NNi* icons placed as a spot drawing beside a section's text (height; width follows the drawing) */
-  --icon-spot: 96px;
+  --icon-display: 32px;   /* NE0NNi* icon beside a display heading (labels and titles: the line height) */
   /* the phone the SNS posts play on (width of the body, corner radius) */
   --phone-w: 232px;
   --phone-r: 40px;
@@ -131,7 +131,7 @@
     --fs-lead: 24px;       --lh-lead: 48px;
 
     --header-h: 64px;
-    --icon-spot: 128px;
+    --icon-display: 40px;
     --logo-h: 20px;
     --chapter-h: 64px;
     --phone-w: 256px;
