@@ -94,37 +94,23 @@ ul, ol { list-style: none; }
 }
 
 /* ---------- header ----------
-   No band. The logo and nav sit on the page; once it scrolls, a veil under them blurs the page and fades it into
-   the ground (paper / mist / night, chosen by the script from the section under the header), so nothing is cut
-   along a line (4-10). On a night ground the logo and nav turn paper. */
+   No fill, no blur (2026-11-09). The logo and nav sit straight on the page with a 2px keyline in the color of the
+   ground under the header (paper / mist / night, set by site.js). On plain ground the keyline is not seen; where a
+   picture or a line passes behind, the letters keep a gap round them, as lines do where they cross in the drawings
+   (4-10). On a night ground the logo and nav turn paper. */
 .site-header {
   position: sticky; top: 0; z-index: 20;
   height: var(--header-h);
   display: flex; align-items: center; justify-content: space-between;
   padding-inline: var(--grid-margin);
-  --veil: var(--veil-paper); --veil-grain: var(--grain-light);
-  transition: color var(--dur-1) var(--ease-out);
+  --keyline: var(--color-paper);
 }
-.site-header[data-ground="mist"] { --veil: var(--veil-mist); }
-.site-header[data-ground="night"] { --veil: var(--veil-night); --veil-grain: var(--grain-dark); color: var(--color-paper); }
-.site-header::before, .site-header::after {
-  content: ""; position: absolute; z-index: -1; left: 0; right: 0; top: 0;
-  height: calc(var(--header-h) + var(--veil-fade));
-  opacity: 0; pointer-events: none;
-  transition: opacity var(--dur-1) var(--ease-out), background-color var(--dur-1) var(--ease-out);
+.site-header[data-ground="mist"] { --keyline: var(--color-mist); }
+.site-header[data-ground="night"] { --keyline: var(--color-ink); color: var(--color-paper); }
+.site-header > * {
+  filter: drop-shadow(var(--keyline-w) 0 0 var(--keyline)) drop-shadow(calc(var(--keyline-w) * -1) 0 0 var(--keyline))
+          drop-shadow(0 var(--keyline-w) 0 var(--keyline)) drop-shadow(0 calc(var(--keyline-w) * -1) 0 var(--keyline));
 }
-/* the blur, only behind the logo and nav */
-.site-header::before {
-  -webkit-backdrop-filter: blur(var(--veil-blur)); backdrop-filter: blur(var(--veil-blur));
-  -webkit-mask-image: var(--veil-blur-mask); mask-image: var(--veil-blur-mask);
-}
-/* the ground's color and grain over it, fading out below the header */
-.site-header::after {
-  background-color: var(--veil);
-  background-image: var(--veil-grain); background-size: 256px 256px; background-attachment: fixed;
-  -webkit-mask-image: var(--veil-mask); mask-image: var(--veil-mask);
-}
-.site-header.is-scrolled::before, .site-header.is-scrolled::after { opacity: 1; }
 .site-header .logo { height: var(--logo-h); transition: opacity var(--dur-1) var(--ease-out); }
 .site-header.is-masthead .logo { opacity: 0; }
 .site-nav { display: flex; gap: var(--space-5); }

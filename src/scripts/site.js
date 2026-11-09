@@ -77,7 +77,7 @@ export default function site() {
     new IntersectionObserver(([e]) => header.classList.toggle('is-masthead', e.isIntersecting), { rootMargin: '-80px 0px 0px 0px' }).observe(masthead);
   }
 
-  // ---------- header veil: shown once the page scrolls, in the color of the ground under the header (4-10) ----------
+  // ---------- header: the ground under it sets the keyline color, and paper letters on night (4-10) ----------
   const hdr = document.querySelector('.site-header');
   if (hdr) {
     const grounds = [...document.querySelectorAll('.is-night, .l-mist')];
@@ -87,7 +87,6 @@ export default function site() {
       const y = hdr.offsetHeight / 2;
       const g = grounds.find((el) => { const r = el.getBoundingClientRect(); return r.top <= y && r.bottom > y && r.width >= window.innerWidth * 0.9; });
       hdr.dataset.ground = g ? (g.classList.contains('is-night') ? 'night' : 'mist') : 'paper';
-      hdr.classList.toggle('is-scrolled', window.scrollY > 0);
     };
     const queue = () => { if (!queued) { queued = true; requestAnimationFrame(ground); } };
     window.addEventListener('scroll', queue, { passive: true });

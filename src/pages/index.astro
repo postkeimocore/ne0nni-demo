@@ -179,8 +179,9 @@ const jsonLd = [
   .looks { display: grid; row-gap: var(--section-gap); }
   /* the cable comes in from beyond the right edge, threads behind each work and ends at the link */
   .looks__start { position: absolute; right: calc(var(--grid-margin) * -1 - var(--space-6)); top: calc(var(--block-gap) * -1); width: 1px; height: 1px; }
-  /* chapter bands are opaque, so the cable passes behind them like behind the pictures */
-  .look :global(.chapter), .look__info { background-color: var(--color-mist); background-image: var(--grain-light); background-size: 256px 256px; background-attachment: fixed; }
+  /* no ground under the headings and the data: the cable shows behind them (2026-11-09). Where it crosses a letter,
+     the letter keeps a 2px gap of the ground round it, as one line passes behind another in the drawings */
+  .look :global(.chapter), .look__info { -webkit-text-stroke: 4px var(--color-mist); paint-order: stroke fill; }
   .look__body { margin-top: var(--block-gap); row-gap: var(--space-6); align-items: end; }
   .look__art { display: block; grid-column: 1 / -1; }
   .look__info { grid-column: 1 / -1; display: grid; gap: var(--space-5); align-content: end; }
