@@ -77,7 +77,7 @@ export default function site() {
     new IntersectionObserver(([e]) => header.classList.toggle('is-masthead', e.isIntersecting), { rootMargin: '-80px 0px 0px 0px' }).observe(masthead);
   }
 
-  // ---------- header: the ground under it sets the keyline color, and paper letters on night (4-10) ----------
+  // ---------- header: paper letters on a night ground (4-10) ----------
   const hdr = document.querySelector('.site-header');
   if (hdr) {
     const grounds = [...document.querySelectorAll('.is-night, .l-mist')];
@@ -92,19 +92,6 @@ export default function site() {
     window.addEventListener('scroll', queue, { passive: true });
     window.addEventListener('resize', queue);
     ground();
-
-    // the edge line (4-10): a copy of the header laid over it, each mark drawn by #edge-line as one 1px line, in difference
-    const edge = hdr.cloneNode(true);
-    edge.removeAttribute('data-ground');
-    edge.classList.add('site-edge');
-    edge.setAttribute('aria-hidden', 'true');
-    edge.inert = true;
-    edge.querySelectorAll('[id], [data-menu-open], [role], [aria-label]').forEach((el) => {
-      ['id', 'data-menu-open', 'role', 'aria-label'].forEach((a) => el.removeAttribute(a));
-    });
-    hdr.after(edge);
-    new MutationObserver(() => edge.classList.toggle('is-masthead', hdr.classList.contains('is-masthead')))
-      .observe(hdr, { attributes: true, attributeFilter: ['class'] });
   }
 
   // ---------- cable line: one line threads behind the works, drawn with scroll ----------

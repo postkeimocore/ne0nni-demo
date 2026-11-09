@@ -31,9 +31,6 @@
   --grain-light: url(assets/grain-light.png);  /* fine dark specks on paper / mist */
   --grain-dark: url(assets/grain-dark.png);    /* fine light specks on the night section */
 
-  /* header keyline (4-10): the gap of ground round the logo and nav where something passes behind them */
-  --keyline-w: 2px;
-
   /* grid checker (debug overlay only) */
   --checker-col: rgba(255, 0, 128, .08);
   --checker-col-edge: rgba(255, 0, 128, .35);
