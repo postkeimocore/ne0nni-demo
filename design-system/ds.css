@@ -93,14 +93,25 @@ ul, ol { list-style: none; }
 
 /* ---------- header ----------
    No fill, no blur, no edge round the letters (2026-11-09: the white keyline and the line outside it were taken
-   off by the user). The logo and nav sit straight on the page. On a night ground (set by site.js) they turn paper. */
+   off by the user). The logo and nav sit straight on the page. Each letter is black over light things and white
+   over dark ones (2026-11-09, the user: turn white over black things), part by part: only the part of a letter over
+   a night ground, black letters, a cable line or a dark part of a drawing turns white. Lavender art and mist stay
+   under black letters. Three copies of the header (site.js) sit under it and turn what is behind each letter into
+   black or white: grey (color), then color-burn and color-dodge at mid grey; the header is paper in difference and
+   flips it. Without the script the letters are paper in difference (the plain inverse). */
 .site-header {
   position: sticky; top: 0; z-index: 20;
   height: var(--header-h);
   display: flex; align-items: center; justify-content: space-between;
   padding-inline: var(--grid-margin);
+  color: var(--color-paper);
+  mix-blend-mode: difference;
 }
-.site-header[data-ground="night"] { color: var(--color-paper); }
+.site-header :focus-visible { outline-color: currentColor; }
+.site-header--layer { z-index: 19; margin-top: calc(var(--header-h) * -1); pointer-events: none; }
+.site-header--layer.is-grey { color: var(--header-mid); mix-blend-mode: color; }
+.site-header--layer.is-burn { color: var(--header-mid); mix-blend-mode: color-burn; }
+.site-header--layer.is-dodge { color: var(--header-step); mix-blend-mode: color-dodge; }
 .site-header .logo { height: var(--logo-h); transition: opacity var(--dur-1) var(--ease-out); }
 .site-header.is-masthead .logo { opacity: 0; }
 .site-nav { display: flex; gap: var(--space-5); }

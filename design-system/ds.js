@@ -73,21 +73,29 @@
     }, { rootMargin: '-80px 0px 0px 0px' }).observe(masthead);
   }
 
-  // header — paper letters on a night ground (4-10)
+  // header letters: black over light things, white over dark ones (4-10)
+  // Three copies of the header under it turn what is behind each letter into black or white; the header flips that.
   const hdr = document.querySelector('.site-header');
   if (hdr) {
-    const grounds = [...document.querySelectorAll('.is-night, .l-mist')];
-    let queued = false;
-    const ground = () => {
-      queued = false;
-      const y = hdr.offsetHeight / 2;
-      const g = grounds.find((el) => { const r = el.getBoundingClientRect(); return r.top <= y && r.bottom > y && r.width >= window.innerWidth * 0.9; });
-      hdr.dataset.ground = g ? (g.classList.contains('is-night') ? 'night' : 'mist') : 'paper';
-    };
-    const queue = () => { if (!queued) { queued = true; requestAnimationFrame(ground); } };
-    window.addEventListener('scroll', queue, { passive: true });
-    window.addEventListener('resize', queue);
-    ground();
+    const layers = ['grey', 'burn', 'dodge'].map((k) => {
+      const l = hdr.cloneNode(true);
+      l.classList.add('site-header--layer', `is-${k}`);
+      l.setAttribute('aria-hidden', 'true');
+      l.inert = true;
+      l.querySelectorAll('[id], [data-menu-open], [role], [aria-label], [aria-controls], [aria-expanded]').forEach((el) => {
+        ['id', 'data-menu-open', 'role', 'aria-label', 'aria-controls', 'aria-expanded'].forEach((a) => el.removeAttribute(a));
+      });
+      return l;
+    });
+    hdr.after(...layers);
+    new MutationObserver(() => layers.forEach((l) => l.classList.toggle('is-masthead', hdr.classList.contains('is-masthead'))))
+      .observe(hdr, { attributes: true, attributeFilter: ['class'] });
+    // the hover underline is drawn in the copies too
+    hdr.querySelectorAll('.site-nav a').forEach((a, i) => {
+      const mirror = (on) => layers.forEach((l) => l.querySelectorAll('.site-nav a')[i].classList.toggle('is-hover', on));
+      a.addEventListener('pointerenter', () => mirror(true));
+      a.addEventListener('pointerleave', () => mirror(false));
+    });
   }
 
   // cable line — drawn with scroll, an asterisk travels along it

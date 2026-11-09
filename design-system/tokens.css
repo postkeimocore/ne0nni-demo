@@ -11,6 +11,10 @@
   --color-field: #8A8A94;
   --color-rule-soft: #D4D4DC;
 
+  /* header letters (4-10). Not colours anyone sees: the steps that turn what is behind a letter into black or white */
+  --header-mid: #808080;  /* mid grey: darker than this turns the letter white */
+  --header-step: #E6E6E6; /* how sharp the switch is (from mid grey to about 55%) */
+
   /* light (decoration only, taken from the artwork) */
   --color-glint-violet-lt: #B8C0F8; /* lit jacket highlight */
   --color-glint-cyan: #B8F0F0;     /* phone-screen glow of No.001 */
