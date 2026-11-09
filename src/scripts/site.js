@@ -77,6 +77,24 @@ export default function site() {
     new IntersectionObserver(([e]) => header.classList.toggle('is-masthead', e.isIntersecting), { rootMargin: '-80px 0px 0px 0px' }).observe(masthead);
   }
 
+  // ---------- header veil: shown once the page scrolls, in the color of the ground under the header (4-10) ----------
+  const hdr = document.querySelector('.site-header');
+  if (hdr) {
+    const grounds = [...document.querySelectorAll('.is-night, .l-mist')];
+    let queued = false;
+    const ground = () => {
+      queued = false;
+      const y = hdr.offsetHeight / 2;
+      const g = grounds.find((el) => { const r = el.getBoundingClientRect(); return r.top <= y && r.bottom > y && r.width >= window.innerWidth * 0.9; });
+      hdr.dataset.ground = g ? (g.classList.contains('is-night') ? 'night' : 'mist') : 'paper';
+      hdr.classList.toggle('is-scrolled', window.scrollY > 0);
+    };
+    const queue = () => { if (!queued) { queued = true; requestAnimationFrame(ground); } };
+    window.addEventListener('scroll', queue, { passive: true });
+    window.addEventListener('resize', queue);
+    ground();
+  }
+
   // ---------- cable line: one line threads behind the works, drawn with scroll ----------
   document.querySelectorAll('[data-cable]').forEach((host) => {
     const NS = 'http://www.w3.org/2000/svg';

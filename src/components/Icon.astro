@@ -6,14 +6,15 @@
  * Colors come from tokens.css through --icon-fill / --icon-ink. The lines are as drawn (never thickened here).
  *   topic  the heading it stands beside (src/lib/icon-topics.ts), or name for a drawing by its own name
  *   size   label (16px) / title (24px) / display (32px, 40px from TB): the height of the drawn shape
- *   night  the version drawn for black grounds
+ *   line   the drawing with a white inside and black lines. Unused: the site shows the black-filled one (solid)
+ *          on every ground, white and black (2026-11-09)
  */
 import { ICONS, type IconName } from '../lib/icons';
 import { TOPIC_ICON, type Topic } from '../lib/icon-topics';
-interface Props { topic?: Topic; name?: IconName; size?: 'label' | 'title' | 'display'; night?: boolean; class?: string }
-const { topic, name, size, night = false, class: cls } = Astro.props;
+interface Props { topic?: Topic; name?: IconName; size?: 'label' | 'title' | 'display'; line?: boolean; class?: string }
+const { topic, name, size, line = false, class: cls } = Astro.props;
 const icon: IconName = name ?? TOPIC_ICON[topic!];
-const variant = night ? 'night' : 'day';
+const variant = line ? 'line' : 'solid';
 const [x, y, w, h] = ICONS[icon][variant];
 ---
-<svg class:list={['icon', size && `icon--${size}`, night && 'icon--night', cls]} viewBox={`${x} ${y} ${w} ${h}`} style={`aspect-ratio: ${w} / ${h}`} preserveAspectRatio="xMinYMid meet" aria-hidden="true" focusable="false"><use href={`/icons/${icon}.svg#${variant}`} /></svg>
+<svg class:list={['icon', size && `icon--${size}`, line && 'icon--line', cls]} viewBox={`${x} ${y} ${w} ${h}`} style={`aspect-ratio: ${w} / ${h}`} preserveAspectRatio="xMinYMid meet" aria-hidden="true" focusable="false"><use href={`/icons/${icon}.svg#${variant}`} /></svg>

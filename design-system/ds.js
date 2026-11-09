@@ -73,6 +73,24 @@
     }, { rootMargin: '-80px 0px 0px 0px' }).observe(masthead);
   }
 
+  // header veil — shown once the page scrolls, in the color of the ground under the header (4-10)
+  const hdr = document.querySelector('.site-header');
+  if (hdr) {
+    const grounds = [...document.querySelectorAll('.is-night, .l-mist')];
+    let queued = false;
+    const ground = () => {
+      queued = false;
+      const y = hdr.offsetHeight / 2;
+      const g = grounds.find((el) => { const r = el.getBoundingClientRect(); return r.top <= y && r.bottom > y && r.width >= window.innerWidth * 0.9; });
+      hdr.dataset.ground = g ? (g.classList.contains('is-night') ? 'night' : 'mist') : 'paper';
+      hdr.classList.toggle('is-scrolled', window.scrollY > 0);
+    };
+    const queue = () => { if (!queued) { queued = true; requestAnimationFrame(ground); } };
+    window.addEventListener('scroll', queue, { passive: true });
+    window.addEventListener('resize', queue);
+    ground();
+  }
+
   // cable line — drawn with scroll, an asterisk travels along it
   document.querySelectorAll('[data-cable]').forEach((wrap) => {
     const paths = wrap.querySelectorAll('.cable path');

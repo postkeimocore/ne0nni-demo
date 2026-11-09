@@ -150,8 +150,9 @@ const jsonLd = {
 </Base>
 
 <style>
-  .about-hero { padding-top: var(--space-8); }
-  @media (min-width: 768px) { .about-hero { padding-top: var(--space-9); } }
+  /* the night reaches the top of the screen: it starts under the header (4-10) */
+  .about-hero { margin-top: calc(var(--header-h) * -1); padding-top: calc(var(--space-8) + var(--header-h)); }
+  @media (min-width: 768px) { .about-hero { padding-top: calc(var(--space-9) + var(--header-h)); } }
   .about-hero__head { display: flex; align-items: flex-start; gap: var(--space-4); }
   .about-hero__body { grid-column: 1 / -1; display: grid; gap: var(--space-5); margin-top: var(--block-gap); }
   @media (min-width: 768px) { .about-hero__body { grid-column: 3 / -1; } }
