@@ -374,8 +374,14 @@ body, .site-header, .l-mist, .posts {
 .icon--label { height: var(--lh-label); }
 .icon--title { height: var(--lh-grotesk-title); }
 .icon--display { height: var(--icon-display); }
-.with-icon { display: flex; align-items: center; gap: var(--space-2); }
-.with-icon--display { align-items: baseline; gap: var(--space-3); }
+.with-icon { display: flex; align-items: baseline; gap: var(--space-2); }
+.with-icon > .icon { align-self: center; }
+.with-icon--display { gap: var(--space-3); }
+.with-icon--display > .icon { align-self: baseline; }
+/* labels stacked in a list (the work data, the WORKS filter): every icon gets the same slot, the drawing at its left,
+   so the words start at one x. A label there without an icon (Date) starts at the same x. */
+.with-icon--slot > .icon { width: var(--icon-slot); }
+.wdata--icons dt:not(.with-icon) { padding-left: calc(var(--icon-slot) + var(--space-2)); }
 .icons-block { row-gap: var(--space-5); }
 .icons-set { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(auto-fill, minmax(184px, 1fr)); gap: var(--space-5) var(--space-4); }
 .icon-spec { display: grid; gap: var(--space-2); justify-items: start; align-content: start; }

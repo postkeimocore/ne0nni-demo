@@ -475,7 +475,7 @@ section[id], [id^="look-"] { scroll-margin-top: var(--header-h); }
 .site-footer small { font-size: inherit; }
 
 /* ---------- NE0NNi* icons (design-system.md 4-9) ----------
-   Drawn by NE0NNi*, one drawing per meaning (src/lib/icon-topics.ts), on the right of the heading or label.
+   Drawn by NE0NNi*, one drawing per meaning (src/lib/icon-topics.ts), on the left of the heading or label.
    The box is the drawing's own bounds; the lines are as drawn. Colors from tokens through --icon-fill / --icon-ink. */
 .icon { display: block; flex: none; height: 1em; width: auto; --icon-fill: var(--color-paper); --icon-ink: var(--color-ink); }
 .icon--night { --icon-fill: var(--color-ink); --icon-ink: var(--color-paper); }
@@ -484,8 +484,16 @@ section[id], [id^="look-"] { scroll-margin-top: var(--header-h); }
 .icon--title { height: var(--lh-grotesk-title); }
 /* display headings: a small mark standing on the baseline, like the asterisk beside ABOUT */
 .icon--display { height: var(--icon-display); }
-.with-icon { display: flex; align-items: center; gap: var(--space-2); }
-.with-icon--display { align-items: baseline; gap: var(--space-3); }
+/* The icon comes first, but the line keeps the baseline of the words (only the words align to the baseline;
+   an icon has none, and as the first item it would give the label the baseline of its bottom edge) */
+.with-icon { display: flex; align-items: baseline; gap: var(--space-2); }
+.with-icon > .icon { align-self: center; }
+.with-icon--display { gap: var(--space-3); }
+.with-icon--display > .icon { align-self: baseline; }
+/* labels stacked in a list (the work data, the WORKS filter): every icon gets the same slot, the drawing at its left,
+   so the words start at one x. A label there without an icon (Date) starts at the same x. */
+.with-icon--slot > .icon { width: var(--icon-slot); }
+.wdata--icons dt:not(.with-icon) { padding-left: calc(var(--icon-slot) + var(--space-2)); }
 
 /* ---------- the way on (Go): a label and a round arrow on its right, used instead of text links ----------
    The circle is 48px (the hit area). It fills on hover; on night sections the colors swap. */

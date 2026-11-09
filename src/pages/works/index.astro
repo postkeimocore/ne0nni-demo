@@ -44,7 +44,7 @@ const jsonLd = {
 
   <header class="page-head l-container">
     <div class="l-grid page-head__grid">
-      <h1 class="t-display-1 page-head__title with-icon with-icon--display">Works<Icon topic="works" size="display" /></h1>
+      <h1 class="t-display-1 page-head__title with-icon with-icon--display"><Icon topic="works" size="display" />Works</h1>
       <div class="page-head__lead">
         <p class="t-body">号数は、シリーズをまたいだ公開順の通し番号です。Work・Character・Music・Gear で絞り込めます。</p>
       </div>
@@ -59,7 +59,7 @@ const jsonLd = {
         </div>
         {groups.map((g) => (
           <div class="filter__group">
-            <span class="filter__title t-label with-icon" aria-hidden="true">{g.title}<Icon topic={g.icon} size="label" /></span>
+            <span class="filter__title t-label with-icon with-icon--slot" aria-hidden="true"><Icon topic={g.icon} size="label" />{g.title}</span>
             <span class="filter__items">
               {g.items.map((it) => (
                 <button class:list={['filter__btn t-label', g.name && 'is-name']} type="button" aria-pressed="false" data-key={it.key} aria-label={`${g.title}：${it.label}（${it.n}）`}>{it.label}<span class="filter__count">{it.n}</span></button>

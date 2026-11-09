@@ -99,6 +99,7 @@
   --radius-frame: 48px;
   --thumb: 64px;
   --icon-display: 32px;   /* NE0NNi* icon beside a display heading (labels and titles: the line height) */
+  --icon-slot: 20px;      /* the width every icon gets in a stack of labels, so the words start at one x */
   /* the phone the SNS posts play on (width of the body, corner radius) */
   --phone-w: 232px;
   --phone-r: 40px;

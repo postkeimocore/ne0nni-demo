@@ -1,6 +1,6 @@
 ---
 /** Chapter heading (GLOBAL WORK): 1px rules above and below, number | title, an optional note on the right.
- *  icon: the NE0NNi* icon for the title's topic, on its right (design-system.md 4-9). */
+ *  icon: the NE0NNi* icon for the title's topic, on its left (design-system.md 4-9). */
 import Icon from './Icon.astro';
 import type { Topic } from '../lib/icon-topics';
 interface Props { no: string; title: string; tag?: 'h1' | 'h2' | 'h3'; id?: string; href?: string; icon?: Topic; class?: string }
@@ -8,6 +8,6 @@ const { no, title, tag: Tag = 'h2', id, href, icon, class: cls } = Astro.props;
 ---
 <div class:list={['chapter', cls]}>
   <span class="chapter__no t-number">{no}</span>
-  <Tag class:list={['chapter__title t-grotesk-title', icon && 'with-icon']} id={id}>{href ? <a class="chapter__link" href={href}>{title}</a> : title}{icon && <Icon topic={icon} size="title" />}</Tag>
+  <Tag class:list={['chapter__title t-grotesk-title', icon && 'with-icon']} id={id}>{icon && <Icon topic={icon} size="title" />}{href ? <a class="chapter__link" href={href}>{title}</a> : title}</Tag>
   {Astro.slots.has('default') && <span class="chapter__note"><slot /></span>}
 </div>

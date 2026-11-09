@@ -117,7 +117,7 @@ const jsonLd = [
     {work.posts.length > 0 && (
       <section class="l-section l-container wd-posts" aria-labelledby="posts-h">
         <div class="wd-posts__head">
-          <h2 class="t-display-3 with-icon with-icon--display" id="posts-h">Posts<Icon topic="posts" size="display" /></h2>
+          <h2 class="t-display-3 with-icon with-icon--display" id="posts-h"><Icon topic="posts" size="display" />Posts</h2>
           <p class="t-small">{label(work)} を SNS で公開した投稿です。</p>
         </div>
         <Posts posts={work.posts} label={label(work)} />
@@ -126,7 +126,7 @@ const jsonLd = [
 
     <section class="l-section l-container wd-contact" aria-labelledby="wd-contact-h">
       <div class="l-grid wd-contact__grid">
-        <h2 class="t-grotesk-title wd-contact__h with-icon" id="wd-contact-h">For business<Icon topic="business" size="title" /></h2>
+        <h2 class="t-grotesk-title wd-contact__h with-icon" id="wd-contact-h"><Icon topic="business" size="title" />For business</h2>
         <div class="wd-contact__body">
           <p class="t-body">この作品の利用や、同じシリーズでの制作のご依頼は、お問い合わせフォームからご連絡ください。</p>
           <p><a class="pill t-label" href={`/contact/?work=${work.id}`}>この作品について問い合わせる</a></p>

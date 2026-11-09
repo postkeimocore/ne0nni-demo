@@ -29,7 +29,7 @@
 
 ## 2026-11-09
 - 別セッションで作ったアイコン（ヘッドホン2種・ペン・ペンを持つ手）をサイトに入れた。ABOUT の Gear にヘッドホン、For business（ABOUT・作品詳細）にペンを持つ手、写真のないギアのサムネイルにヘッドホン。色は tokens から塗るよう、パスだけを `src/lib/icons.ts` に書き出した（`scripts/make-icons.py`）。正面のヘッドホンとペン単体は使っていない。見本ページにも載せた
-- アイコンを10種に増やし（キャラクター・カード・本・CD・スマホ・封筒を追加）、使い方を見出し・ラベルの横に小さく置く形に変えた。割り当ては Series＝本、Work(s)＝ペン、Character＝キャラクター、Music＝CD、Gear＝斜めのヘッドフォン、Posts・SNS＝スマホ、Contact＝封筒、For business＝ペンを持つ手（`src/lib/icon-topics.ts`）。ABOUT の章見出し、作品データ、作品のノート、WORKS の絞り込み、HOME・WORKS・CONTACT・作品詳細の大見出しに置いた。説明文の上の大きいアイコンは外した
+- アイコンを10種に増やし（キャラクター・カード・本・CD・スマホ・封筒を追加）、使い方を見出し・ラベルの横に小さく置く形に変えた。割り当ては Series＝本、Work(s)＝ペン、Character＝キャラクター、Music＝CD、Gear＝斜めのヘッドフォン、Posts・SNS＝スマホ、Contact＝封筒、For business＝ペンを持つ手（`src/lib/icon-topics.ts`）。ABOUT の章見出し、作品データ、作品のノート、WORKS の絞り込み、HOME・WORKS・CONTACT・作品詳細の大見出しの左に置いた（はじめ右に置いたが、ユーザーの指示で左に。作品データと絞り込みはアイコンの幅を 20px にそろえて文字の頭を揃えた）。説明文の上の大きいアイコンは外した
 - アイコンはページに書き込まず `public/icons/{name}.svg` を `<use>` で参照する形にした（HOME は作品データで15個並ぶため）。線は描いたまま太くしない（太くした案はユーザーの判断で不採用）
 - 作品データと絞り込みのラベルの列を 96px→112px（CHARACTER とアイコンが入る幅）。TB では大見出し（HOME の Works・Contact、WORKS・CONTACT のページ見出し）を行いっぱいにして、横の文章を下に回した。PC のページ見出しは 7列→8列（Contact とアイコンが入らないため）
 - `scripts/make-icons.py` のパスの読み取りを、絶対座標の C・Q などにも対応させた

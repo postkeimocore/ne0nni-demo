@@ -16,4 +16,4 @@ const icon: IconName = name ?? TOPIC_ICON[topic!];
 const variant = night ? 'night' : 'day';
 const [x, y, w, h] = ICONS[icon][variant];
 ---
-<svg class:list={['icon', size && `icon--${size}`, night && 'icon--night', cls]} viewBox={`${x} ${y} ${w} ${h}`} style={`aspect-ratio: ${w} / ${h}`} aria-hidden="true" focusable="false"><use href={`/icons/${icon}.svg#${variant}`} /></svg>
+<svg class:list={['icon', size && `icon--${size}`, night && 'icon--night', cls]} viewBox={`${x} ${y} ${w} ${h}`} style={`aspect-ratio: ${w} / ${h}`} preserveAspectRatio="xMinYMid meet" aria-hidden="true" focusable="false"><use href={`/icons/${icon}.svg#${variant}`} /></svg>

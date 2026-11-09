@@ -1,26 +1,26 @@
 ---
 /** Facts about a work as a data list: Series, Work (Original / Tribute), Character, Music, Gear, Date.
- *  Each label but Date has its NE0NNi* icon on the right (design-system.md 4-9). */
+ *  Each label but Date has its NE0NNi* icon on the left (design-system.md 4-9). */
 import type { Work } from '../lib/types';
 import { KIND_LABEL, trackName } from '../lib/cms';
 import Icon from './Icon.astro';
 interface Props { work: Work; class?: string }
 const { work, class: cls } = Astro.props;
 ---
-<dl class:list={['wdata', cls]}>
-  <div class="wdata__row"><dt class="t-label with-icon">Series<Icon topic="series" size="label" /></dt><dd class="t-grotesk-data">{work.series.name}</dd></div>
-  <div class="wdata__row"><dt class="t-label with-icon">Work<Icon topic="works" size="label" /></dt><dd class="t-grotesk-data">{KIND_LABEL[work.kind]}</dd></div>
+<dl class:list={['wdata wdata--icons', cls]}>
+  <div class="wdata__row"><dt class="t-label with-icon with-icon--slot"><Icon topic="series" size="label" />Series</dt><dd class="t-grotesk-data">{work.series.name}</dd></div>
+  <div class="wdata__row"><dt class="t-label with-icon with-icon--slot"><Icon topic="works" size="label" />Work</dt><dd class="t-grotesk-data">{KIND_LABEL[work.kind]}</dd></div>
   {work.character && (
-    <div class="wdata__row"><dt class="t-label with-icon">Character<Icon topic="character" size="label" /></dt><dd class="t-grotesk-data">{work.character.name}</dd></div>
+    <div class="wdata__row"><dt class="t-label with-icon with-icon--slot"><Icon topic="character" size="label" />Character</dt><dd class="t-grotesk-data">{work.character.name}</dd></div>
   )}
   {work.tribute && (
-    <div class="wdata__row"><dt class="t-label with-icon">Character<Icon topic="character" size="label" /></dt><dd class="t-grotesk-data t-ja">{work.tribute.character}（{work.tribute.title}）</dd></div>
+    <div class="wdata__row"><dt class="t-label with-icon with-icon--slot"><Icon topic="character" size="label" />Character</dt><dd class="t-grotesk-data t-ja">{work.tribute.character}（{work.tribute.title}）</dd></div>
   )}
   {work.music.length > 0 && (
-    <div class="wdata__row"><dt class="t-label with-icon">Music<Icon topic="music" size="label" /></dt><dd class="t-grotesk-data t-ja">{work.music.map(trackName).join(' / ')}</dd></div>
+    <div class="wdata__row"><dt class="t-label with-icon with-icon--slot"><Icon topic="music" size="label" />Music</dt><dd class="t-grotesk-data t-ja">{work.music.map(trackName).join(' / ')}</dd></div>
   )}
   {work.gear.length > 0 && (
-    <div class="wdata__row"><dt class="t-label with-icon">Gear<Icon topic="gear" size="label" /></dt><dd class="t-grotesk-data">{work.gear.map((g) => `${g.brand} ${g.model}`).join(' / ')}</dd></div>
+    <div class="wdata__row"><dt class="t-label with-icon with-icon--slot"><Icon topic="gear" size="label" />Gear</dt><dd class="t-grotesk-data">{work.gear.map((g) => `${g.brand} ${g.model}`).join(' / ')}</dd></div>
   )}
   {work.date && (
     <div class="wdata__row"><dt class="t-label">Date</dt><dd class="t-grotesk-data"><time datetime={work.date}>{work.date.replaceAll('-', '.')}</time></dd></div>
