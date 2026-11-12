@@ -40,15 +40,6 @@
     if (reduce) el.classList.add('is-in'); else io.observe(el);
   });
 
-  // filter — one pressed button per group
-  document.querySelectorAll('.filter').forEach((group) => {
-    group.addEventListener('click', (e) => {
-      const btn = e.target.closest('.filter__btn');
-      if (!btn) return;
-      group.querySelectorAll('.filter__btn').forEach((b) => b.setAttribute('aria-pressed', String(b === btn)));
-    });
-  });
-
   // posts: the player loads only when the phone's screen is pressed (same as the site)
   document.querySelectorAll('[data-embed]').forEach((btn) => {
     btn.addEventListener('click', () => {

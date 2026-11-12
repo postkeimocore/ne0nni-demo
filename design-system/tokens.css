@@ -101,6 +101,8 @@
   --logo-h: 16px;
   --chapter-h: 56px;
   --pill-h: 48px;
+  /* behind the WORKS filter panel */
+  --backdrop: rgba(14, 14, 18, .48);
   --radius-pill: 24px;
   --radius-frame: 48px;
   --thumb: 64px;

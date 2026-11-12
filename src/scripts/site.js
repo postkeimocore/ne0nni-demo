@@ -163,36 +163,72 @@ export default function site() {
     build();
   });
 
-  // ---------- works filter: one pressed button; the layout rhythm follows the visible works ----------
+  // ---------- works list (WORKS): filter in a panel of checkboxes and sort, like a shop's list ----------
+  // A work is shown when, in every group that has a picked option, it has one of them (any inside a group, all
+  // across groups). Each option shows how many works it would show with the other groups as they are.
   const list = document.querySelector('[data-works]');
-  const filter = document.querySelector('[data-filter]');
-  if (list && filter) {
+  const shop = document.querySelector('[data-shop]');
+  const panel = document.querySelector('[data-facets]');
+  if (list && shop && panel) {
     const items = [...list.querySelectorAll('[data-keys]')];
-    const RHYTHM = ['w-center', 'w-pair-a', 'w-pair-b', 'w-bleed-right', 'w-center', 'w-pair-a', 'w-pair-b', 'w-bleed-left'];
-    const ALL = RHYTHM.concat('w-solo');
-    const count = document.querySelector('[data-count]');
-    const apply = (key, push) => {
-      filter.querySelectorAll('[data-key]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.key === key)));
-      const shown = items.filter((el) => key === 'all' || el.dataset.keys.split(' ').includes(key));
-      items.forEach((el) => { el.hidden = !shown.includes(el); el.classList.remove(...ALL); });
-      shown.forEach((el, i) => {
-        let cls = shown.length === 2 ? ['w-pair-a', 'w-pair-b'][i] : RHYTHM[i % RHYTHM.length];
-        if (cls === 'w-pair-a' && i === shown.length - 1) cls = 'w-solo';    // a pair needs a partner
-        el.classList.add(cls);
+    const boxes = [...panel.querySelectorAll('input[type="checkbox"]')];
+    const sort = shop.querySelector('[data-sort]');
+    const sortLabel = shop.querySelector('[data-sort-label]');
+    const chips = shop.querySelector('[data-chips]');
+    const badge = shop.querySelector('[data-active-n]');
+    const empty = document.querySelector('[data-works-empty]');
+    const keys = new Map(items.map((el) => [el, el.dataset.keys.split(' ')]));
+    const picked = () => {
+      const by = {};
+      boxes.forEach((b) => { if (b.checked) (by[b.name] = by[b.name] || []).push(b.value); });
+      return by;
+    };
+    const fits = (el, by, skip) => Object.entries(by).every(([g, ks]) => g === skip || ks.some((k) => keys.get(el).includes(k)));
+    const chip = (b) => {
+      const el = document.createElement('button');
+      el.type = 'button';
+      el.className = 'fchip t-label' + (b.hasAttribute('data-name') ? ' is-name' : '');
+      el.setAttribute('aria-label', `${b.dataset.label} を外す`);
+      el.append(b.dataset.label, Object.assign(document.createElement('span'), { className: 'fchip__x' }));
+      el.addEventListener('click', () => { b.checked = false; apply(true); });
+      return el;
+    };
+    const apply = (push) => {
+      const by = picked();
+      const shown = items.filter((el) => fits(el, by));
+      const dir = sort.value === 'old' ? 1 : -1;
+      items.slice().sort((a, b) => dir * (a.dataset.no - b.dataset.no)).forEach((el) => list.append(el));
+      items.forEach((el) => { el.hidden = !shown.includes(el); });
+      boxes.forEach((b) => {
+        const n = items.filter((el) => fits(el, by, b.name) && keys.get(el).includes(b.value)).length;
+        b.closest('label').querySelector('[data-n]').textContent = String(n);
       });
-      if (count) count.textContent = String(shown.length);
+      document.querySelectorAll('[data-count]').forEach((c) => { c.textContent = String(shown.length); });
+      const on = boxes.filter((b) => b.checked);
+      badge.textContent = String(on.length);
+      badge.hidden = on.length === 0;
+      const clear = on.length ? [Object.assign(document.createElement('button'), { type: 'button', className: 'fchip fchip--clear t-label', textContent: 'すべて解除', onclick: clearAll })] : [];
+      chips.replaceChildren(...on.map(chip), ...clear);
+      if (empty) empty.hidden = shown.length > 0;
+      sortLabel.textContent = sort.selectedOptions[0].textContent;
       if (push) {
         const url = new URL(location.href);
-        if (key === 'all') url.searchParams.delete('f'); else url.searchParams.set('f', key);
+        if (on.length) url.searchParams.set('f', on.map((b) => b.value).join(',')); else url.searchParams.delete('f');
+        if (sort.value === 'old') url.searchParams.set('sort', 'old'); else url.searchParams.delete('sort');
         history.replaceState(null, '', url);
       }
     };
-    filter.addEventListener('click', (e) => {
-      const btn = e.target.closest('[data-key]');
-      if (btn) apply(btn.dataset.key, true);
-    });
-    const start = new URLSearchParams(location.search).get('f');
-    apply(start && filter.querySelector(`[data-key="${CSS.escape(start)}"]`) ? start : 'all', false);
+    function clearAll() { boxes.forEach((b) => { b.checked = false; }); apply(true); }
+    boxes.forEach((b) => b.addEventListener('change', () => apply(true)));
+    sort.addEventListener('change', () => apply(true));
+    document.querySelectorAll('[data-clear]').forEach((b) => b.addEventListener('click', clearAll));
+    shop.querySelector('[data-facets-open]').addEventListener('click', () => panel.showModal());
+    panel.querySelectorAll('[data-facets-close]').forEach((b) => b.addEventListener('click', () => panel.close()));
+    panel.addEventListener('click', (e) => { if (e.target === panel) panel.close(); });   // a press on the dark side
+    const q = new URLSearchParams(location.search);
+    (q.get('f') || '').split(',').forEach((k) => { const b = boxes.find((x) => x.value === k); if (b) b.checked = true; });
+    if (q.get('sort') === 'old') sort.value = 'old';
+    apply(false);
   }
 
   // ---------- posts: the player (YouTube Shorts / TikTok) loads only when the phone's screen is pressed ----------

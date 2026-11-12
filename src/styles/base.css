@@ -266,19 +266,35 @@ ul, ol { list-style: none; }
 .phone__play:focus-visible .phone__play-icon { outline: 2px solid var(--color-paper); outline-offset: 4px; }
 .phone__play[hidden] { display: none; }
 
-/* ---------- filter (works) ---------- */
-.filter { display: flex; flex-wrap: wrap; gap: var(--space-2); }
-.filter__btn {
-  display: inline-flex; align-items: center; gap: var(--space-2);
-  height: 48px; padding-inline: var(--space-3);
-  border: 1px solid var(--color-field); background: var(--color-paper); color: var(--color-ink);
+/* ---------- square button (WORKS: すべて解除 / 作品を見る) ----------
+   48px high, a 1px ink line, `label`. The filled one is the panel's way out. Hover swaps ink and paper. */
+.sbtn {
+  display: inline-flex; align-items: center; justify-content: center; gap: var(--space-2);
+  height: 48px; padding-inline: var(--space-4);
+  border: 1px solid var(--color-ink); border-radius: 0; background: var(--color-paper); color: var(--color-ink);
   cursor: pointer;
-  transition: background-color var(--dur-1) var(--ease-out), color var(--dur-1) var(--ease-out), border-color var(--dur-1) var(--ease-out);
+  transition: background-color var(--dur-1) var(--ease-out), color var(--dur-1) var(--ease-out), transform var(--dur-1) var(--ease-out);
 }
-.filter__btn:hover { border-color: var(--color-ink); }
-.filter__btn[aria-pressed="true"] { background: var(--color-ink); color: var(--color-paper); border-color: var(--color-ink); }
-.filter__btn[aria-pressed="true"]::before { content: ""; width: 8px; height: 8px; background: currentColor; border-radius: 50%; }
-.filter__count { font-weight: 400; }
+.sbtn:hover { background: var(--color-ink); color: var(--color-paper); }
+.sbtn--fill { background: var(--color-ink); color: var(--color-paper); }
+.sbtn--fill:hover { background: var(--color-paper); color: var(--color-ink); }
+.sbtn:active { transform: scale(.98); }
+.sbtn:focus-visible { outline: 2px solid var(--color-ink); outline-offset: 2px; }
+
+/* ---------- picked-option chip (WORKS): the option's name and a cross; pressing it takes the option off ---------- */
+.fchip {
+  display: inline-flex; align-items: center; gap: var(--space-2);
+  height: 40px; padding-inline: var(--space-3) var(--space-2);
+  border: 1px solid var(--color-ink); background: var(--color-paper); color: var(--color-ink); cursor: pointer;
+  transition: background-color var(--dur-1) var(--ease-out), color var(--dur-1) var(--ease-out);
+}
+.fchip__x { position: relative; width: 16px; height: 16px; flex: none; }
+.fchip__x::before, .fchip__x::after { content: ""; position: absolute; left: 0; top: 50%; width: 16px; height: 1px; background: currentColor; }
+.fchip__x::before { transform: rotate(45deg); }
+.fchip__x::after { transform: rotate(-45deg); }
+.fchip--clear { padding-inline: var(--space-3); }
+.fchip:hover { background: var(--color-ink); color: var(--color-paper); }
+.fchip:focus-visible { outline: 2px solid var(--color-ink); outline-offset: 2px; }
 
 /* ---------- night section ---------- */
 .is-night { background: var(--color-ink); color: var(--color-paper); }
@@ -465,11 +481,6 @@ section[id], [id^="look-"] { scroll-margin-top: var(--header-h); }
 .crumbs li { display: inline-flex; align-items: center; }
 .crumbs li + li::before { content: "/"; margin-right: var(--space-2); }
 
-/* ---------- works list ---------- */
-.w-solo { grid-column: 1 / -1; }
-@media (min-width: 768px) { .w-solo { grid-column: 2 / span 5; } }
-@media (min-width: 1200px) { .w-solo { grid-column: 2 / span 5; } }
-
 /* ---------- night block (lower pages, before the footer) ---------- */
 .night-block__tag { grid-column: 1 / -1; }
 .night-block__body { grid-column: 1 / -1; display: grid; gap: var(--space-5); justify-items: start; margin-top: var(--block-gap); }
@@ -503,7 +514,7 @@ section[id], [id^="look-"] { scroll-margin-top: var(--header-h); }
 .with-icon > .icon { align-self: center; }
 .with-icon--display { gap: var(--space-3); }
 .with-icon--display > .icon { align-self: baseline; }
-/* labels stacked in a list (the work data, the WORKS filter): every icon gets the same slot, the drawing at its left,
+/* labels stacked in a list (the work data, the WORKS filter panel): every icon gets the same slot, the drawing at its left,
    so the words start at one x. A label there without an icon (Date) starts at the same x. */
 .with-icon--slot > .icon { width: var(--icon-slot); }
 .wdata--icons dt:not(.with-icon) { padding-left: calc(var(--icon-slot) + var(--space-2)); }
@@ -525,7 +536,6 @@ section[id], [id^="look-"] { scroll-margin-top: var(--header-h); }
 .go:focus-visible { outline: 2px solid currentColor; outline-offset: 4px; }
 .go--icon { gap: 0; }
 
-/* ---------- works filter: names keep their own capitals ---------- */
 /* names keep their own letters inside upper-cased labels (NE0NNi*, brand and artist names) */
 .is-name { text-transform: none; }
 

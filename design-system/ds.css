@@ -261,19 +261,49 @@ ul, ol { list-style: none; }
 .phone__play:focus-visible .phone__play-icon { outline: 2px solid var(--color-paper); outline-offset: 4px; }
 .phone__play[hidden] { display: none; }
 
-/* ---------- filter (works) ---------- */
-.filter { display: flex; flex-wrap: wrap; gap: var(--space-2); }
-.filter__btn {
-  display: inline-flex; align-items: center; gap: var(--space-2);
-  height: 48px; padding-inline: var(--space-3);
-  border: 1px solid var(--color-field); background: var(--color-paper); color: var(--color-ink);
-  cursor: pointer;
-  transition: background-color var(--dur-1) var(--ease-out), color var(--dur-1) var(--ease-out), border-color var(--dur-1) var(--ease-out);
+/* ---------- WORKS: the bar, the panel's checkboxes, square buttons, chips (as src/pages/works/index.astro) ---------- */
+.shopbar__bar { position: relative; display: grid; grid-template-columns: 1fr 1fr; height: 48px; border-block: 1px solid var(--color-ink); }
+.shopbar__ctl { position: relative; display: flex; align-items: center; justify-content: center; gap: var(--space-2); height: 100%; padding-inline: var(--space-3); border: 0; background: none; color: var(--color-ink); cursor: pointer; transition: background-color var(--dur-1) var(--ease-out); }
+.shopbar__ctl:hover { background-color: var(--color-mist); }
+.shopbar__ctl .t-label { white-space: nowrap; }
+.shopbar__ctl--sort { border-left: 1px solid var(--color-ink); }
+.shopbar__icon { width: 24px; height: 24px; flex: none; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: square; }
+.shopbar__icon circle { fill: currentColor; stroke: none; }
+.shopbar__icon--chevron { width: 16px; height: 16px; }
+.shopbar__sort-name { display: none; }
+.shopbar__sort-name::after { content: "："; }
+.shopbar__select { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; font-size: 16px; cursor: pointer; }
+.shopbar__badge { display: inline-grid; place-items: center; min-width: 24px; height: 24px; padding-inline: var(--space-1); border-radius: 12px; background: var(--color-ink); color: var(--color-paper); letter-spacing: 0; }
+@media (min-width: 768px) {
+  .shopbar__bar { grid-template-columns: auto auto; justify-content: space-between; height: 56px; }
+  .shopbar__ctl--filter { margin-left: calc(var(--space-3) * -1); }
+  .shopbar__ctl--sort { border-left: 0; margin-right: calc(var(--space-3) * -1); }
+  .shopbar__sort-name { display: inline; }
 }
-.filter__btn:hover { border-color: var(--color-ink); }
-.filter__btn[aria-pressed="true"] { background: var(--color-ink); color: var(--color-paper); border-color: var(--color-ink); }
-.filter__btn[aria-pressed="true"]::before { content: ""; width: 8px; height: 8px; background: currentColor; border-radius: 50%; }
-.filter__count { font-weight: 400; }
+.shopbar__sub { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2) var(--space-3); min-height: 40px; margin-top: var(--space-3); }
+.shopbar__chips { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+.opt { display: flex; align-items: center; gap: var(--space-3); min-height: 48px; padding-block: var(--space-2); border-bottom: 1px solid var(--color-rule-soft); cursor: pointer; }
+.opt input { appearance: none; display: grid; place-items: center; flex: none; width: 24px; height: 24px; margin: 0; border: 1px solid var(--color-ink); border-radius: 0; background: var(--color-paper); cursor: pointer; transition: background-color var(--dur-1) var(--ease-out); }
+.opt input::after { content: ""; width: 12px; height: 6px; margin-top: -3px; border-left: 1.5px solid var(--color-paper); border-bottom: 1.5px solid var(--color-paper); transform: rotate(-45deg); opacity: 0; }
+.opt input:checked { background: var(--color-ink); }
+.opt input:checked::after { opacity: 1; }
+.opt input:focus-visible { outline: 2px solid var(--color-ink); outline-offset: 2px; }
+.opt:hover input:not(:checked) { background: var(--color-mist); }
+.opt__n { margin-left: auto; font-variant-numeric: tabular-nums; }
+.sbtn { display: inline-flex; align-items: center; justify-content: center; gap: var(--space-2); height: 48px; padding-inline: var(--space-4); border: 1px solid var(--color-ink); border-radius: 0; background: var(--color-paper); color: var(--color-ink); cursor: pointer; transition: background-color var(--dur-1) var(--ease-out), color var(--dur-1) var(--ease-out), transform var(--dur-1) var(--ease-out); }
+.sbtn:hover, .sbtn.is-hover { background: var(--color-ink); color: var(--color-paper); }
+.sbtn--fill { background: var(--color-ink); color: var(--color-paper); }
+.sbtn--fill:hover { background: var(--color-paper); color: var(--color-ink); }
+.sbtn:active { transform: scale(.98); }
+.sbtn:focus-visible, .sbtn.is-focus { outline: 2px solid var(--color-ink); outline-offset: 2px; }
+.fchip { display: inline-flex; align-items: center; gap: var(--space-2); height: 40px; padding-inline: var(--space-3) var(--space-2); border: 1px solid var(--color-ink); background: var(--color-paper); color: var(--color-ink); cursor: pointer; transition: background-color var(--dur-1) var(--ease-out), color var(--dur-1) var(--ease-out); }
+.fchip__x { position: relative; width: 16px; height: 16px; flex: none; }
+.fchip__x::before, .fchip__x::after { content: ""; position: absolute; left: 0; top: 50%; width: 16px; height: 1px; background: currentColor; }
+.fchip__x::before { transform: rotate(45deg); }
+.fchip__x::after { transform: rotate(-45deg); }
+.fchip--clear { padding-inline: var(--space-3); }
+.fchip:hover { background: var(--color-ink); color: var(--color-paper); }
+.fchip:focus-visible { outline: 2px solid var(--color-ink); outline-offset: 2px; }
 
 /* ---------- night section ---------- */
 .is-night { background: var(--color-ink); color: var(--color-paper); }
@@ -391,7 +421,7 @@ body, .l-mist, .posts {
 .with-icon > .icon { align-self: center; }
 .with-icon--display { gap: var(--space-3); }
 .with-icon--display > .icon { align-self: baseline; }
-/* labels stacked in a list (the work data, the WORKS filter): every icon gets the same slot, the drawing at its left,
+/* labels stacked in a list (the work data, the WORKS filter panel): every icon gets the same slot, the drawing at its left,
    so the words start at one x. A label there without an icon (Date) starts at the same x. */
 .with-icon--slot > .icon { width: var(--icon-slot); }
 .wdata--icons dt:not(.with-icon) { padding-left: calc(var(--icon-slot) + var(--space-2)); }

@@ -7,7 +7,16 @@ import type { Topic } from '../../lib/icon-topics';
 import { getWorks, getSeries, getCharacters, getGear, characterName, filterKey, keysOf, KIND_LABEL, label, pathOf } from '../../lib/cms';
 import type { Track, WorkKind } from '../../lib/types';
 
-const works = await getWorks();
+/*
+ * WORKS, laid out like a shop's list (2026-11-13, the user: a list like an online shop's, not the wall of buttons):
+ *   - a bar over the list: 絞り込み (opens the panel) on the left, 並び替え (新しい順 / 古い順) on the right;
+ *     under it the number of works shown and the picked options as chips (each one takes itself off)
+ *   - the panel: the groups with checkboxes and how many works each would show. Inside a group, any of the picked
+ *     options; across groups, all of them
+ *   - the works in an even grid, newest first
+ * Behaviour: src/scripts/site.js "works list". URL: ?f=key,key&sort=old (the way-on buttons open ?f=key).
+ */
+const works = [...(await getWorks())].sort((a, b) => b.no - a.no);
 const count = (pred: (w: (typeof works)[number]) => boolean) => works.filter(pred).length;
 const series = await getSeries();
 const kinds: WorkKind[] = ['original', 'tribute'];
@@ -16,23 +25,17 @@ const artists = [...new Map(works.flatMap((w) => w.music).map((t) => [t.id, t] a
 const gear = await getGear();
 
 // The four groups of the site (Work / Character / Music / Gear), plus Series once there is more than one.
-// A button that would show every work (or none) is left out: it would not narrow anything.
+// An option that every work (or none) has is left out: it would not narrow anything.
 // name: brand and artist names keep their own capitals.
 const groups = [
-  { title: 'Series', icon: 'series' as Topic, items: series.map((s) => ({ key: filterKey.series(s), label: s.name, n: count((w) => w.series.id === s.id) })) },
-  { title: 'Work', icon: 'works' as Topic, items: kinds.map((k) => ({ key: filterKey.kind(k), label: KIND_LABEL[k], n: count((w) => w.kind === k) })) },
-  { title: 'Character', icon: 'character' as Topic, items: characters.map((c) => ({ key: filterKey.character(c), label: characterName(c), n: count((w) => w.character?.id === c.id) })) },
-  { title: 'Music', icon: 'music' as Topic, name: true, items: artists.map((t) => ({ key: filterKey.music(t), label: t.artist, n: count((w) => w.music.some((x) => x.id === t.id)) })) },
-  { title: 'Gear', icon: 'gear' as Topic, name: true, items: gear.map((g) => ({ key: filterKey.gear(g), label: `${g.brand} ${g.model}`, n: count((w) => w.gear.some((x) => x.id === g.id)) })) },
+  { id: 'series', title: 'Series', icon: 'series' as Topic, items: series.map((s) => ({ key: filterKey.series(s), label: s.name, n: count((w) => w.series.id === s.id) })) },
+  { id: 'work', title: 'Work', icon: 'works' as Topic, items: kinds.map((k) => ({ key: filterKey.kind(k), label: KIND_LABEL[k], n: count((w) => w.kind === k) })) },
+  { id: 'character', title: 'Character', icon: 'character' as Topic, items: characters.map((c) => ({ key: filterKey.character(c), label: characterName(c), n: count((w) => w.character?.id === c.id) })) },
+  { id: 'music', title: 'Music', icon: 'music' as Topic, name: true, items: artists.map((t) => ({ key: filterKey.music(t), label: t.artist, n: count((w) => w.music.some((x) => x.id === t.id)) })) },
+  { id: 'gear', title: 'Gear', icon: 'gear' as Topic, name: true, items: gear.map((g) => ({ key: filterKey.gear(g), label: `${g.brand} ${g.model}`, n: count((w) => w.gear.some((x) => x.id === g.id)) })) },
 ]
   .map((g) => ({ ...g, items: g.items.filter((it) => it.n > 0 && it.n < works.length) }))
   .filter((g) => g.items.length);
-// first paint (no JavaScript): the same rhythm the filter script applies
-const RHYTHM = ['w-center', 'w-pair-a', 'w-pair-b', 'w-bleed-right', 'w-center', 'w-pair-a', 'w-pair-b', 'w-bleed-left'];
-const layoutOf = (i: number) => {
-  const cls = works.length === 2 ? ['w-pair-a', 'w-pair-b'][i] : RHYTHM[i % RHYTHM.length];
-  return cls === 'w-pair-a' && i === works.length - 1 ? 'w-solo' : cls;
-};
 
 const base = Astro.site!.href;
 const jsonLd = {
@@ -40,7 +43,7 @@ const jsonLd = {
   hasPart: works.map((w) => ({ '@type': 'VisualArtwork', name: `${label(w)} ${w.series.name}`, url: new URL(pathOf(w), base).href })),
 };
 ---
-<Base title="Works" description="NE0NNi*（ネオンニ）の作品一覧。シリーズ HEADPHONES GIRL の作品を、号数順に掲載しています。Original／Tribute、キャラクター、曲のアーティスト、描いたギアで絞り込めます。" current="works" jsonLd={jsonLd}>
+<Base title="Works" description="NE0NNi*（ネオンニ）の作品一覧。シリーズ HEADPHONES GIRL の作品を新しい順に掲載しています。Original／Tribute、キャラクター、曲のアーティスト、描いたギアで絞り込めます。" current="works" jsonLd={jsonLd}>
 
   <header class="page-head l-container">
     <div class="l-grid page-head__grid">
@@ -52,71 +55,186 @@ const jsonLd = {
   </header>
 
   <section class="l-section l-container works" aria-label="作品一覧">
-    <div class="filter-bar">
-      <div class="filter" role="group" aria-label="作品の絞り込み" data-filter>
-        <div class="filter__group filter__group--all">
-          <button class="filter__btn t-label" type="button" aria-pressed="true" data-key="all">All<span class="filter__count">{works.length}</span></button>
+    <div class="shopbar" data-shop>
+      <div class="shopbar__bar">
+        <button class="shopbar__ctl shopbar__ctl--filter" type="button" aria-haspopup="dialog" aria-controls="facets" data-facets-open>
+          <svg class="shopbar__icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7h18M3 17h18" /><circle cx="9" cy="7" r="2.5" /><circle cx="15" cy="17" r="2.5" /></svg>
+          <span class="t-label">絞り込み</span>
+          <span class="shopbar__badge t-label" data-active-n hidden>0</span>
+        </button>
+        <div class="shopbar__ctl shopbar__ctl--sort">
+          <span class="t-label shopbar__sort-name">並び替え</span>
+          <span class="t-label" data-sort-label>新しい順</span>
+          <svg class="shopbar__icon shopbar__icon--chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6" /></svg>
+          <select class="shopbar__select" aria-label="並び替え" data-sort>
+            <option value="new">新しい順</option>
+            <option value="old">古い順</option>
+          </select>
         </div>
-        {groups.map((g) => (
-          <div class="filter__group">
-            <span class="filter__title t-label with-icon with-icon--slot" aria-hidden="true"><Icon topic={g.icon} size="label" />{g.title}</span>
-            <span class="filter__items">
-              {g.items.map((it) => (
-                <button class:list={['filter__btn t-label', g.name && 'is-name']} type="button" aria-pressed="false" data-key={it.key} aria-label={`${g.title}：${it.label}（${it.n}）`}>{it.label}<span class="filter__count">{it.n}</span></button>
-              ))}
-            </span>
-          </div>
-        ))}
       </div>
-      <p class="t-label works__count" aria-live="polite"><span data-count>{works.length}</span> works</p>
+      <div class="shopbar__sub">
+        <p class="t-label shopbar__count" aria-live="polite"><span data-count>{works.length}</span> works</p>
+        <div class="shopbar__chips" data-chips></div>
+      </div>
     </div>
 
-    <div class="works__grid l-grid" data-works>
-      <div class="v-slot" aria-hidden="true"><span class="v-word t-grotesk-display">Works</span></div>
-      {works.map((w, i) => (
-        <article class:list={['wcard', layoutOf(i)]} data-keys={keysOf(w).join(' ')}>
+    <div class="shop-grid" data-works>
+      {works.map((w) => (
+        <article class="wcard" data-keys={keysOf(w).join(' ')} data-no={w.no}>
           <a class="wcard__link" href={pathOf(w)}>
             <div class="wcard__art">
-              <Art img={w.key} sizes="(min-width: 1200px) 50vw, (min-width: 768px) 75vw, 100vw" style={w.focus ? `object-position:${w.focus}` : undefined} />
+              <Art img={w.key} sizes="(min-width: 768px) 33vw, 50vw" style={w.focus ? `object-position:${w.focus}` : undefined} />
             </div>
             <div class="wcard__cap">
               <span class="t-number">{label(w)}</span>
-              <span class="t-grotesk-title">{w.series.name}</span>
               <span class="t-label wcard__kind">{KIND_LABEL[w.kind]}</span>
+              <span class="t-grotesk-title wcard__series">{w.series.name}</span>
             </div>
           </a>
         </article>
       ))}
     </div>
+    <div class="shop-empty" data-works-empty hidden>
+      <p class="t-body">選んだ条件に当てはまる作品はありません。</p>
+      <button class="sbtn t-label" type="button" data-clear>すべて解除</button>
+    </div>
   </section>
+
+  <dialog class="facets" id="facets" aria-labelledby="facets-h" data-facets>
+    <div class="facets__head">
+      <h2 class="t-label" id="facets-h">絞り込み</h2>
+      <button class="facets__close" type="button" aria-label="絞り込みを閉じる" data-facets-close><span></span></button>
+    </div>
+    <div class="facets__body">
+      {groups.map((g) => (
+        <fieldset class="facet">
+          <legend class="facet__title t-label with-icon with-icon--slot"><Icon topic={g.icon} size="label" />{g.title}</legend>
+          <ul class="facet__opts">
+            {g.items.map((it) => (
+              <li>
+                <label class="opt">
+                  <input type="checkbox" name={g.id} value={it.key} data-label={it.label} data-name={g.name ? '' : undefined} />
+                  <span class:list={['opt__label t-grotesk-data', g.name && 'is-name']}>{it.label}</span>
+                  <span class="opt__n t-grotesk-data" data-n>{it.n}</span>
+                </label>
+              </li>
+            ))}
+          </ul>
+        </fieldset>
+      ))}
+    </div>
+    <div class="facets__foot">
+      <button class="sbtn t-label" type="button" data-clear>すべて解除</button>
+      <button class="sbtn sbtn--fill t-label" type="button" data-facets-close>作品を見る（<span data-count>{works.length}</span>）</button>
+    </div>
+  </dialog>
 
   <NightBlock to="about" />
 </Base>
 
 <style>
-  .filter-bar { display: grid; gap: var(--space-4); margin-bottom: var(--block-gap); }
-  /* one row per group: the group's name, then its buttons */
-  .filter { display: grid; gap: var(--space-3); }
-  .filter__group { display: grid; gap: var(--space-2); align-items: center; }
-  .filter__items { display: flex; flex-wrap: wrap; gap: var(--space-2); }
-  @media (min-width: 768px) {
-    .filter__group { grid-template-columns: 112px minmax(0, 1fr); column-gap: var(--space-3); }
-    .filter__group--all { grid-template-columns: none; justify-items: start; }
+  /* ---- the bar: 絞り込み on the left, 並び替え on the right; it stays under the header while the list scrolls ---- */
+  /* the bar sticks inside the whole section (the list included), not inside its own box */
+  .shopbar { display: contents; }
+  .shopbar__bar {
+    position: sticky; top: var(--header-h); z-index: 5;
+    display: grid; grid-template-columns: 1fr 1fr; height: 48px;
+    border-block: 1px solid var(--color-ink);
+    background-color: var(--color-paper); background-image: var(--grain-light); background-size: 256px 256px; background-attachment: fixed;
   }
-  .works__count span { font-variant-numeric: tabular-nums; }
-  @media (min-width: 768px) { .filter-bar { grid-template-columns: 1fr auto; align-items: end; } }
+  /* the ground under the header, so the pictures do not show above the bar once it sticks (the header letters turn
+     black over it). Before it sticks it lies over the empty space under the page heading. */
+  .shopbar__bar::before {
+    content: ""; position: absolute; bottom: calc(100% + 1px); left: calc(var(--grid-margin) * -1); right: calc(var(--grid-margin) * -1);
+    height: var(--header-h); pointer-events: none;
+    background-color: var(--color-paper); background-image: var(--grain-light); background-size: 256px 256px; background-attachment: fixed;
+  }
+  .shopbar__ctl {
+    position: relative; display: flex; align-items: center; justify-content: center; gap: var(--space-2);
+    height: 100%; padding-inline: var(--space-3); border: 0; background: none; color: var(--color-ink); cursor: pointer;
+    transition: background-color var(--dur-1) var(--ease-out);
+  }
+  .shopbar__ctl:hover { background-color: var(--color-mist); }
+  .shopbar__ctl--sort { border-left: 1px solid var(--color-ink); }
+  .shopbar__ctl--filter:focus-visible, .shopbar__ctl--sort:has(select:focus-visible) { outline: 2px solid var(--color-ink); outline-offset: -4px; }
+  .shopbar__icon { width: 24px; height: 24px; flex: none; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: square; }
+  .shopbar__icon circle { fill: currentColor; stroke: none; }
+  .shopbar__icon--chevron { width: 16px; height: 16px; }
+  .shopbar__ctl .t-label { white-space: nowrap; }
+  /* phones: the half of the bar fits the order's name only (新しい順); the select keeps the name 並び替え */
+  .shopbar__sort-name { display: none; }
+  .shopbar__sort-name::after { content: "："; }
+  @media (min-width: 768px) { .shopbar__sort-name { display: inline; } }
+  /* the select covers the whole control, so a press anywhere on it opens the phone's own picker */
+  .shopbar__select { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; font-size: 16px; cursor: pointer; }
+  /* how many options are picked: the number in an ink circle */
+  .shopbar__badge { display: inline-grid; place-items: center; min-width: 24px; height: 24px; padding-inline: var(--space-1); border-radius: 12px; background: var(--color-ink); color: var(--color-paper); letter-spacing: 0; }
+  .shopbar__badge[hidden] { display: none; }
+  @media (min-width: 768px) {
+    .shopbar__bar { grid-template-columns: auto auto; justify-content: space-between; height: 56px; }
+    .shopbar__ctl--filter { margin-left: calc(var(--space-3) * -1); }
+    .shopbar__ctl--sort { border-left: 0; margin-right: calc(var(--space-3) * -1); }
+  }
 
-  .works__grid { row-gap: var(--block-gap); align-items: start; }
-  .v-slot { display: none; }
-  @media (min-width: 1200px) { .v-slot { display: block; grid-column: 12; grid-row: 1 / span 2; justify-self: end; } }
+  .shopbar__sub { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2) var(--space-3); min-height: 40px; margin-block: var(--space-3) var(--space-5); }
+  .shopbar__count span { font-variant-numeric: tabular-nums; }
+  .shopbar__chips { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+  .shopbar__chips:empty { display: none; }
+
+  /* ---- the works: an even grid, 2 / 3 across ---- */
+  .shop-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--block-gap) var(--grid-gutter); align-items: start; }
+  @media (min-width: 768px) { .shop-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
   .wcard[hidden] { display: none; }
   .wcard__link { display: block; text-decoration: none; }
   .wcard__art { overflow: hidden; aspect-ratio: 4 / 5; }
   .wcard :global(img) { width: 100%; height: 100%; object-fit: cover; transition: transform var(--dur-3) var(--ease-out); }
   .wcard__link:hover :global(img) { transform: scale(1.03); }
-  .wcard__cap { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--space-2) var(--space-3); margin-top: var(--space-3); }
-  .wcard__kind { margin-left: auto; }
-  .wcard.w-bleed-right .wcard__art, .wcard.w-bleed-left .wcard__art { aspect-ratio: 4 / 3; }
-  .wcard.w-bleed-right .wcard__cap { padding-right: var(--grid-margin); }
-  .wcard.w-bleed-left .wcard__cap { padding-left: var(--grid-margin); }
+  .wcard__link:focus-visible { outline: 2px solid var(--color-ink); outline-offset: 4px; }
+  /* No. and the kind on one line (the kind on the right, where a shop puts the price), the series under them */
+  .wcard__cap { display: grid; grid-template-columns: 1fr auto; align-items: baseline; column-gap: var(--space-2); margin-top: var(--space-3); }
+  .wcard__series { grid-column: 1 / -1; }
+  .shop-empty { display: grid; justify-items: start; gap: var(--space-4); padding-block: var(--space-6); }
+  .shop-empty[hidden] { display: none; }
+
+  /* ---- the panel: from the right, the whole height (the whole screen on phones) ---- */
+  .facets {
+    position: fixed; inset: 0 0 0 auto; width: min(100%, 448px); max-width: none; height: 100%; max-height: none;
+    margin: 0; padding: 0; border: 0; color: var(--color-ink);
+    background-color: var(--color-paper); background-image: var(--grain-light); background-size: 256px 256px;
+  }
+  .facets[open] { display: grid; grid-template-rows: auto minmax(0, 1fr) auto; }
+  .facets::backdrop { background: var(--backdrop); }
+  .facets__head { display: flex; align-items: center; justify-content: space-between; height: var(--header-h); padding-inline: var(--grid-margin) var(--space-2); border-bottom: 1px solid var(--color-ink); }
+  .facets__close { display: inline-grid; place-items: center; width: 48px; height: 48px; border: 0; background: none; color: inherit; cursor: pointer; }
+  .facets__close span { position: relative; width: 24px; height: 24px; }
+  .facets__close span::before, .facets__close span::after { content: ""; position: absolute; left: 0; top: 50%; width: 24px; height: 1px; background: currentColor; }
+  .facets__close span::before { transform: rotate(45deg); }
+  .facets__close span::after { transform: rotate(-45deg); }
+  .facets__close:focus-visible { outline: 2px solid var(--color-ink); outline-offset: -4px; }
+  .facets__body { display: grid; align-content: start; gap: var(--space-5); padding: var(--space-4) var(--grid-margin) var(--space-6); overflow-y: auto; overscroll-behavior: contain; }
+  .facet { margin: 0; padding: 0; border: 0; min-width: 0; }
+  .facet__title { float: left; width: 100%; margin-bottom: var(--space-2); padding: 0; }
+  .facet__opts { clear: both; border-top: 1px solid var(--color-ink); }
+  .opt { display: flex; align-items: center; gap: var(--space-3); min-height: 48px; padding-block: var(--space-2); border-bottom: 1px solid var(--color-rule-soft); cursor: pointer; }
+  /* the box: 24px, a 1px ink line; picked, it fills with ink and shows a paper tick (the tick says it, not the color) */
+  .opt input {
+    appearance: none; display: grid; place-items: center; flex: none; width: 24px; height: 24px; margin: 0;
+    border: 1px solid var(--color-ink); border-radius: 0; background: var(--color-paper); cursor: pointer;
+    transition: background-color var(--dur-1) var(--ease-out);
+  }
+  .opt input::after { content: ""; width: 12px; height: 6px; margin-top: -3px; border-left: 1.5px solid var(--color-paper); border-bottom: 1.5px solid var(--color-paper); transform: rotate(-45deg); opacity: 0; }
+  .opt input:checked { background: var(--color-ink); }
+  .opt input:checked::after { opacity: 1; }
+  .opt input:focus-visible { outline: 2px solid var(--color-ink); outline-offset: 2px; }
+  .opt:hover input:not(:checked) { background: var(--color-mist); }
+  .opt__label { min-width: 0; }
+  .opt__n { margin-left: auto; font-variant-numeric: tabular-nums; }
+  .facets__foot { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-2); padding: var(--space-3) var(--grid-margin) calc(var(--space-3) + env(safe-area-inset-bottom)); border-top: 1px solid var(--color-ink); }
+  @media (prefers-reduced-motion: no-preference) {
+    .facets[open] { animation: facets-in var(--dur-2) var(--ease-out); }
+    .facets[open]::backdrop { animation: facets-fade var(--dur-2) var(--ease-out); }
+  }
+  @keyframes facets-in { from { transform: translateX(100%); } }
+  @keyframes facets-fade { from { opacity: 0; } }
+  :global(html:has(.facets[open])) { overflow: hidden; }
 </style>

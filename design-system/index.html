@@ -146,6 +146,7 @@
   @media (min-width: 1200px) { .cut-copy { grid-column: 2 / span 4; } }
   .posts-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--space-2) var(--space-5); margin-bottom: var(--space-5); }
   .filter-demo { display: grid; gap: var(--space-3); margin-bottom: var(--block-gap); }
+  .opt-demo { max-width: 448px; border-top: 1px solid var(--color-ink); margin-bottom: var(--space-3); }
 
   .states { display: flex; flex-wrap: wrap; gap: var(--space-5) var(--space-6); align-items: flex-end; }
   .state { display: grid; gap: var(--space-3); justify-items: start; }
@@ -361,11 +362,35 @@
 <section class="l-section l-container" id="contact" aria-labelledby="h-comp">
   <div class="chapter doc-head"><span class="chapter__no t-number">05</span><h2 class="chapter__title t-grotesk-title" id="h-comp">Components</h2></div>
   <div class="filter-demo" id="filter">
-    <p class="t-label">Filter</p>
-    <div class="filter" role="group" aria-label="作品の絞り込み">
-      <button class="filter__btn t-label" type="button" aria-pressed="true">All<span class="filter__count">2</span></button>
-      <button class="filter__btn t-label" type="button" aria-pressed="false">Headphones Girl<span class="filter__count">2</span></button>
-      <button class="filter__btn t-label" type="button" aria-pressed="false">FIIO EH11<span class="filter__count">1</span></button>
+    <p class="t-label">WORKS：絞り込み・並び替えのバー</p>
+    <div class="shopbar__bar">
+      <button class="shopbar__ctl shopbar__ctl--filter" type="button">
+        <svg class="shopbar__icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7h18M3 17h18" /><circle cx="9" cy="7" r="2.5" /><circle cx="15" cy="17" r="2.5" /></svg>
+        <span class="t-label">絞り込み</span><span class="shopbar__badge t-label">1</span>
+      </button>
+      <div class="shopbar__ctl shopbar__ctl--sort">
+        <span class="t-label shopbar__sort-name">並び替え</span><span class="t-label">新しい順</span>
+        <svg class="shopbar__icon shopbar__icon--chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6" /></svg>
+        <select class="shopbar__select" aria-label="並び替え"><option>新しい順</option><option>古い順</option></select>
+      </div>
+    </div>
+    <div class="shopbar__sub">
+      <p class="t-label">1 works</p>
+      <div class="shopbar__chips">
+        <button class="fchip t-label is-name" type="button" aria-label="FiiO EH11 を外す">FiiO EH11<span class="fchip__x"></span></button>
+        <button class="fchip fchip--clear t-label" type="button">すべて解除</button>
+      </div>
+    </div>
+    <p class="t-label">絞り込みのパネル：選択肢</p>
+    <ul class="opt-demo">
+      <li><label class="opt"><input type="checkbox" checked><span class="t-grotesk-data is-name">FiiO EH11</span><span class="opt__n t-grotesk-data">1</span></label></li>
+      <li><label class="opt"><input type="checkbox"><span class="t-grotesk-data is-name">audio-technica ATH-HL7BT</span><span class="opt__n t-grotesk-data">1</span></label></li>
+    </ul>
+    <div class="states">
+      <div class="state"><span class="t-small">四角ボタン</span><button class="sbtn t-label" type="button">すべて解除</button></div>
+      <div class="state"><span class="t-small">hover</span><span class="sbtn t-label is-hover">すべて解除</span></div>
+      <div class="state"><span class="t-small">focus-visible</span><span class="sbtn t-label is-focus">すべて解除</span></div>
+      <div class="state"><span class="t-small">塗り（パネルを閉じる）</span><button class="sbtn sbtn--fill t-label" type="button">作品を見る（1）</button></div>
     </div>
   </div>
   <div class="states">
