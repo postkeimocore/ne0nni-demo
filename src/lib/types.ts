@@ -14,6 +14,8 @@ export type Img = {
   width: number;
   height: number;
   alt: string;
+  /** object-position when a list crops it to 4:5 (the HOME works list) */
+  focus?: string;
 };
 
 /** HEADPHONES GIRL today; EARPHONES GIRLS etc. later. */

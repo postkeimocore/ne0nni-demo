@@ -12,7 +12,7 @@ import { getSite, getWorks, KIND_LABEL, label, pathOf } from '../lib/cms';
 import { ACCOUNTS } from '../lib/sns';
 
 const site = await getSite();
-const { hero, latest } = site;
+const { latest } = site;
 const works = await getWorks();
 const tall = (w: (typeof latest)[number]) => w.key.height / w.key.width > 1.5;
 // the hero's wall pattern: rings round the head (radii in the rings' own units)
@@ -35,16 +35,17 @@ const jsonLd = [
        (2026-11-12); the ground, the header and the type are this site's (design-system.md 5 ヒーロー) -->
   <section class="cover hero" aria-labelledby="home-h">
     <div class="hero__stage">
-      <div class="hero__wall" aria-hidden="true">
-        <svg class="hero__rings" viewBox="-900 -900 1800 1800">
+      <div class="hero__wall" aria-hidden="true"></div>
+      <h1 class="u-sr" id="home-h">NE0NNi*（ネオンニ） Girls &amp; night sounds.</h1>
+      <div class="hero__lockup">
+        <svg class="hero__rings" viewBox="-900 -900 1800 1800" aria-hidden="true">
           {RINGS.map((r, i) => <circle r={r} style={`--i:${i}`} />)}
         </svg>
+        <div class="hero__sticker"><Lockup /></div>
       </div>
-      <h1 class="u-sr" id="home-h">NE0NNi*（ネオンニ） Girls &amp; night sounds.</h1>
-      <div class="hero__lockup"><Lockup /></div>
-      <p class="hero__tag hero__tag--tl t-grotesk-data">{hero.series.name.toUpperCase()}</p>
       <p class="hero__tag hero__tag--bl t-grotesk-data">Girls &amp; night sounds.</p>
-      <p class="hero__tag hero__tag--br" lang="ja" aria-hidden="true">ネ　オ　ン　ニ</p>
+      <p class="hero__tag hero__tag--br t-grotesk-data" aria-hidden="true">NE0NNi*</p>
+      <SnsIcons class="hero__sns" />
     </div>
   </section>
 
@@ -125,70 +126,97 @@ const jsonLd = [
      Taken over from the wakabayashi site (neonni-site-wakabayashi/src/styles/site.css, 2026-11-12):
        the page opens: rings spread round the head, the outlines run from the top, then the white backing and the
        black fill come in on a slant (18deg, the slant of the logo) and the outlines fade; the words rise last.
-       scroll: the stage stays while the first 80vh scrolls by, and the lockup goes from close on the face to whole.
-     Without scroll-driven animations the whole lockup shows from the start; with reduced motion nothing moves. */
-  .hero { position: relative; margin-top: calc(var(--header-h) * -1); overflow-x: clip; --hero-zoom: 1.6; }
-  .hero__stage { position: relative; display: grid; place-items: center; height: 100svh; min-height: 600px; overflow: hidden; }
-  .hero__wall { position: absolute; inset: 0; }
-  .hero__rings { position: absolute; left: 50%; top: 47%; width: max(150vw, 150svh); aspect-ratio: 1; translate: -50% -50%; }
+     2026-11-13 (the user):
+       - the lockup opens whole, the logo in view (no close-up on the face)
+       - scroll: the stage stays while the first 80svh scrolls by, and the lockup keeps getting smaller until the
+         hero has left the screen; meanwhile the ground turns from paper to mist (the Works ground), so the two
+         sections meet without an edge, and the rings fade
+       - the rings beat after the opening: a double beat runs from the centre ring outwards every 2.4s
+       - flicker: nothing with fine lines is scaled as a composited layer any more. The rings used to be scaled with
+         the scroll; a composited layer of 1px rings is redrawn at a new scale now and then, and the lines visibly
+         jumped between soft and sharp. The rings now only fade; the lockup keeps one raster (will-change) and only
+         gets smaller than it was drawn.
+     Without scroll-driven animations the hero is one screen, its foot fading into mist; with reduced motion nothing
+     moves. */
+  .hero { position: relative; margin-top: calc(var(--header-h) * -1); overflow-x: clip;
+    /* the lockup (2650 : 2580) fills the height between the header and the foot; the SNS column on the right has
+       room on TB / PC */
+    --lk-w: min(calc(100vw - (var(--grid-margin) + 48px + var(--space-3)) * 2), calc((100svh - var(--header-h) - var(--space-5)) * 1.027)); }
+  .hero__stage { position: relative; isolation: isolate; display: grid; place-items: center; height: 100svh; min-height: 600px;
+    padding: var(--header-h) 0 var(--space-3); overflow: hidden; }
+  /* the mist that the hero turns into (over the rings, under the lockup) */
+  .hero__wall { position: absolute; inset: 0; z-index: -1; background-color: var(--color-mist);
+    background-image: var(--grain-light); background-size: 256px 256px; background-attachment: fixed;
+    -webkit-mask-image: linear-gradient(transparent 56%, var(--color-ink)); mask-image: linear-gradient(transparent 56%, var(--color-ink)); }
+  .hero__lockup { position: relative; width: var(--lk-w); }
+  /* the rings sit round the head (40% down the lockup) and do not get smaller with it */
+  .hero__rings { position: absolute; z-index: -2; left: 50%; top: 40%; width: max(150vw, 150svh); aspect-ratio: 1; translate: -50% -50%; pointer-events: none; }
   .hero__rings circle { fill: none; stroke: var(--color-rule-soft); stroke-width: 1px; vector-effect: non-scaling-stroke;
     transform-box: fill-box; transform-origin: center; }
-  /* the lockup is 2650 : 2580: as wide as the screen leaves room for the header and the words below */
-  .hero__lockup { position: relative; width: min(84vw, calc((100svh - 168px) * 1.027)); margin-top: var(--space-5);
-    transform-origin: 50% 48%; /* the eyes */ }
+  .hero__sticker { position: relative; }
   .hero :global(.lockup) { display: block; width: 100%; height: auto; overflow: visible; }
   .hero :global(.lk-shadow) { fill: var(--sticker-shadow); }
   .hero :global(.lk-back) { fill: var(--color-paper); }
   .hero :global(.lk-ink) { fill: var(--color-ink); }
-  .hero :global(.lk-lines path) { fill: none; stroke: var(--color-ink); stroke-width: 6; stroke-linecap: round; stroke-linejoin: round; opacity: 0; }
-  .hero__tag { position: absolute; margin: 0; }
-  .hero__tag--tl { top: calc(var(--header-h) + var(--space-3)); left: var(--grid-margin); }
-  .hero__tag--bl { bottom: var(--space-4); left: var(--grid-margin); }
-  .hero__tag--br { bottom: var(--space-4); right: var(--grid-margin);
-    font: 500 var(--fs-grotesk-data)/var(--lh-grotesk-data) var(--font-gothic); letter-spacing: var(--ls-ja-display); }
+  .hero :global(.lk-lines path) { fill: none; stroke: var(--color-ink); stroke-width: 6; stroke-linecap: round; stroke-linejoin: round; opacity: 0; visibility: hidden; }
+  .hero__tag { position: absolute; bottom: var(--space-4); margin: 0; }
+  .hero__tag--bl { left: var(--grid-margin); }
+  .hero__tag--br { right: var(--grid-margin); }
+  /* SNS: a column at the right edge, in the middle (TB / PC); the icon's drawing lines up with the margin */
+  .hero :global(.hero__sns) { position: absolute; right: calc(var(--grid-margin) - var(--space-1) * 3); top: 50%; translate: 0 -50%;
+    flex-direction: column; flex-wrap: nowrap; }
+  /* SP: a row at the foot on the right, over the name */
   @media (max-width: 767px) {
-    .hero { --hero-zoom: 1.1; } /* 90vw x 1.1 = 99vw: close on the face without the lockup leaving the screen */
-    .hero__lockup { width: min(90vw, calc((100svh - 200px) * 1.027)); margin-top: 0; }
+    .hero { --lk-w: min(calc(100vw - var(--grid-margin) * 2), calc((100svh - var(--header-h) - var(--space-5)) * 1.027)); }
+    .hero :global(.hero__sns) { top: auto; bottom: calc(var(--space-4) + var(--lh-grotesk-data) + var(--space-2)); translate: none; flex-direction: row; }
   }
 
   /* the page opens */
   @media (prefers-reduced-motion: no-preference) {
-    .hero__wall { animation: hero-wall-in 1.1s var(--ease-sticker) both; }
-    .hero__rings circle { animation: hero-ring-in 1.5s var(--ease-sticker) calc(.25s + var(--i) * 70ms) both; }
-    /* the outlines run, the upper ones first */
-    .hero :global(.lk-lines path) { opacity: 1; stroke-dasharray: 1 1; stroke-dashoffset: 1;
+    .hero__rings circle { animation: hero-ring-in 1.5s var(--ease-sticker) calc(.25s + var(--i) * 70ms) both,
+      hero-ring-beat 2.4s linear calc(3.2s + var(--i) * 90ms) infinite; }
+    /* the outlines run, the upper ones first, and go once the fill is in */
+    .hero :global(.lk-lines path) { opacity: 1; visibility: visible; stroke-dasharray: 1 1; stroke-dashoffset: 1;
       animation: hero-draw 1.25s cubic-bezier(.55, 0, .2, 1) calc(.35s + var(--t) * .55s) both, hero-out .3s linear 2.35s forwards; }
-    /* the backing and the fill come in on a slant */
-    .hero :global(.lk-fill) { animation: hero-fill 1s var(--ease-sticker) 1.3s both; }
+    /* the backing and the fill come in on a slant (no clip left once in) */
+    .hero :global(.lk-fill) { animation: hero-fill 1s var(--ease-sticker) 1.3s backwards; }
     .hero__tag { animation: hero-rise .9s var(--ease-sticker) 1.8s both; }
-  }
-  @keyframes hero-wall-in {
-    from { clip-path: polygon(0 0, 0 0, -40% 100%, -40% 100%); }
-    to { clip-path: polygon(0 0, 140% 0, 100% 100%, -40% 100%); }
+    .hero :global(.hero__sns li) { animation: hero-rise .9s var(--ease-sticker) 1.9s both; }
+    .hero :global(.hero__sns li:nth-child(2)) { animation-delay: 1.97s; }
+    .hero :global(.hero__sns li:nth-child(3)) { animation-delay: 2.04s; }
   }
   @keyframes hero-ring-in { from { opacity: 0; transform: scale(.5); } }
+  /* ドクン、ドクン: two beats, the second weaker, then rest */
+  @keyframes hero-ring-beat {
+    0%, 22%, 100% { stroke: var(--color-rule-soft); transform: none; }
+    6% { stroke: var(--color-ink-sub); transform: scale(1.02); }
+    12% { stroke: var(--color-rule-soft); transform: scale(1.004); }
+    16% { stroke: var(--color-ink-sub); transform: scale(1.012); }
+  }
   @keyframes hero-draw { to { stroke-dashoffset: 0; } }
-  @keyframes hero-out { to { opacity: 0; } }
+  @keyframes hero-out { to { opacity: 0; visibility: hidden; } }
   @keyframes hero-fill {
     from { clip-path: polygon(-30% 0, -30% 0, -60% 100%, -60% 100%); }
     to { clip-path: polygon(-30% 0, 150% 0, 120% 100%, -60% 100%); }
   }
   @keyframes hero-rise { from { opacity: 0; transform: translateY(12px); } }
 
-  /* scroll: close on the face -> the whole lockup (browsers with scroll-driven animations only) */
-  @supports (animation-timeline: scroll()) {
+  /* scroll (browsers with scroll-driven animations only) */
+  @supports (animation-timeline: view()) {
     @media (prefers-reduced-motion: no-preference) {
-      .hero { height: 180svh; }
+      .hero { height: 180svh; view-timeline: --hero block; }
       .hero__stage { position: sticky; top: 0; }
-      .hero__lockup { animation: hero-assemble linear both; }
-      .hero__rings { animation: hero-rings-turn linear both; }
-      /* animation-timeline sits in a rule of its own: the CSS minifier folds it into the animation shorthand above
-         as "animation: ... scroll(root)", which browsers reject, dropping the motion (found on the wakabayashi site) */
-      .hero .hero__stage .hero__lockup, .hero .hero__stage .hero__rings { animation-timeline: scroll(root block); animation-range: 0 80vh; }
+      .hero__wall { -webkit-mask-image: none; mask-image: none; animation: hero-mist linear both; }
+      .hero__sticker { will-change: transform; animation: hero-shrink linear both; }
+      /* animation-timeline sits in a rule of its own: the CSS minifier folds it into the animation shorthand above,
+         which browsers reject, dropping the motion (found on the wakabayashi site).
+         contain 0% = the top of the page; contain 100% = the stage lets go; exit 100% = the hero has left */
+      .hero .hero__stage .hero__wall { animation-timeline: --hero; animation-range: contain 0% contain 100%; }
+      .hero .hero__stage .hero__sticker { animation-timeline: --hero; animation-range: contain 0% exit 100%; }
     }
   }
-  @keyframes hero-assemble { from { transform: scale(var(--hero-zoom)); } to { transform: none; } }
-  @keyframes hero-rings-turn { from { transform: scale(1.4) rotate(-16deg); } to { transform: none; } }
+  @keyframes hero-mist { from { opacity: 0; } }
+  @keyframes hero-shrink { to { transform: scale(.44); } }
 
   /* ---------- WORKS ---------- */
   .home-works__head { row-gap: var(--space-4); margin-bottom: var(--block-gap); align-items: end; }

@@ -78,7 +78,7 @@ export const works: Work[] = [
     posts: [
       {
         kind: 'short',
-        image: img(p1, '雨の夜の部屋で、うつぶせでスマートフォンを見る女の子のショート動画'),
+        image: { ...img(p1, '雨の夜の部屋で、うつぶせでスマートフォンを見る女の子のショート動画'), focus: '50% 100%' },
         links: [tiktok('video/7703174687689559317'), instagram('reel/DfMuF0Rh-FX'), youtube('gaGauU1kXLc')],
       },
       {
@@ -97,7 +97,7 @@ export const works: Work[] = [
     key: img(k2, 'ラベンダーの背景に、首にオレンジのヘッドホンをかけた長い髪の女の子'),
     cut: img(c2, '首にオレンジのヘッドホンをかけ、手すりにもたれる女の子'),
     face: img(f2, '首にヘッドホンをかけて微笑む女の子の顔'),
-    scene: img(s2, '夜の街を背にした屋上の女の子'),
+    scene: { ...img(s2, '夜の街を背にした屋上の女の子'), focus: '50% 15%' },
     focus: '40% 30%',
     music: [music.musubi],
     gear: [EH11],

@@ -1,24 +1,43 @@
 ---
 /**
- * The works list on HOME, between the Works heading and the chapters. The arrangement comes from the wakabayashi site
- * (2026-11-12); the look is this site's (2026-11-13, the user: match the site's tone, do not bring it in as it was).
- *   - the newest work large on the left, staying while the list scrolls by (phones and portrait tablets: first)
- *   - the rest in two columns, newest first, the right column 48px lower (as `pair` on WORKS)
+ * The works list on HOME, between the Works heading and the chapters. The layout is the wakabayashi site's
+ * (2026-11-12, the user: keep it as it was, the large picture staying on the left while the list scrolls by);
+ * the words and the way the pictures come in are this site's (2026-11-13).
+ *   - every picture of every work, newest work first: the key picture, the scene version, the pictures of its posts
+ *     (the same picture once). The wakabayashi site lists every post the same way. A picture crops to 4:5 at its
+ *     own focus (Img.focus; the key picture: Work.focus), else at the middle.
+ *   - the first (the newest work's key picture) large on the left, staying while the rest scroll by in two columns
+ *     (the right column 96px lower). Phones and portrait tablets: the large one first, then the two columns.
  * Cards: src/components/WorkTile.astro. Look: base.css "works list".
  */
 import WorkTile from './WorkTile.astro';
-import type { Work } from '../lib/types';
+import type { Img, Work } from '../lib/types';
 
 interface Props { works: Work[] }
-const [feature, ...rest] = [...Astro.props.works].sort((a, b) => b.no - a.no);
-const tall = feature ? feature.key.height / feature.key.width > 1.5 : false;
+type Pic = { work: Work; img: Img; focus?: string };
+
+const pics: Pic[] = [];
+const seen = new Set<unknown>();
+const add = (work: Work, img: Img | undefined, focus?: string) => {
+  if (!img || seen.has(img.src)) return;
+  seen.add(img.src);
+  pics.push({ work, img, focus });
+};
+for (const w of [...Astro.props.works].sort((a, b) => b.no - a.no)) {
+  add(w, w.key, w.focus);
+  add(w, w.scene, w.scene?.focus);
+  // a short of a work with a scene version is that scene set moving: its poster frame is the scene picture again
+  w.posts.forEach((p) => { if (!(p.kind === 'short' && w.scene)) add(w, p.image, p.image?.focus); });
+}
+const [feature, ...rest] = pics;
+const tall = feature ? feature.img.height / feature.img.width > 1.5 : false;
 ---
 {feature && (
   <div class="wl">
-    <div class="wl__feature" data-shape={tall ? 'tall' : 'portrait'}><WorkTile work={feature} big /></div>
+    <div class="wl__feature" data-shape={tall ? 'tall' : 'portrait'}><WorkTile {...feature} big /></div>
     {rest.length > 0 && (
       <ul class="wl__list">
-        {rest.map((w) => <li><WorkTile work={w} /></li>)}
+        {rest.map((p) => <li><WorkTile {...p} /></li>)}
       </ul>
     )}
   </div>
