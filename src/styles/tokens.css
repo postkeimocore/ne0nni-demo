@@ -34,8 +34,6 @@
   --phone-shadow-near: rgba(14, 14, 18, .36);
   /* the HOME hero sticker (the lockup): its shadow, the backing moved down right */
   --sticker-shadow: rgba(14, 14, 18, .2);
-  /* behind the dialog that shows a work whole (HOME works list) */
-  --backdrop: rgba(14, 14, 18, .88);
   --display-opsz: 24;              /* Bodoni Moda optical size, fixed */
   --grain-light: url(/assets/grain-light.png);  /* fine dark specks on paper / mist */
   --grain-dark: url(/assets/grain-dark.png);    /* fine light specks on the night section */
@@ -107,7 +105,6 @@
   --radius-pill: 24px;
   --radius-frame: 48px;
   --thumb: 64px;
-  --line-frame: 2px;      /* the frame round a picture and its caption box in the HOME works list */
   /* NE0NNi* icons placed as a spot drawing beside a section's text (height; width follows the drawing) */
   /* NE0NNi* icon beside a display heading (labels and titles: the line height). ex = the x-height of the heading's
      font: on TB / PC the icon is as tall as the lowercase (2026-11-12, the user); on phones half again, so it

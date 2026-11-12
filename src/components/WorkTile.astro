@@ -1,12 +1,10 @@
 ---
 /**
- * One tile of the HOME works list (src/components/WorkList.astro): the picture in a frame, a caption box under it,
- * and, in a <template>, what the dialog shows when the picture is pressed (the whole picture and the way on).
- * Caption: the number and the hashtags of the gear (maker, model) and the song (artist, title); a work with neither
- * shows its kind. Hashtags have their spaces taken out, and a maker its hyphen (audio-technica -> #audiotechnica).
+ * One work in the HOME works list (src/components/WorkList.astro), set like the cards on WORKS:
+ * the picture (4:5, or whole when the large one is tall), then the number, the series and the kind. The card goes to
+ * the work's page. It rises in with the other blocks (data-reveal="up").
  */
 import Art from './Art.astro';
-import Go from './Go.astro';
 import { KIND_LABEL, label, pathOf } from '../lib/cms';
 import type { Work } from '../lib/types';
 
@@ -16,32 +14,18 @@ interface Props {
   big?: boolean;
 }
 const { work: w, big = false } = Astro.props;
-const tag = (s: string) => s.replace(/[\s　]+/g, '');
-const tags = [
-  ...w.gear.flatMap((g) => [g.brand.replace(/-/g, ''), g.model]),
-  ...w.music.flatMap((m) => [m.artist, m.title]),
-].map(tag);
 const tall = big && w.key.height / w.key.width > 1.5;
 const sizes = big ? '(min-width: 1200px) 40vw, (min-width: 768px) 50vw, 100vw' : '(min-width: 1200px) 24vw, 50vw';
 ---
-<article class="wtile" data-shape={tall ? 'tall' : 'portrait'}>
-  <button class="wtile__art" type="button" aria-haspopup="dialog" aria-label={`${label(w)} を大きく見る：${w.key.alt}`} data-wl-open>
-    <Art img={w.key} sizes={sizes} decorative style={w.focus && !tall ? `object-position:${w.focus}` : undefined} />
-  </button>
-  <p class="wtile__cap">
-    <span class="t-number wtile__no">{label(w)}</span>
-    {tags.length ? tags.map((t) => <span class="wtile__tag">#{t}</span>) : <span class="wtile__tag">{KIND_LABEL[w.kind]}</span>}
-  </p>
-  <template data-wl-tpl>
-    <figure class="wl-box__fig" data-ratio={(w.key.width / w.key.height).toFixed(4)} style={`aspect-ratio:${w.key.width}/${w.key.height}`}>
-      <Art img={w.key} sizes="(min-width: 768px) 50vw, 100vw" />
-    </figure>
-    <div class="wl-box__cap">
-      <h3 class="wtile__cap wl-box__title" data-wl-title>
-        <span class="t-number wtile__no">{label(w)}</span>
-        {tags.length ? tags.map((t) => <span class="wtile__tag">#{t}</span>) : <span class="wtile__tag">{KIND_LABEL[w.kind]}</span>}
-      </h3>
-      <Go href={pathOf(w)} label={`View ${label(w)}`} />
+<article class="wtile" data-shape={tall ? 'tall' : 'portrait'} data-reveal="up">
+  <a class="wtile__link" href={pathOf(w)}>
+    <div class="wtile__art">
+      <Art img={w.key} sizes={sizes} style={w.focus && !tall ? `object-position:${w.focus}` : undefined} />
     </div>
-  </template>
+    <div class="wtile__cap">
+      <span class="t-number">{label(w)}</span>
+      <span class="t-grotesk-title">{w.series.name}</span>
+      <span class="t-label wtile__kind">{KIND_LABEL[w.kind]}</span>
+    </div>
+  </a>
 </article>
