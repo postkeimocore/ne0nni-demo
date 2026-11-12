@@ -465,6 +465,8 @@ section[id], [id^="look-"] { scroll-margin-top: var(--header-h); }
 
 /* ---------- page head (lower pages) ---------- */
 .page-head { padding-top: var(--space-8); padding-bottom: var(--block-gap); }
+/* what comes right after a page heading starts one block-gap under it (no section space on top) */
+.page-head + .l-section { padding-top: 0; }
 .page-head__grid { row-gap: var(--space-4); align-items: end; }
 .page-head__title { grid-column: 1 / -1; }
 .page-head__lead { grid-column: 1 / -1; display: grid; gap: var(--space-3); }

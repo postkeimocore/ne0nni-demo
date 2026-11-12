@@ -163,18 +163,34 @@ export default function site() {
     build();
   });
 
-  // ---------- works list (WORKS): filter in a panel of checkboxes and sort, like a shop's list ----------
+  // ---------- works list (WORKS): filter with checkboxes and sort, like a shop's list ----------
+  // The options sit in the left column on PC (it stays while the list scrolls) and in the panel on phones and
+  // tablets: one set of checkboxes, moved between the two.
   // A work is shown when, in every group that has a picked option, it has one of them (any inside a group, all
   // across groups). Each option shows how many works it would show with the other groups as they are.
   const list = document.querySelector('[data-works]');
   const shop = document.querySelector('[data-shop]');
   const panel = document.querySelector('[data-facets]');
-  if (list && shop && panel) {
+  const options = document.querySelector('[data-facet-list]');
+  if (list && shop && panel && options) {
+    const side = document.querySelector('[data-side]');
+    const slot = panel.querySelector('[data-facet-slot]');
+    const pc = window.matchMedia('(min-width: 1200px)');
+    const place = () => {
+      if (pc.matches) { if (panel.open) panel.close(); side.append(options); } else slot.append(options);
+    };
+    place();
+    pc.addEventListener('change', place);
+    // the bar marks itself once it sticks under the header (the ground under the header shows then)
+    const bar = shop.querySelector('[data-bar]');
+    const stuck = () => bar.classList.toggle('is-stuck', bar.getBoundingClientRect().top <= parseFloat(getComputedStyle(bar).top) + 0.5 && window.scrollY > 0);
+    window.addEventListener('scroll', stuck, { passive: true });
+    stuck();
     const items = [...list.querySelectorAll('[data-keys]')];
-    const boxes = [...panel.querySelectorAll('input[type="checkbox"]')];
+    const boxes = [...options.querySelectorAll('input[type="checkbox"]')];
     const sort = shop.querySelector('[data-sort]');
     const sortLabel = shop.querySelector('[data-sort-label]');
-    const chips = shop.querySelector('[data-chips]');
+    const chipBoxes = [...shop.querySelectorAll('[data-chips]')];
     const badge = shop.querySelector('[data-active-n]');
     const empty = document.querySelector('[data-works-empty]');
     const keys = new Map(items.map((el) => [el, el.dataset.keys.split(' ')]));
@@ -207,8 +223,10 @@ export default function site() {
       const on = boxes.filter((b) => b.checked);
       badge.textContent = String(on.length);
       badge.hidden = on.length === 0;
-      const clear = on.length ? [Object.assign(document.createElement('button'), { type: 'button', className: 'fchip fchip--clear t-label', textContent: 'すべて解除', onclick: clearAll })] : [];
-      chips.replaceChildren(...on.map(chip), ...clear);
+      chipBoxes.forEach((c) => {
+        const clear = on.length ? [Object.assign(document.createElement('button'), { type: 'button', className: 'fchip fchip--clear t-label', textContent: 'すべて解除', onclick: clearAll })] : [];
+        c.replaceChildren(...on.map(chip), ...clear);
+      });
       if (empty) empty.hidden = shown.length > 0;
       sortLabel.textContent = sort.selectedOptions[0].textContent;
       if (push) {

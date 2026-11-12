@@ -52,48 +52,81 @@ const jsonLd = {
   </header>
 
   <section class="l-section l-container works" aria-label="作品一覧">
-    <div class="shopbar" data-shop>
-      <div class="shopbar__bar">
-        <button class="shopbar__ctl shopbar__ctl--filter" type="button" aria-haspopup="dialog" aria-controls="facets" data-facets-open>
+    <div class="shop">
+      <!-- PC: the options stay on the left while the list scrolls. Phones and tablets: site.js moves them into the panel -->
+      <aside class="shop-side" aria-labelledby="side-h" data-side>
+        <div class="shop-side__head">
           <svg class="shopbar__icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7h18M3 17h18" /><circle cx="9" cy="7" r="2.5" /><circle cx="15" cy="17" r="2.5" /></svg>
-          <span class="t-label">絞り込み</span>
-          <span class="shopbar__badge t-label" data-active-n hidden>0</span>
-        </button>
-        <div class="shopbar__ctl shopbar__ctl--sort">
-          <span class="t-label shopbar__sort-name">並び替え</span>
-          <span class="t-label" data-sort-label>新しい順</span>
-          <svg class="shopbar__icon shopbar__icon--chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6" /></svg>
-          <select class="shopbar__select" aria-label="並び替え" data-sort>
-            <option value="new">新しい順</option>
-            <option value="old">古い順</option>
-          </select>
+          <h2 class="t-label" id="side-h">絞り込み</h2>
+        </div>
+        <div class="facet-list" data-facet-list>
+          {groups.map((g) => (
+            <fieldset class="facet">
+              <legend class="facet__title t-label with-icon with-icon--slot"><Icon topic={g.icon} size="label" />{g.title}</legend>
+              <ul class="facet__opts">
+                {g.items.map((it) => (
+                  <li>
+                    <label class="opt">
+                      <input type="checkbox" name={g.id} value={it.key} data-label={it.label} data-name={g.name ? '' : undefined} />
+                      <span class:list={['opt__label t-grotesk-data', g.name && 'is-name']}>{it.label}</span>
+                      <span class="opt__n t-grotesk-data" data-n>{it.n}</span>
+                    </label>
+                  </li>
+                ))}
+              </ul>
+            </fieldset>
+          ))}
+        </div>
+      </aside>
+
+      <div class="shop-main">
+        <div class="shopbar" data-shop>
+          <div class="shopbar__bar" data-bar>
+            <button class="shopbar__ctl shopbar__ctl--filter" type="button" aria-haspopup="dialog" aria-controls="facets" data-facets-open>
+              <svg class="shopbar__icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7h18M3 17h18" /><circle cx="9" cy="7" r="2.5" /><circle cx="15" cy="17" r="2.5" /></svg>
+              <span class="t-label">絞り込み</span>
+              <span class="shopbar__badge t-label" data-active-n hidden>0</span>
+            </button>
+            <p class="t-label shopbar__count shopbar__count--bar"><span data-count>{works.length}</span> works</p>
+            <div class="shopbar__chips shopbar__chips--bar" data-chips></div>
+            <div class="shopbar__ctl shopbar__ctl--sort">
+              <span class="t-label shopbar__sort-name">並び替え</span>
+              <span class="t-label" data-sort-label>新しい順</span>
+              <svg class="shopbar__icon shopbar__icon--chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6" /></svg>
+              <select class="shopbar__select" aria-label="並び替え" data-sort>
+                <option value="new">新しい順</option>
+                <option value="old">古い順</option>
+              </select>
+            </div>
+          </div>
+          <div class="shopbar__sub">
+            <p class="t-label shopbar__count"><span data-count>{works.length}</span> works</p>
+            <div class="shopbar__chips" data-chips></div>
+          </div>
+          <p class="u-sr" aria-live="polite"><span data-count>{works.length}</span> works</p>
+        </div>
+
+        <div class="shop-grid" data-works>
+          {works.map((w) => (
+            <article class="wcard" data-keys={keysOf(w).join(' ')} data-no={w.no}>
+              <a class="wcard__link" href={pathOf(w)}>
+                <div class="wcard__art">
+                  <Art img={w.key} sizes="(min-width: 1200px) 24vw, (min-width: 768px) 33vw, 50vw" style={w.focus ? `object-position:${w.focus}` : undefined} />
+                </div>
+                <div class="wcard__cap">
+                  <span class="t-number">{label(w)}</span>
+                  <span class="t-label wcard__kind">{KIND_LABEL[w.kind]}</span>
+                  <span class="t-grotesk-title wcard__series">{w.series.name}</span>
+                </div>
+              </a>
+            </article>
+          ))}
+        </div>
+        <div class="shop-empty" data-works-empty hidden>
+          <p class="t-body">選んだ条件に当てはまる作品はありません。</p>
+          <button class="sbtn t-label" type="button" data-clear>すべて解除</button>
         </div>
       </div>
-      <div class="shopbar__sub">
-        <p class="t-label shopbar__count" aria-live="polite"><span data-count>{works.length}</span> works</p>
-        <div class="shopbar__chips" data-chips></div>
-      </div>
-    </div>
-
-    <div class="shop-grid" data-works>
-      {works.map((w) => (
-        <article class="wcard" data-keys={keysOf(w).join(' ')} data-no={w.no}>
-          <a class="wcard__link" href={pathOf(w)}>
-            <div class="wcard__art">
-              <Art img={w.key} sizes="(min-width: 768px) 33vw, 50vw" style={w.focus ? `object-position:${w.focus}` : undefined} />
-            </div>
-            <div class="wcard__cap">
-              <span class="t-number">{label(w)}</span>
-              <span class="t-label wcard__kind">{KIND_LABEL[w.kind]}</span>
-              <span class="t-grotesk-title wcard__series">{w.series.name}</span>
-            </div>
-          </a>
-        </article>
-      ))}
-    </div>
-    <div class="shop-empty" data-works-empty hidden>
-      <p class="t-body">選んだ条件に当てはまる作品はありません。</p>
-      <button class="sbtn t-label" type="button" data-clear>すべて解除</button>
     </div>
   </section>
 
@@ -102,24 +135,7 @@ const jsonLd = {
       <h2 class="t-label" id="facets-h">絞り込み</h2>
       <button class="facets__close" type="button" aria-label="絞り込みを閉じる" data-facets-close><span></span></button>
     </div>
-    <div class="facets__body">
-      {groups.map((g) => (
-        <fieldset class="facet">
-          <legend class="facet__title t-label with-icon with-icon--slot"><Icon topic={g.icon} size="label" />{g.title}</legend>
-          <ul class="facet__opts">
-            {g.items.map((it) => (
-              <li>
-                <label class="opt">
-                  <input type="checkbox" name={g.id} value={it.key} data-label={it.label} data-name={g.name ? '' : undefined} />
-                  <span class:list={['opt__label t-grotesk-data', g.name && 'is-name']}>{it.label}</span>
-                  <span class="opt__n t-grotesk-data" data-n>{it.n}</span>
-                </label>
-              </li>
-            ))}
-          </ul>
-        </fieldset>
-      ))}
-    </div>
+    <div class="facets__body" data-facet-slot></div>
     <div class="facets__foot">
       <button class="sbtn t-label" type="button" data-clear>すべて解除</button>
       <button class="sbtn sbtn--fill t-label" type="button" data-facets-close>作品を見る（<span data-count>{works.length}</span>）</button>
@@ -139,13 +155,14 @@ const jsonLd = {
     border-block: 1px solid var(--color-ink);
     background-color: var(--color-paper); background-image: var(--grain-light); background-size: 256px 256px; background-attachment: fixed;
   }
-  /* the ground under the header, so the pictures do not show above the bar once it sticks (the header letters turn
-     black over it). Before it sticks it lies over the empty space under the page heading. */
+  /* the ground under the header once the bar has stuck (site.js: is-stuck), so the pictures do not show above it
+     (the header letters turn black over it). The whole width: the section clips it at the window's edges. */
   .shopbar__bar::before {
-    content: ""; position: absolute; bottom: calc(100% + 1px); left: calc(var(--grid-margin) * -1); right: calc(var(--grid-margin) * -1);
-    height: var(--header-h); pointer-events: none;
+    content: ""; position: absolute; bottom: calc(100% + 1px); left: -100vw; right: -100vw;
+    height: var(--header-h); pointer-events: none; visibility: hidden;
     background-color: var(--color-paper); background-image: var(--grain-light); background-size: 256px 256px; background-attachment: fixed;
   }
+  .shopbar__bar.is-stuck::before { visibility: visible; }
   .shopbar__ctl {
     position: relative; display: flex; align-items: center; justify-content: center; gap: var(--space-2);
     height: 100%; padding-inline: var(--space-3); border: 0; background: none; color: var(--color-ink); cursor: pointer;
@@ -177,6 +194,27 @@ const jsonLd = {
   .shopbar__count span { font-variant-numeric: tabular-nums; }
   .shopbar__chips { display: flex; flex-wrap: wrap; gap: var(--space-2); }
   .shopbar__chips:empty { display: none; }
+  /* the number and the picked options go into the bar on PC (shown below it on phones and tablets) */
+  .shopbar__count--bar, .shopbar__chips--bar { display: none; }
+
+  /* ---- PC: the options in a column on the left that stays while the list scrolls (Workman / Amazon) ---- */
+  .shop-side { display: none; }
+  @media (min-width: 1200px) {
+    .shop { display: grid; grid-template-columns: repeat(var(--grid-cols), minmax(0, 1fr)); column-gap: var(--grid-gutter); align-items: start; }
+    .shop-side {
+      display: block; grid-column: 1 / span 3; position: sticky; top: var(--header-h);
+      max-height: calc(100svh - var(--header-h)); overflow-y: auto; overscroll-behavior: contain; padding-bottom: var(--space-5);
+    }
+    .shop-main { grid-column: 4 / -1; align-self: stretch; }
+    .shop-side__head { display: flex; align-items: center; gap: var(--space-2); height: 56px; border-block: 1px solid var(--color-ink); }
+    .shop-side .facet-list { padding-top: var(--space-4); }
+    .shopbar__bar { grid-template-columns: auto minmax(0, 1fr) auto; justify-content: stretch; align-items: center; column-gap: var(--space-3); }
+    .shopbar__ctl--filter, .shopbar__sub { display: none; }
+    .shopbar__count--bar { display: block; }
+    .shopbar__chips--bar { display: flex; flex-wrap: nowrap; overflow-x: auto; }
+    .shopbar__chips--bar:empty { display: block; }
+    .shop-grid { margin-top: var(--space-5); }
+  }
 
   /* ---- the works: an even grid, 2 / 3 across ---- */
   .shop-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--block-gap) var(--grid-gutter); align-items: start; }
@@ -208,7 +246,8 @@ const jsonLd = {
   .facets__close span::before { transform: rotate(45deg); }
   .facets__close span::after { transform: rotate(-45deg); }
   .facets__close:focus-visible { outline: 2px solid var(--color-ink); outline-offset: -4px; }
-  .facets__body { display: grid; align-content: start; gap: var(--space-5); padding: var(--space-4) var(--grid-margin) var(--space-6); overflow-y: auto; overscroll-behavior: contain; }
+  .facets__body { padding: var(--space-4) var(--grid-margin) var(--space-6); overflow-y: auto; overscroll-behavior: contain; }
+  .facet-list { display: grid; align-content: start; gap: var(--space-5); }
   .facet { margin: 0; padding: 0; border: 0; min-width: 0; }
   .facet__title { float: left; width: 100%; margin-bottom: var(--space-2); padding: 0; }
   .facet__opts { clear: both; border-top: 1px solid var(--color-ink); }
