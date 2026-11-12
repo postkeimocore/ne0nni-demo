@@ -1,0 +1,23 @@
+---
+/**
+ * The NE0NNi* lockup (the girl resting her chin on her hands, over the wordmark) as a sticker on the HOME hero.
+ * Taken over from the wakabayashi site (neonni-site-wakabayashi/src/components/Lockup.astro, 2026-11-12):
+ *   .lk-shadow  the sticker's shadow (the backing, moved a little)
+ *   .lk-back    the sticker's white backing (the outline, fattened a little)
+ *   .lk-lines   the outlines, one path each: they run when the page opens and fade once the fill is in
+ *   .lk-ink     the black fill
+ * Shapes: src/data/lockup.json (traced from the logo image on the wakabayashi site)
+ */
+import L from '../data/lockup.json';
+---
+<svg class="lockup" viewBox={`0 0 ${L.w} ${L.h}`} role="img"
+  aria-label="NE0NNi* のエンブレム。ヘッドホンをつけて頬杖をつく、ボブの女の子の線画と、NE0NNi* のロゴ">
+  <g class="lk-fill">
+    <path class="lk-shadow" d={L.backing} transform="translate(26 30)"></path>
+    <path class="lk-back" d={L.backing}></path>
+    <path class="lk-ink" d={L.ink} fill-rule="evenodd"></path>
+  </g>
+  <g class="lk-lines" aria-hidden="true">
+    {L.strokes.map((s) => <path d={s.d} pathLength="1" style={`--t:${s.t}`} />)}
+  </g>
+</svg>

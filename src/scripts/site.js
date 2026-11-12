@@ -70,6 +70,51 @@ export default function site() {
     if (reduce) el.classList.add('is-in'); else io.observe(el);
   });
 
+  // ---------- works list on HOME (from the wakabayashi site): tiles come in on a slant; a picture opens whole ----------
+  document.querySelectorAll('[data-wl]').forEach((wl) => {
+    if (!reduce && 'IntersectionObserver' in window) {
+      wl.classList.add('is-io');
+      wl.querySelectorAll('.wl__list > li').forEach((li, i) => li.style.setProperty('--d', `${(i % 2) * 120}ms`));
+      // watch the item (never clipped: a clipped element counts as out of view), move the tile inside it
+      const wio = new IntersectionObserver((entries) => {
+        entries.forEach((e) => {
+          if (!e.isIntersecting) return;
+          const el = e.target;
+          el.classList.add('is-in');
+          el.querySelectorAll('img[loading="lazy"]').forEach((img) => { img.loading = 'eager'; });
+          setTimeout(() => el.classList.add('is-done'), 1700); // then unclip, so the focus ring is not cut
+          wio.unobserve(el);
+        });
+      }, { rootMargin: '0px 0px -8% 0px', threshold: 0.1 });
+      wl.querySelectorAll('.wl__item').forEach((el) => wio.observe(el));
+    }
+    const box = wl.querySelector('[data-wl-box]');
+    const content = box.querySelector('[data-wl-content]');
+    const inner = box.querySelector('.wl-box__inner');
+    let opener = null;
+    const lock = (on) => {
+      const html = document.documentElement;
+      if (on) html.style.setProperty('--scrollbar', `${window.innerWidth - html.clientWidth}px`);
+      else html.style.removeProperty('--scrollbar');
+      html.classList.toggle('is-locked', on);
+    };
+    wl.addEventListener('click', (e) => {
+      const btn = e.target.closest('[data-wl-open]');
+      const tpl = btn?.closest('.wtile')?.querySelector('template[data-wl-tpl]');
+      if (!tpl) return;
+      content.replaceChildren(tpl.content.cloneNode(true));
+      inner.style.setProperty('--wl-ratio', content.querySelector('[data-ratio]')?.dataset.ratio || '0.8');
+      const title = content.querySelector('[data-wl-title]');
+      if (title) { title.id = 'wl-box-title'; box.setAttribute('aria-labelledby', title.id); }
+      opener = btn;
+      lock(true);
+      box.showModal();
+    });
+    box.addEventListener('close', () => { lock(false); content.replaceChildren(); opener?.focus(); opener = null; });
+    box.querySelector('[data-wl-close]').addEventListener('click', () => box.close());
+    box.addEventListener('click', (e) => { if (e.target === box) box.close(); }); // the dark round the picture
+  });
+
   // ---------- masthead: hide the header logo while the large hero logo is on screen ----------
   const masthead = document.querySelector('[data-masthead]');
   const header = document.querySelector('.site-header');

@@ -1,0 +1,33 @@
+---
+/**
+ * The works list on HOME, before the chapters (from the wakabayashi site, 2026-11-12: PostFeed / FeedTile / PostCard).
+ *   - the newest work large on the left, staying while the list scrolls by (on phones and portrait tablets: first)
+ *   - the rest in two columns of 4:5 tiles, newest first, the right column one step lower
+ *   - pressing a picture opens it whole in the one <dialog> here (src/scripts/site.js)
+ * Tiles: src/components/WorkTile.astro. Look: base.css "works list". Motion: site.js "works list".
+ */
+import WorkTile from './WorkTile.astro';
+import type { Work } from '../lib/types';
+
+interface Props { works: Work[] }
+const [feature, ...rest] = [...Astro.props.works].sort((a, b) => b.no - a.no);
+const tall = feature ? feature.key.height / feature.key.width > 1.5 : false;
+---
+{feature && (
+  <div class="wl" data-wl>
+    <div class="wl__feature wl__item" data-shape={tall ? 'tall' : 'portrait'}><WorkTile work={feature} big /></div>
+    {rest.length > 0 && (
+      <ul class="wl__list">
+        {rest.map((w) => <li class="wl__item"><WorkTile work={w} /></li>)}
+      </ul>
+    )}
+    <dialog class="wl-box" data-wl-box aria-label="作品を大きく見る">
+      <div class="wl-box__inner">
+        <div data-wl-content></div>
+        <button class="wl-box__close" type="button" aria-label="閉じる" data-wl-close autofocus>
+          <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M5 5l14 14M19 5L5 19" fill="none" stroke="currentColor" stroke-width="2" /></svg>
+        </button>
+      </div>
+    </dialog>
+  </div>
+)}

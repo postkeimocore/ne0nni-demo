@@ -1,0 +1,47 @@
+---
+/**
+ * One tile of the HOME works list (src/components/WorkList.astro): the picture in a frame, a caption box under it,
+ * and, in a <template>, what the dialog shows when the picture is pressed (the whole picture and the way on).
+ * Caption: the number and the hashtags of the gear (maker, model) and the song (artist, title); a work with neither
+ * shows its kind. Hashtags have their spaces taken out, and a maker its hyphen (audio-technica -> #audiotechnica).
+ */
+import Art from './Art.astro';
+import Go from './Go.astro';
+import { KIND_LABEL, label, pathOf } from '../lib/cms';
+import type { Work } from '../lib/types';
+
+interface Props {
+  work: Work;
+  /** the large one on the left: the picture whole when it is tall (9:16), otherwise 4:5 like the rest */
+  big?: boolean;
+}
+const { work: w, big = false } = Astro.props;
+const tag = (s: string) => s.replace(/[\s　]+/g, '');
+const tags = [
+  ...w.gear.flatMap((g) => [g.brand.replace(/-/g, ''), g.model]),
+  ...w.music.flatMap((m) => [m.artist, m.title]),
+].map(tag);
+const tall = big && w.key.height / w.key.width > 1.5;
+const sizes = big ? '(min-width: 1200px) 40vw, (min-width: 768px) 50vw, 100vw' : '(min-width: 1200px) 24vw, 50vw';
+---
+<article class="wtile" data-shape={tall ? 'tall' : 'portrait'}>
+  <button class="wtile__art" type="button" aria-haspopup="dialog" aria-label={`${label(w)} を大きく見る：${w.key.alt}`} data-wl-open>
+    <Art img={w.key} sizes={sizes} decorative style={w.focus && !tall ? `object-position:${w.focus}` : undefined} />
+  </button>
+  <p class="wtile__cap">
+    <span class="t-number wtile__no">{label(w)}</span>
+    {tags.length ? tags.map((t) => <span class="wtile__tag">#{t}</span>) : <span class="wtile__tag">{KIND_LABEL[w.kind]}</span>}
+  </p>
+  <template data-wl-tpl>
+    <figure class="wl-box__fig" data-ratio={(w.key.width / w.key.height).toFixed(4)} style={`aspect-ratio:${w.key.width}/${w.key.height}`}>
+      <Art img={w.key} sizes="(min-width: 768px) 50vw, 100vw" />
+    </figure>
+    <div class="wl-box__cap">
+      <h3 class="wtile__cap wl-box__title" data-wl-title>
+        <span class="t-number wtile__no">{label(w)}</span>
+        {tags.length ? tags.map((t) => <span class="wtile__tag">#{t}</span>) : <span class="wtile__tag">{KIND_LABEL[w.kind]}</span>}
+      </h3>
+      <Go href={pathOf(w)} label={`View ${label(w)}`} />
+    </div>
+  </template>
+</article>

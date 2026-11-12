@@ -544,3 +544,86 @@ section[id], [id^="look-"] { scroll-margin-top: var(--header-h); }
 
 /* ---------- posts: an icon for each platform the post is on ---------- */
 .post__links { display: inline-flex; margin-right: calc(var(--space-1) * -3); }
+
+/* ---------- works list on HOME (from the wakabayashi site, 2026-11-12) ----------
+   The newest work large on the left, staying while the rest scroll by in two columns of 4:5 tiles (the right column
+   one step lower). Each picture sits in a 2px ink frame with a paper caption box under it: the number and hashtags.
+   Phones and portrait tablets: the newest first, then the two columns. Pressing a picture opens it whole. */
+.wl { display: grid; row-gap: var(--space-6); align-items: start; }
+.wl__feature { width: 100%; }
+.wl__list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-5) var(--space-3); align-items: start; }
+.wtile__art {
+  display: block; width: 100%; aspect-ratio: 4 / 5; padding: 0; overflow: hidden; cursor: zoom-in;
+  border: var(--line-frame) solid var(--color-ink); background: var(--color-art);
+}
+.wtile[data-shape="tall"] .wtile__art { aspect-ratio: 9 / 16; }
+.wtile__art img { width: 100%; height: 100%; object-fit: cover; transition: transform .9s var(--ease-sticker); }
+.wtile__art:hover img { transform: scale(1.04); }
+.wtile__art:focus-visible { outline-offset: 4px; }
+.wtile__cap {
+  display: flex; flex-wrap: wrap; align-items: baseline; gap: 0 var(--space-3);
+  margin-top: var(--space-2); padding: var(--space-1) var(--space-3);
+  background: var(--color-paper); border: var(--line-frame) solid var(--color-ink);
+}
+.wtile__no { font-size: var(--fs-grotesk-data); line-height: var(--lh-grotesk-data); }
+/* a tag longer than the box (a Japanese artist's name on a phone) breaks inside; the others wrap whole */
+.wtile__tag { font: 500 var(--fs-small)/var(--lh-small) var(--font-gothic); letter-spacing: var(--ls-ja-body); overflow-wrap: anywhere; }
+@media (min-width: 768px) {
+  .wl__feature { width: min(100%, calc((100svh - var(--header-h) - 152px) * .8)); }
+  .wl__feature[data-shape="tall"] { width: min(100%, calc((100svh - var(--header-h) - 152px) * 9 / 16)); }
+  .wl__list { gap: var(--space-7) var(--space-5); }
+  .wl__list > li:nth-child(even) { margin-top: var(--space-8); }
+}
+/* side by side: TB landscape (8 columns) and PC (12) */
+@media (min-width: 768px) and (orientation: landscape), (min-width: 1200px) {
+  .wl { grid-template-columns: repeat(var(--grid-cols), minmax(0, 1fr)); column-gap: var(--grid-gutter); }
+  .wl__feature { grid-column: 1 / span 4; position: sticky; top: calc(var(--header-h) + var(--space-4)); }
+  .wl__list { grid-column: 5 / -1; }
+}
+@media (min-width: 1200px) {
+  .wl__feature { grid-column: 1 / span 5; }
+  .wl__list { grid-column: 7 / -1; gap: var(--space-7) var(--space-5); }
+  /* a tall newest work is narrower: the columns on the right get the room */
+  .wl__feature[data-shape="tall"] { grid-column: 1 / span 4; }
+  .wl:has(.wl__feature[data-shape="tall"]) .wl__list { grid-column: 6 / -1; }
+}
+
+/* coming in (site.js adds .is-io when it watches; the watched item itself is never clipped):
+   a curtain on a slant opens left to right, the picture settles from 112% */
+.wl.is-io .wl__item .wtile { clip-path: polygon(0 0, 0 0, -30% 100%, -30% 100%); transition: clip-path 1.15s var(--ease-sticker) var(--d, 0ms); }
+.wl.is-io .wl__item.is-in .wtile { clip-path: polygon(0 0, 130% 0, 100% 100%, -30% 100%); }
+.wl.is-io .wl__item.is-done .wtile { clip-path: none; transition: none; }
+.wl.is-io .wl__item .wtile__art img { transform: scale(1.12); transition: transform 1.6s var(--ease-sticker) var(--d, 0ms); }
+.wl.is-io .wl__item.is-in .wtile__art img { transform: none; }
+.wl.is-io .wl__item.is-in .wtile__art:hover img { transform: scale(1.04); transition-duration: .9s; transition-delay: 0ms; }
+
+/* the dialog: the whole picture (its own ratio, as tall as the screen allows), the caption and the way on */
+html.is-locked { overflow: hidden; padding-right: var(--scrollbar, 0); }
+.wl-box {
+  width: 100%; height: 100%; max-width: none; max-height: none; margin: 0; padding: var(--space-3);
+  border: 0; background: transparent; color: var(--color-ink); overflow: auto; overscroll-behavior: contain;
+}
+.wl-box[open] { display: grid; place-items: center; }
+.wl-box::backdrop { background: var(--backdrop); }
+.wl-box__inner {
+  --cap: 120px; /* the caption under the picture */
+  position: relative;
+  width: min(100%, calc((100svh - var(--space-3) * 4 - var(--cap)) * var(--wl-ratio, .8) + var(--space-3) * 2));
+  padding: var(--space-3); background: var(--color-paper); border: var(--line-frame) solid var(--color-ink);
+}
+.wl-box[open] .wl-box__inner { animation: wl-box-in .7s var(--ease-sticker); }
+.wl-box[open]::backdrop { animation: wl-fade-in .4s var(--ease-sticker); }
+@keyframes wl-box-in { from { clip-path: inset(100% 0 0 0); } to { clip-path: inset(0 0 0 0); } }
+@keyframes wl-fade-in { from { opacity: 0; } }
+.wl-box__fig { margin: 0; overflow: hidden; border: var(--line-frame) solid var(--color-ink); background: var(--color-art); }
+.wl-box__fig img { width: 100%; height: 100%; object-fit: cover; }
+.wl-box__cap { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-2) var(--space-4); margin-top: var(--space-3); }
+.wl-box__title { margin: 0; padding: 0; border: 0; background: none; font-weight: inherit; }
+.wl-box__close {
+  position: absolute; top: 0; right: 0; z-index: 1; display: grid; place-items: center; width: 48px; height: 48px; padding: 0;
+  border: 0; border-left: var(--line-frame) solid var(--color-ink); border-bottom: var(--line-frame) solid var(--color-ink);
+  background: var(--color-paper); color: var(--color-ink); cursor: pointer;
+  transition: background-color var(--dur-1) var(--ease-out), color var(--dur-1) var(--ease-out);
+}
+.wl-box__close:hover { background: var(--color-ink); color: var(--color-paper); }
+.wl-box__close:focus-visible { outline-offset: -6px; }
