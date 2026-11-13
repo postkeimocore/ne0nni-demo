@@ -172,15 +172,27 @@ ul, ol { list-style: none; }
 .data-item dl { display: grid; grid-template-columns: max-content 1fr; column-gap: var(--space-3); row-gap: var(--space-1); align-items: baseline; }
 .data-item dt:first-of-type, .data-item dd:first-of-type { text-box: trim-start cap alphabetic; }
 
-/* ---------- stacked reveal (GLOBAL WORK) ---------- */
-.stack { position: relative; isolation: isolate; }
-.stack__layer { position: absolute; inset: 0; z-index: -1; transition: transform var(--dur-3) var(--ease-out), opacity var(--dur-3) var(--ease-out); }
+/* ---------- stacked reveal (GLOBAL WORK) ----------
+   Three of the picture, scattered and tilted, land one after another and become one: the two copies, then the
+   picture on top (パラパラっと集まる). Each lands in 1.8s, 0.3s apart; the copies go once the picture is down.
+   It starts when the picture's top is 20% up the screen, so most of it is seen (2026-11-13, the user: the works
+   list showed the motion only on the last picture; slower, gathering). The picture is `.stack > img` or, when it
+   sits in a crop of its own, `.stack__top`. */
+.stack { position: relative; isolation: isolate; --stack-land: 1.8s; --stack-step: .3s; }
+.stack__layer { position: absolute; inset: 0; z-index: -1; opacity: 0; }
 .stack__layer img, .stack > img { width: 100%; height: 100%; object-fit: cover; }
-.stack > img { position: relative; transition: transform var(--dur-3) var(--ease-out), opacity var(--dur-2) var(--ease-out); }
-.stack:not(.is-in) > img { transform: rotate(2deg) translate(2%, 4%); opacity: 0; }
-.stack:not(.is-in) .stack__layer:nth-of-type(1) { transform: rotate(-6deg) translate(-6%, 3%); opacity: .55; }
-.stack:not(.is-in) .stack__layer:nth-of-type(2) { transform: rotate(4deg) translate(5%, -2%); opacity: .35; }
-.stack.is-in .stack__layer { opacity: 0; }
+.stack > img { position: relative; }
+.stack:not(.is-in) > img, .stack:not(.is-in) .stack__top { opacity: 0; }
+.stack.is-in .stack__layer:nth-of-type(1) { --from: rotate(-7deg) translate(-8%, 5%);
+  animation: stack-land var(--stack-land) var(--ease-sticker) both,
+    stack-off var(--dur-1) linear calc(var(--stack-land) + var(--stack-step) * 2) forwards; }
+.stack.is-in .stack__layer:nth-of-type(2) { --from: rotate(5deg) translate(7%, -4%);
+  animation: stack-land var(--stack-land) var(--ease-sticker) var(--stack-step) both,
+    stack-off var(--dur-1) linear calc(var(--stack-land) + var(--stack-step) * 2) forwards; }
+.stack.is-in > img, .stack.is-in .stack__top { --from: rotate(2deg) translate(2%, 7%);
+  animation: stack-land var(--stack-land) var(--ease-sticker) calc(var(--stack-step) * 2) both; }
+@keyframes stack-land { from { opacity: 0; transform: var(--from); } 35% { opacity: 1; } to { opacity: 1; transform: none; } }
+@keyframes stack-off { to { opacity: 0; } }
 
 /* ---------- char reveal (Wedding MESSAGE) ---------- */
 [data-reveal="chars"] .word { display: inline-block; white-space: nowrap; }
@@ -393,8 +405,8 @@ body, .l-mist, .posts {
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
-  .stack > img, .stack .stack__layer { transform: none !important; }
-  .stack:not(.is-in) > img { opacity: 1; }
+  .stack > img, .stack .stack__layer, .stack .stack__top { transform: none !important; }
+  .stack:not(.is-in) > img, .stack:not(.is-in) .stack__top { opacity: 1; }
   .stack__layer { display: none; }
   [data-reveal="chars"] .ch { opacity: 1; transform: none; }
 }
@@ -562,7 +574,8 @@ section[id], [id^="look-"] { scroll-margin-top: var(--header-h); }
    large on the left, staying (sticky) while the other pictures scroll by in two columns, the right column 96px
    lower. Phones and portrait tablets: the large one first (at most 560px wide), then the two columns.
    The words and the way the pictures come in are this site's: the picture comes in like the chapters' pictures
-   (two tilted copies behind it), the number, the series and the kind rise in under it, as on WORKS. */
+   (the stacked reveal; the crop is its .stack__top), the number, the series and the kind rise in under it, as on
+   WORKS. */
 .wl { display: grid; align-items: start; }
 .wl__feature { width: min(100%, 560px); margin-bottom: var(--block-gap); }
 .wl__list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--block-gap) var(--grid-gutter); align-items: start; }
@@ -570,8 +583,7 @@ section[id], [id^="look-"] { scroll-margin-top: var(--header-h); }
 .wtile__art { aspect-ratio: 4 / 5; }
 .wtile[data-shape="tall"] .wtile__art { aspect-ratio: 9 / 16; }
 /* the picture itself: crops to its frame (the tilted copies of data-stack stay outside it) */
-.wtile__crop { height: 100%; overflow: hidden; transition: transform var(--dur-3) var(--ease-out), opacity var(--dur-2) var(--ease-out); }
-.wtile__art:not(.is-in) .wtile__crop { transform: rotate(2deg) translate(2%, 4%); opacity: 0; }
+.wtile__crop { height: 100%; overflow: hidden; }
 .wtile__crop img { width: 100%; height: 100%; object-fit: cover; transition: transform var(--dur-3) var(--ease-out); }
 .wtile__link:hover .wtile__crop img { transform: scale(1.03); }
 .wtile__cap { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--space-2) var(--space-3); margin-top: var(--space-3); }

@@ -133,7 +133,8 @@ const jsonLd = [
          sections meet without an edge, and the rings fade
        - the rings beat after the opening: a double beat runs from the centre ring outwards every 2.4s; the rings
          stay ink-sub and only spread
-       - flicker: nothing with fine lines is scaled as a composited layer any more. The rings used to be scaled with
+       - flicker: nothing with fine lines is scaled as a composited layer any more (the rings' own layer is never
+         scaled). The rings used to be scaled with
          the scroll; a composited layer of 1px rings is redrawn at a new scale now and then, and the lines visibly
          jumped between soft and sharp. The rings now only fade; the lockup keeps one raster (will-change) and only
          gets smaller than it was drawn.
@@ -151,7 +152,12 @@ const jsonLd = [
     -webkit-mask-image: linear-gradient(transparent 56%, var(--color-ink)); mask-image: linear-gradient(transparent 56%, var(--color-ink)); }
   .hero__lockup { position: relative; width: var(--lk-w); }
   /* the rings sit round the head (40% down the lockup) and do not get smaller with it */
-  .hero__rings { position: absolute; z-index: -2; left: 50%; top: 40%; width: max(150vw, 150svh); aspect-ratio: 1; translate: -50% -50%; pointer-events: none; }
+  /* will-change: the rings get a layer of their own (never scaled: only the circles inside move, redrawn sharp). In
+     Chrome with the GPU on a Retina Mac, the rings drawn into the page's own layer made the browser show frames with
+     parts of the lockup not drawn yet (blank tiles, the outlines only), several times a second while the hero
+     opened, beat and scrolled: the flicker on PC (2026-11-13). With their own layer: no such frames. */
+  .hero__rings { position: absolute; z-index: -2; left: 50%; top: 40%; width: max(150vw, 150svh); aspect-ratio: 1; translate: -50% -50%; pointer-events: none;
+    will-change: transform; }
   .hero__rings circle { fill: none; stroke: var(--color-ink-sub); stroke-width: 1px; vector-effect: non-scaling-stroke;
     transform-box: fill-box; transform-origin: center; }
   .hero__sticker { position: relative; }

@@ -47,7 +47,7 @@ export default function site() {
     });
   });
 
-  // ---------- stacked reveal: two tilted copies behind the image ----------
+  // ---------- stacked reveal: two tilted copies land, then the picture (base.css) ----------
   document.querySelectorAll('[data-stack]').forEach((el) => {
     const img = el.querySelector('img');
     for (let i = 0; i < 2; i++) {
@@ -66,8 +66,15 @@ export default function site() {
   const io = new IntersectionObserver((entries) => {
     entries.forEach((e) => { if (e.isIntersecting) { e.target.classList.add('is-in'); io.unobserve(e.target); } });
   }, { threshold: 0.25 });
-  document.querySelectorAll('[data-reveal], [data-stack]').forEach((el) => {
+  document.querySelectorAll('[data-reveal]').forEach((el) => {
     if (reduce) el.classList.add('is-in'); else io.observe(el);
+  });
+  // stacked pictures start later, once their top is 20% up the screen, so the landing is seen (2026-11-13)
+  const ioStack = new IntersectionObserver((entries) => {
+    entries.forEach((e) => { if (e.isIntersecting) { e.target.classList.add('is-in'); ioStack.unobserve(e.target); } });
+  }, { rootMargin: '0px 0px -20% 0px' });
+  document.querySelectorAll('[data-stack]').forEach((el) => {
+    if (reduce) el.classList.add('is-in'); else ioStack.observe(el);
   });
 
   // ---------- masthead: hide the header logo while the large hero logo is on screen ----------

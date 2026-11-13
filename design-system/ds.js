@@ -17,7 +17,7 @@
     });
   });
 
-  // stacked reveal — two tilted copies behind the image
+  // stacked reveal — two tilted copies land, then the picture
   document.querySelectorAll('[data-stack]').forEach((el) => {
     const img = el.querySelector('img');
     for (let i = 0; i < 2; i++) {
@@ -36,8 +36,15 @@
       if (e.isIntersecting) { e.target.classList.add('is-in'); io.unobserve(e.target); }
     });
   }, { threshold: 0.35 });
-  document.querySelectorAll('[data-reveal="chars"], [data-stack]').forEach((el) => {
+  document.querySelectorAll('[data-reveal="chars"]').forEach((el) => {
     if (reduce) el.classList.add('is-in'); else io.observe(el);
+  });
+  // stacked pictures start once their top is 20% up the screen (same as the site)
+  const ioStack = new IntersectionObserver((entries) => {
+    entries.forEach((e) => { if (e.isIntersecting) { e.target.classList.add('is-in'); ioStack.unobserve(e.target); } });
+  }, { rootMargin: '0px 0px -20% 0px' });
+  document.querySelectorAll('[data-stack]').forEach((el) => {
+    if (reduce) el.classList.add('is-in'); else ioStack.observe(el);
   });
 
   // posts: the player loads only when the phone's screen is pressed (same as the site)

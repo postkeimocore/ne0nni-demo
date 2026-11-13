@@ -2,7 +2,7 @@
 /**
  * One picture in the HOME works list (src/components/WorkList.astro), with this site's words and motion:
  *   - the picture (4:5; the large one whole when it is tall, 9:16) comes in like the pictures of the chapters:
- *     two tilted copies behind it settle and fade (data-stack, base.css "stacked reveal")
+ *     two tilted copies and then the picture land one after another (data-stack, base.css "stacked reveal")
  *   - under it, as on WORKS: the number, the series and the kind; they rise in (data-reveal="up")
  * The card goes to the work's page.
  */
@@ -26,7 +26,7 @@ const sizes = big ? '(min-width: 1200px) 40vw, (min-width: 768px) 50vw, 100vw' :
 <article class="wtile" data-shape={tall ? 'tall' : 'portrait'}>
   <a class="wtile__link" href={pathOf(w)}>
     <div class="wtile__art stack" data-stack>
-      <div class="wtile__crop"><Art img={img} sizes={sizes} style={pos ? `object-position:${pos}` : undefined} /></div>
+      <div class="wtile__crop stack__top"><Art img={img} sizes={sizes} style={pos ? `object-position:${pos}` : undefined} /></div>
     </div>
     <div class="wtile__cap" data-reveal="up">
       <span class="t-number">{label(w)}</span>
