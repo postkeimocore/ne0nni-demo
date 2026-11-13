@@ -131,7 +131,8 @@ const jsonLd = [
        - scroll: the stage stays while the first 80svh scrolls by, and the lockup keeps getting smaller until the
          hero has left the screen; meanwhile the ground turns from paper to mist (the Works ground), so the two
          sections meet without an edge, and the rings fade
-       - the rings beat after the opening: a double beat runs from the centre ring outwards every 2.4s
+       - the rings beat after the opening: a double beat runs from the centre ring outwards every 2.4s; the rings
+         stay ink-sub and only spread
        - flicker: nothing with fine lines is scaled as a composited layer any more. The rings used to be scaled with
          the scroll; a composited layer of 1px rings is redrawn at a new scale now and then, and the lines visibly
          jumped between soft and sharp. The rings now only fade; the lockup keeps one raster (will-change) and only
@@ -151,7 +152,7 @@ const jsonLd = [
   .hero__lockup { position: relative; width: var(--lk-w); }
   /* the rings sit round the head (40% down the lockup) and do not get smaller with it */
   .hero__rings { position: absolute; z-index: -2; left: 50%; top: 40%; width: max(150vw, 150svh); aspect-ratio: 1; translate: -50% -50%; pointer-events: none; }
-  .hero__rings circle { fill: none; stroke: var(--color-rule-soft); stroke-width: 1px; vector-effect: non-scaling-stroke;
+  .hero__rings circle { fill: none; stroke: var(--color-ink-sub); stroke-width: 1px; vector-effect: non-scaling-stroke;
     transform-box: fill-box; transform-origin: center; }
   .hero__sticker { position: relative; }
   .hero :global(.lockup) { display: block; width: 100%; height: auto; overflow: visible; }
@@ -186,12 +187,14 @@ const jsonLd = [
     .hero :global(.hero__sns li:nth-child(3)) { animation-delay: 2.04s; }
   }
   @keyframes hero-ring-in { from { opacity: 0; transform: scale(.5); } }
-  /* ドクン、ドクン: two beats, the second weaker, then rest */
+  /* ドクン、ドクン: two beats, the second weaker, then rest. The rings only spread: their colour stays ink-sub
+     (2026-11-13, the user: the lines went pale between the beats, and the colour going dark / pale / dark / pale
+     in 0.4s, ring after ring, read as flicker) */
   @keyframes hero-ring-beat {
-    0%, 22%, 100% { stroke: var(--color-rule-soft); transform: none; }
-    6% { stroke: var(--color-ink-sub); transform: scale(1.02); }
-    12% { stroke: var(--color-rule-soft); transform: scale(1.004); }
-    16% { stroke: var(--color-ink-sub); transform: scale(1.012); }
+    0%, 22%, 100% { transform: none; }
+    6% { transform: scale(1.02); }
+    12% { transform: scale(1.004); }
+    16% { transform: scale(1.012); }
   }
   @keyframes hero-draw { to { stroke-dashoffset: 0; } }
   @keyframes hero-out { to { opacity: 0; visibility: hidden; } }
