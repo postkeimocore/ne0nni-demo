@@ -22,6 +22,7 @@ import k3 from '../assets/art/003-key.webp';
 import c3 from '../assets/art/003-cut.webp';
 import g3 from '../assets/art/003-gear.webp';
 import l3 from '../assets/art/003-lettered.webp';
+import p3 from '../assets/art/003-short-poster.webp';
 import k4 from '../assets/art/004-key.webp';
 import g4 from '../assets/art/004-gear.webp';
 import k5 from '../assets/art/005-key.webp';
@@ -131,7 +132,7 @@ export const works: Work[] = [
     lettered: img(ig2, 'HEADPHONES GIRL と NE0NNi* のロゴ、FiiO EH11 の文字と、首にヘッドホンをかけた女の子'),
   },
   {
-    // the 03 folder (2026-11-13): IMG_8457.jpg, the room on a rainy night. Character and posts not given yet (current.md)
+    // the 03 folder (2026-11-13): IMG_8457.jpg, the room on a rainy night. Character not given yet (current.md)
     no: 3,
     id: '003',
     series: HG,
@@ -141,7 +142,14 @@ export const works: Work[] = [
     focus: '50% 4%',
     music: [music.kohaku],
     gear: [R50X],
-    posts: [],
+    posts: [
+      {
+        // TikTok has it as a photo post (the link opens /photo/); the site plays the short from YouTube
+        kind: 'short',
+        image: img(p3, '雨の夜の部屋で、膝を立てて座る白いTシャツの女の子のショート動画'),
+        links: [tiktok('photo/7706950847539744021'), instagram('reel/DfhQD-RRVli'), youtube('Rup8M6yBbRQ')],
+      },
+    ],
     lettered: img(l3, 'HEADPHONES GIRL と NE0NNi* のロゴ、audio-technica ATH-R50x の文字と、ヘッドホンをつけて頬づえをつく女の子'),
   },
   {
