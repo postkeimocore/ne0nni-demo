@@ -10,6 +10,7 @@ import c1 from '../assets/art/001-cut.webp';
 import f1 from '../assets/art/001-face.webp';
 import g1 from '../assets/art/001-gear.webp';
 import p1 from '../assets/art/001-short-poster.webp';
+import s1 from '../assets/art/001-room.webp';
 import k2 from '../assets/art/002-key.webp';
 import c2 from '../assets/art/002-cut.webp';
 import f2 from '../assets/art/002-face.webp';
@@ -22,6 +23,7 @@ import c3 from '../assets/art/003-cut.webp';
 import g3 from '../assets/art/003-gear.webp';
 import l3 from '../assets/art/003-lettered.webp';
 import k4 from '../assets/art/004-key.webp';
+import g4 from '../assets/art/004-gear.webp';
 import k5 from '../assets/art/005-key.webp';
 import c5 from '../assets/art/005-cut.webp';
 import f5 from '../assets/art/005-face.webp';
@@ -59,6 +61,9 @@ const [A, B] = characters;
 const music: Record<string, Track> = {
   akanesasu: { id: 'zutomayo', artist: 'ずっと真夜中でいいのに。', title: 'あかねさす頃' },
   musubi: { id: 'ayumu-imazu', artist: 'Ayumu Imazu', title: '結び' },
+  // 2026-11-13, the user: No.003 くるりの「上海蟹」の曲, No.004 A2O LITE「NEON」
+  kohaku: { id: 'quruli', artist: 'くるり', title: '琥珀色の街、上海蟹の朝' },
+  neon: { id: 'a2o-lite', artist: 'A2O LITE', title: 'NEON' },
 };
 
 export const gear: Gear[] = [
@@ -66,8 +71,9 @@ export const gear: Gear[] = [
   { id: 'fiio-eh11', brand: 'FiiO', model: 'EH11', thumb: img(g2, 'FiiO EH11') },
   // from the words on No.003's feed image (GEAR / BRAND audio-technica / MODEL ATH-R50x)
   { id: 'audio-technica-ath-r50x', brand: 'audio-technica', model: 'ATH-R50x', thumb: img(g3, 'audio-technica ATH-R50x') },
+  { id: 'sony-wh-ult900n', brand: 'Sony', model: 'WH-ULT900N', thumb: img(g4, 'Sony WH-ULT900N') },
 ];
-const [HL7BT, EH11, R50X] = gear;
+const [HL7BT, EH11, R50X, ULT900N] = gear;
 
 export const works: Work[] = [
   {
@@ -79,6 +85,8 @@ export const works: Work[] = [
     key: img(k1, '枕に頬をのせ、うつぶせでスマートフォンを見る、黒いヘッドホンの女の子'),
     cut: img(c1, '枕に頬をのせ、うつぶせでスマートフォンを見る女の子'),
     face: img(f1, 'スマートフォンの光に照らされた、黒いヘッドホンの女の子の顔'),
+    // the still of the short: the room on a rainy night (the 01 folder)
+    scene: { ...img(s1, '雨の夜の部屋で、うつぶせでスマートフォンを見る黒いヘッドホンの女の子'), focus: '50% 100%' },
     focus: '62% 50%',
     music: [music.akanesasu],
     gear: [HL7BT],
@@ -123,29 +131,29 @@ export const works: Work[] = [
     lettered: img(ig2, 'HEADPHONES GIRL と NE0NNi* のロゴ、FiiO EH11 の文字と、首にヘッドホンをかけた女の子'),
   },
   {
-    // the 03 folder (2026-11-13). Character, music and posts not given yet (current.md)
+    // the 03 folder (2026-11-13): IMG_8457.jpg, the room on a rainy night. Character and posts not given yet (current.md)
     no: 3,
     id: '003',
     series: HG,
     kind: 'original',
-    key: img(k3, 'グレーの背景に、黒いヘッドホンをつけた白いTシャツの女の子が、膝を立てて座り、両手で頬づえをつく'),
+    key: img(k3, '雨の夜の部屋で、黒いヘッドホンをつけた白いTシャツの女の子が、膝を立てて座り、両手で頬づえをつく'),
     cut: img(c3, '黒いヘッドホンをつけた白いTシャツの女の子が、膝を立てて座り、両手で頬づえをつく'),
     focus: '50% 4%',
-    music: [],
+    music: [music.kohaku],
     gear: [R50X],
     posts: [],
     lettered: img(l3, 'HEADPHONES GIRL と NE0NNi* のロゴ、audio-technica ATH-R50x の文字と、ヘッドホンをつけて頬づえをつく女の子'),
   },
   {
-    // the 04 folder (2026-11-13). Character, music, gear and posts not given yet (current.md)
+    // the 04 folder (2026-11-13). Character and posts not given yet (current.md)
     no: 4,
     id: '004',
     series: HG,
     kind: 'original',
     key: img(k4, '紫がかったグレーの背景に、白いヘッドホンをつけた長い髪の女の子が、黒いトップスで目元にピースを添える'),
     focus: '50% 0%',
-    music: [],
-    gear: [],
+    music: [music.neon],
+    gear: [ULT900N],
     posts: [],
   },
   {

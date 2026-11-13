@@ -3,9 +3,9 @@
  * The works list on HOME, between the Works heading and the chapters. The layout is the wakabayashi site's
  * (2026-11-12, the user: keep it as it was, the large picture staying on the left while the list scrolls by);
  * the words and the way the pictures come in are this site's (2026-11-13).
- *   - one picture per work, newest work first: its key picture, the one with the background (2026-11-13, the user:
- *     the new works in; the pictures with their backgrounds, not cutouts or the lettered ones). It crops to 4:5 at
- *     Work.focus, else at the middle.
+ *   - one picture per work, newest work first: the version with a background drawn in (the room, the city: the
+ *     scene), else the key picture (2026-11-13, the user: the new works in; the ones with backgrounds; 03 is the room
+ *     on a rainy night). It crops to 4:5 at its focus, else at the middle.
  *   - the first (the newest work's key picture) large on the left, staying while the rest scroll by in two columns
  *     (the right column 96px lower). Phones and portrait tablets: the large one first, then the two columns.
  * Cards: src/components/WorkTile.astro. Look: base.css "works list".
@@ -16,7 +16,7 @@ import type { Img, Work } from '../lib/types';
 interface Props { works: Work[] }
 type Pic = { work: Work; img: Img; focus?: string };
 
-const pics: Pic[] = [...Astro.props.works].sort((a, b) => b.no - a.no).map((w) => ({ work: w, img: w.key, focus: w.focus }));
+const pics: Pic[] = [...Astro.props.works].sort((a, b) => b.no - a.no).map((w) => (w.scene ? { work: w, img: w.scene, focus: w.scene.focus } : { work: w, img: w.key, focus: w.focus }));
 const [feature, ...rest] = pics;
 const tall = feature ? feature.img.height / feature.img.width > 1.5 : false;
 ---
