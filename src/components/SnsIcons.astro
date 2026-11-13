@@ -1,13 +1,17 @@
 ---
-/** SNS as icons (Simple Icons 16.35.0, CC0). 24px glyph in a 48px hit area. */
-interface Props { handles?: boolean; class?: string }
+/** SNS as icons (Simple Icons 16.35.0, CC0). 24px glyph in a 48px hit area.
+ *  knock: each icon also carries its glyph as an image (--glyph), so the hover disc can have the glyph cut out of it
+ *  (the header's column on HOME, base.css "header"). */
+interface Props { handles?: boolean; class?: string; knock?: boolean }
 import { ACCOUNTS } from '../lib/sns';
-const { handles = false, class: cls = '' } = Astro.props;
+const { handles = false, class: cls = '', knock = false } = Astro.props;
+const glyph = (d: string) =>
+  `--glyph:url("data:image/svg+xml,${encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='${d}'/></svg>`)}")`;
 ---
 <ul class:list={['sns', handles && 'sns--handles', cls]} aria-label="SNS">
   {ACCOUNTS.map((a) => (
     <li>
-      <a class="sns-icon" href={a.url} target="_blank" rel="noopener" aria-label={`${a.name}（${a.handle}）`}>
+      <a class="sns-icon" href={a.url} target="_blank" rel="noopener" aria-label={`${a.name}（${a.handle}）`} style={knock ? glyph(a.d) : undefined}>
         <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d={a.d} /></svg>
       </a>
       {handles && <span class="t-grotesk-data sns__handle" aria-hidden="true">{a.handle}</span>}

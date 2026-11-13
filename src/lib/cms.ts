@@ -65,7 +65,7 @@ const toImg = (i: RawImage, alt = ''): Img => {
   return { src: url.toString(), width: Math.round(i.width * scale), height: Math.round(i.height * scale), alt };
 };
 const first = (v?: string[] | string) => (Array.isArray(v) ? v[0] : v);
-const toSeries = (name = 'Headphones Girl'): Series => ({ id: keyOf(name), name });
+const toSeries = (name = 'HEADPHONES GIRL'): Series => ({ id: keyOf(name), name });
 const toCharacter = (c: RawCharacter): Character => ({
   id: c.id, name: c.name, personality: c.personality ?? '', taste: c.taste ?? '', genre: c.genre || undefined,
   artists: (c.artists ?? '').split('\n').map((s) => s.trim()).filter(Boolean),

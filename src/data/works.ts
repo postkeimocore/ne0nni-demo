@@ -26,7 +26,7 @@ const tiktok = (path: string) => ({ platform: 'tiktok' as const, url: `https://w
 const instagram = (path: string) => ({ platform: 'instagram' as const, url: `https://www.instagram.com/${path}/` });
 const youtube = (id: string) => ({ platform: 'youtube' as const, url: `https://www.youtube.com/shorts/${id}` });
 
-export const series: Series[] = [{ id: 'headphones-girl', name: 'Headphones Girl' }];
+export const series: Series[] = [{ id: 'headphones-girl', name: 'HEADPHONES GIRL' }];
 const HG = series[0];
 
 export const characters: Character[] = [

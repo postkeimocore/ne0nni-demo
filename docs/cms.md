@@ -19,7 +19,7 @@
 | まとまり | 項目 | 内容 |
 |---|---|---|
 | 作品 Work | 号数 `no` | 1, 2, 3 …。シリーズをまたいだ公開順の通し番号。URL は `/works/001/`。サイトのどの一覧も号数の順（No.001 が先）。作品にタイトルや一言は持たせない |
-| | シリーズ `series` | 現在は Headphones Girl |
+| | シリーズ `series` | 現在は HEADPHONES GIRL（大文字） |
 | | 種類 `kind` | `original`（NE0NNi のキャラクター A／B）／`tribute`（アニメ・漫画・映画のキャラクターを描いた作品）。表示する言葉は `KIND_LABEL`（`src/lib/cms.ts`）の1か所 |
 | | キャラクター `character` | original のとき。Character を参照 |
 | | 元のキャラクター `tribute` | tribute のときだけ。キャラクター名と作品名 |
@@ -54,7 +54,7 @@ API は4つ（Hobby プランの上限5つの中に収める）。シリーズ�
 
 | API | 種類 | フィールドID |
 |---|---|---|
-| `works` | リスト | `number`（数字）、`series`（セレクト Headphones Girl）、`kind`（セレクト original / tribute）、`character`（コンテンツ参照 characters）、`tributeCharacter` `tributeTitle`（テキスト）、`music`（繰り返し：カスタムフィールド `track`）、`gear`（複数コンテンツ参照 gear）、`date`（日時）、`key` `cut` `face` `scene`（画像）と `keyAlt` `cutAlt` `faceAlt` `sceneAlt`（テキスト）、`focus`（テキスト）、`posts`（繰り返し：カスタムフィールド `post`） |
+| `works` | リスト | `number`（数字）、`series`（セレクト HEADPHONES GIRL）、`kind`（セレクト original / tribute）、`character`（コンテンツ参照 characters）、`tributeCharacter` `tributeTitle`（テキスト）、`music`（繰り返し：カスタムフィールド `track`）、`gear`（複数コンテンツ参照 gear）、`date`（日時）、`key` `cut` `face` `scene`（画像）と `keyAlt` `cutAlt` `faceAlt` `sceneAlt`（テキスト）、`focus`（テキスト）、`posts`（繰り返し：カスタムフィールド `post`） |
 | `track`（カスタムフィールド） | — | `artist` `title`（テキスト） |
 | `post`（カスタムフィールド） | — | `kind`（セレクト short / photo）、`image`（画像）、`alt`（テキスト）、`tiktokUrl` `instagramUrl` `youtubeUrl`（テキスト） |
 | `characters` | リスト | `name`（テキスト）、`personality` `taste`（テキストエリア）、`genre`（テキスト）、`artists`（テキストエリア、1行に1組）、`image`（画像）、`imageAlt`（テキスト） |

@@ -14,6 +14,7 @@ const NAV = [
     {NAV.map((n) => <a href={n.href} aria-current={current === n.id ? 'page' : undefined}>{n.label}</a>)}
   </nav>
   <button class="menu-btn" type="button" aria-label="メニュー" aria-expanded="false" aria-controls="menu" data-menu-open><span></span></button>
+  {home && <SnsIcons class="site-header__sns" knock />}
 </header>
 
 <div class="menu" id="menu" role="dialog" aria-modal="true" aria-label="メニュー" hidden>

@@ -99,14 +99,21 @@ export default function site() {
       return l;
     });
     hdr.after(...layers);
-    new MutationObserver(() => layers.forEach((l) => l.classList.toggle('is-masthead', hdr.classList.contains('is-masthead'))))
+    new MutationObserver(() => layers.forEach((l) => ['is-masthead', 'is-foot'].forEach((c) => l.classList.toggle(c, hdr.classList.contains(c)))))
       .observe(hdr, { attributes: true, attributeFilter: ['class'] });
-    // the hover underline is drawn in the copies too
-    hdr.querySelectorAll('.site-nav a').forEach((a, i) => {
-      const mirror = (on) => layers.forEach((l) => l.querySelectorAll('.site-nav a')[i].classList.toggle('is-hover', on));
+    // the hover underline (nav) and the hover disc (SNS column) are drawn in the copies too
+    const HOVER = '.site-nav a, .site-header__sns a';
+    hdr.querySelectorAll(HOVER).forEach((a, i) => {
+      const mirror = (on) => layers.forEach((l) => l.querySelectorAll(HOVER)[i].classList.toggle('is-hover', on));
       a.addEventListener('pointerenter', () => mirror(true));
       a.addEventListener('pointerleave', () => mirror(false));
     });
+  }
+
+  // ---------- HOME, PC: the SNS column in the header goes when the footer (same icons) comes up to it ----------
+  const footer = document.querySelector('.site-footer');
+  if (hdr && footer && hdr.querySelector('.site-header__sns')) {
+    new IntersectionObserver(([e]) => hdr.classList.toggle('is-foot', e.isIntersecting), { rootMargin: '0px 0px -38% 0px' }).observe(footer);
   }
 
   // ---------- cable line: one line threads behind the works, drawn with scroll ----------
