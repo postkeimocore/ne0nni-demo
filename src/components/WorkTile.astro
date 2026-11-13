@@ -2,12 +2,13 @@
 /**
  * One picture in the HOME works list (src/components/WorkList.astro), with this site's words and motion:
  *   - the picture (4:5; the large one whole when it is tall, 9:16) comes in like the pictures of the chapters:
- *     two tilted copies and then the picture land one after another (data-stack, base.css "stacked reveal")
+ *     two other pictures of the work and then the picture land one after another (data-stack, base.css "stacked
+ *     reveal"; which ones: stackPictures)
  *   - under it, as on WORKS: the number, the series and the kind; they rise in (data-reveal="up")
  * The card goes to the work's page.
  */
 import Art from './Art.astro';
-import { KIND_LABEL, label, pathOf } from '../lib/cms';
+import { KIND_LABEL, label, pathOf, stackPictures } from '../lib/cms';
 import type { Img, Work } from '../lib/types';
 
 interface Props {
@@ -22,10 +23,12 @@ const { work: w, img, focus, big = false } = Astro.props;
 const tall = big && img.height / img.width > 1.5;
 const pos = tall ? undefined : focus;
 const sizes = big ? '(min-width: 1200px) 40vw, (min-width: 768px) 50vw, 100vw' : '(min-width: 1200px) 24vw, 50vw';
+const others = stackPictures(w, img);
 ---
 <article class="wtile" data-shape={tall ? 'tall' : 'portrait'}>
   <a class="wtile__link" href={pathOf(w)}>
     <div class="wtile__art stack" data-stack>
+      {others.map((o) => <div class="stack__layer" aria-hidden="true"><Art img={o} sizes={sizes} decorative style={o.focus ? `object-position:${o.focus}` : undefined} /></div>)}
       <div class="wtile__crop stack__top"><Art img={img} sizes={sizes} style={pos ? `object-position:${pos}` : undefined} /></div>
     </div>
     <div class="wtile__cap" data-reveal="up">

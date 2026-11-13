@@ -150,6 +150,23 @@ export function getSite(): Promise<Site> {
 }
 
 export const label = (w: Work) => `No.${w.id}`;
+/**
+ * The pictures that land before the shown one in the stacked reveal (base.css): other pictures of the same work,
+ * in this order — the scene, the key, the lettered creative, the close crop, the cutout, the pictures of its posts —
+ * each once, never the shown one. A work with fewer has the shown picture again in the empty places
+ * (2026-11-13, the user: other pictures, not the same one twice).
+ */
+export function stackPictures(w: Work, shown: Img, n = 2): Img[] {
+  const seen = new Set<unknown>([shown.src]);
+  const out: Img[] = [];
+  for (const i of [w.scene, w.key, w.lettered, w.face, w.cut, ...w.posts.map((p) => p.image)]) {
+    if (!i || seen.has(i.src)) continue;
+    seen.add(i.src);
+    out.push(i);
+  }
+  while (out.length < n) out.push(shown);
+  return out.slice(0, n);
+}
 export const pathOf = (w: Work) => `/works/${w.id}/`;
 export const characterName = (c: Character) => `Character ${c.name}`;
 /** "ずっと真夜中でいいのに。「あかねさす頃」" */

@@ -47,8 +47,10 @@ export default function site() {
     });
   });
 
-  // ---------- stacked reveal: two tilted copies land, then the picture (base.css) ----------
+  // ---------- stacked reveal: two pictures land, then the shown one (base.css) ----------
+  // The pages put in other pictures of the work (stackPictures); a stack without them gets two copies of its picture.
   document.querySelectorAll('[data-stack]').forEach((el) => {
+    if (el.querySelector(':scope > .stack__layer')) return;
     const img = el.querySelector('img');
     for (let i = 0; i < 2; i++) {
       const layer = document.createElement('div');

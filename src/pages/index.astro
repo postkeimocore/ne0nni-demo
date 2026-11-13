@@ -8,7 +8,7 @@ import WorkData from '../components/WorkData.astro';
 import Go from '../components/Go.astro';
 import Icon from '../components/Icon.astro';
 import SnsIcons from '../components/SnsIcons.astro';
-import { getSite, getWorks, KIND_LABEL, label, pathOf } from '../lib/cms';
+import { getSite, getWorks, KIND_LABEL, label, pathOf, stackPictures } from '../lib/cms';
 import { ACCOUNTS } from '../lib/sns';
 
 const site = await getSite();
@@ -16,6 +16,7 @@ const { latest } = site;
 const works = await getWorks();
 // the chapters show each work's lettered creative (2026-11-13, the user)
 const tall = (w: (typeof latest)[number]) => w.lettered!.height / w.lettered!.width > 1.5;
+const sizes = (w: (typeof latest)[number]) => (tall(w) ? '(min-width: 1200px) 33vw, (min-width: 768px) 45vw, 100vw' : '(min-width: 1200px) 50vw, (min-width: 768px) 60vw, 100vw');
 // the hero's wall pattern: rings round the head (radii in the rings' own units)
 const RINGS = Array.from({ length: 10 }, (_, i) => 96 + i * 82);
 // the HOME chapters take turns: art left / art right / the cutout bleeding off the right edge
@@ -72,7 +73,8 @@ const jsonLd = [
             <div class="look__body l-grid">
               <a class="look__art" href={pathOf(w)} tabindex="-1" aria-hidden="true" data-cable-point="center">
                 <div class="stack" data-stack style={`aspect-ratio:${art.width}/${art.height}`}>
-                  <Art img={art} sizes={tall(w) ? '(min-width: 1200px) 33vw, (min-width: 768px) 45vw, 100vw' : '(min-width: 1200px) 50vw, (min-width: 768px) 60vw, 100vw'} decorative />
+                  {stackPictures(w, art).map((o) => <div class="stack__layer" aria-hidden="true"><Art img={o} sizes={sizes(w)} decorative style={o.focus ? `object-position:${o.focus}` : undefined} /></div>)}
+                  <Art img={art} sizes={sizes(w)} decorative />
                 </div>
               </a>
               <div class="look__info" data-reveal="up">
@@ -142,9 +144,14 @@ const jsonLd = [
   .hero { position: relative; margin-top: calc(var(--header-h) * -1); overflow-x: clip;
     /* the lockup (2650 : 2580) fills the height between the header and the foot; the SNS column on the right has
        room on TB / PC */
-    --lk-w: min(calc(100vw - (var(--grid-margin) + 48px + var(--space-3)) * 2), calc((100svh - var(--header-h) - var(--space-5)) * 1.027)); }
-  .hero__stage { position: relative; isolation: isolate; display: grid; place-items: center; height: 100svh; min-height: 600px;
-    padding: var(--header-h) 0 var(--space-3); overflow: hidden; }
+    --lk-w: min(calc(100vw - (var(--grid-margin) + 48px + var(--space-3)) * 2), calc((100svh - var(--header-h) - var(--space-5)) * 1.027));
+    /* phones: the height the browser's bars give back when they shrink on scroll (0 on PC) */
+    --hero-extra: calc(100lvh - 100svh); }
+  /* the stage is as tall as the screen with the bars shrunk (100lvh), so its ground still fills the screen then; the
+     lockup, the words and the icons keep to the screen with the bars out (100svh): the extra height is padding at the
+     foot (2026-11-13, the user: on a phone a band of the white page showed under the hero while scrolling) */
+  .hero__stage { position: relative; isolation: isolate; display: grid; place-items: center; height: 100lvh; min-height: 600px;
+    padding: var(--header-h) 0 calc(var(--hero-extra) + var(--space-3)); overflow: hidden; }
   /* the mist that the hero turns into (over the rings, under the lockup) */
   .hero__wall { position: absolute; inset: 0; z-index: -1; background-color: var(--color-mist);
     background-image: var(--grain-light); background-size: 256px 256px; background-attachment: fixed;
@@ -165,11 +172,11 @@ const jsonLd = [
   .hero :global(.lk-back) { fill: var(--color-paper); }
   .hero :global(.lk-ink) { fill: var(--color-ink); }
   .hero :global(.lk-lines path) { fill: none; stroke: var(--color-ink); stroke-width: 6; stroke-linecap: round; stroke-linejoin: round; opacity: 0; visibility: hidden; }
-  .hero__tag { position: absolute; bottom: var(--space-4); margin: 0; }
+  .hero__tag { position: absolute; bottom: calc(var(--hero-extra) + var(--space-4)); margin: 0; }
   .hero__tag--bl { left: var(--grid-margin); }
   .hero__tag--br { right: var(--grid-margin); }
   /* SNS: a column at the right edge, in the middle (TB / PC); the icon's drawing lines up with the margin */
-  .hero :global(.hero__sns) { position: absolute; right: calc(var(--grid-margin) - var(--space-1) * 3); top: 50%; translate: 0 -50%;
+  .hero :global(.hero__sns) { position: absolute; right: calc(var(--grid-margin) - var(--space-1) * 3); top: calc((100% - var(--hero-extra)) / 2); translate: 0 -50%;
     flex-direction: column; flex-wrap: nowrap; }
   /* PC: the column is in the header and follows the page (base.css "header") */
   @media (min-width: 1200px) {
@@ -178,7 +185,7 @@ const jsonLd = [
   /* SP: a row at the foot on the right, over the name */
   @media (max-width: 767px) {
     .hero { --lk-w: min(calc(100vw - var(--grid-margin) * 2), calc((100svh - var(--header-h) - var(--space-5)) * 1.027)); }
-    .hero :global(.hero__sns) { top: auto; bottom: calc(var(--space-4) + var(--lh-grotesk-data) + var(--space-2)); translate: none; flex-direction: row; }
+    .hero :global(.hero__sns) { top: auto; bottom: calc(var(--hero-extra) + var(--space-4) + var(--lh-grotesk-data) + var(--space-2)); translate: none; flex-direction: row; }
   }
 
   /* the page opens */

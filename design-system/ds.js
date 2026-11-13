@@ -19,6 +19,7 @@
 
   // stacked reveal — two tilted copies land, then the picture
   document.querySelectorAll('[data-stack]').forEach((el) => {
+    if (el.querySelector(':scope > .stack__layer')) return;   // the site puts in other pictures of the work
     const img = el.querySelector('img');
     for (let i = 0; i < 2; i++) {
       const layer = document.createElement('div');
