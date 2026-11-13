@@ -88,6 +88,8 @@ export type Work = {
   scene?: Img;
   /** object-position for 4:5 crops of the key picture in lists */
   focus?: string;
+  /** the creative with words on it (the logo, the gear), as posted: the HOME chapters show it */
+  lettered?: Img;
   music: Track[];
   gear: Gear[];
   posts: Post[];
@@ -96,7 +98,7 @@ export type Work = {
 export type Site = {
   /** the work whose cutout fills the HOME hero */
   hero: Work;
-  /** the newest three, in order of number (oldest of them first), for the HOME chapters */
+  /** the HOME chapters: the newest three works that have a lettered creative, in order of number (oldest of them first) */
   latest: Work[];
   description: string;
   /** which platform plays the shorts (the one with the most plays); the other is used when a post lacks it */

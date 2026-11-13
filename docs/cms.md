@@ -28,6 +28,7 @@
 | | 公開日 `date` | 分かれば。あるときだけ表示 |
 | | 画像 | `key`（背景つきの全体）必須、`cut`（切り抜き）、`face`（顔などの寄り）、`scene`（背景を描いた場面）。それぞれ alt つき |
 | | `focus` | 一覧で 4:5 に切るときの位置（例 `50% 18%`） |
+| | 文字入りのクリエイティブ `lettered` | ロゴやギアの文字が入った投稿の絵（alt つき）。入っている作品のうち新しい3点が HOME の章に出る |
 | | 投稿 `posts` | 繰り返し。下の「投稿」 |
 | キャラクター Character | `name` | 今は「A」「B」。サイトでは「Character A」と出す |
 | | `personality` `taste` `genre` | 人格、嗜好、音楽のジャンル（1行） |
@@ -54,7 +55,7 @@ API は4つ（Hobby プランの上限5つの中に収める）。シリーズ�
 
 | API | 種類 | フィールドID |
 |---|---|---|
-| `works` | リスト | `number`（数字）、`series`（セレクト HEADPHONES GIRL）、`kind`（セレクト original / tribute）、`character`（コンテンツ参照 characters）、`tributeCharacter` `tributeTitle`（テキスト）、`music`（繰り返し：カスタムフィールド `track`）、`gear`（複数コンテンツ参照 gear）、`date`（日時）、`key` `cut` `face` `scene`（画像）と `keyAlt` `cutAlt` `faceAlt` `sceneAlt`（テキスト）、`focus`（テキスト）、`posts`（繰り返し：カスタムフィールド `post`） |
+| `works` | リスト | `number`（数字）、`series`（セレクト HEADPHONES GIRL）、`kind`（セレクト original / tribute）、`character`（コンテンツ参照 characters）、`tributeCharacter` `tributeTitle`（テキスト）、`music`（繰り返し：カスタムフィールド `track`）、`gear`（複数コンテンツ参照 gear）、`date`（日時）、`key` `cut` `face` `scene`（画像）と `keyAlt` `cutAlt` `faceAlt` `sceneAlt`（テキスト）、`focus`（テキスト）、`lettered`（画像）と `letteredAlt`（テキスト）、`posts`（繰り返し：カスタムフィールド `post`） |
 | `track`（カスタムフィールド） | — | `artist` `title`（テキスト） |
 | `post`（カスタムフィールド） | — | `kind`（セレクト short / photo）、`image`（画像）、`alt`（テキスト）、`tiktokUrl` `instagramUrl` `youtubeUrl`（テキスト） |
 | `characters` | リスト | `name`（テキスト）、`personality` `taste`（テキストエリア）、`genre`（テキスト）、`artists`（テキストエリア、1行に1組）、`image`（画像）、`imageAlt`（テキスト） |

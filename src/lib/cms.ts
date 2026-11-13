@@ -36,7 +36,8 @@ type RawWork = RawRef & {
   number: number; series: string[]; kind: string[]; character?: RawCharacter;
   tributeCharacter?: string; tributeTitle?: string; date?: string;
   key: RawImage; keyAlt: string; cut?: RawImage; cutAlt?: string; face?: RawImage; faceAlt?: string;
-  scene?: RawImage; sceneAlt?: string; focus?: string; music?: RawTrack[]; gear?: RawGear[]; posts?: RawPost[];
+  scene?: RawImage; sceneAlt?: string; focus?: string; lettered?: RawImage; letteredAlt?: string;
+  music?: RawTrack[]; gear?: RawGear[]; posts?: RawPost[];
 };
 
 async function request<T>(endpoint: string, params: Record<string, string> = {}): Promise<T> {
@@ -95,6 +96,7 @@ const toWork = (w: RawWork): Work => {
     key: toImg(w.key, w.keyAlt), cut: w.cut ? toImg(w.cut, w.cutAlt) : undefined,
     face: w.face ? toImg(w.face, w.faceAlt) : undefined, scene: w.scene ? toImg(w.scene, w.sceneAlt) : undefined,
     focus: w.focus || undefined,
+    lettered: w.lettered ? toImg(w.lettered, w.letteredAlt) : undefined,
     music: (w.music ?? []).map(toTrack), gear: (w.gear ?? []).map(toGear), posts: (w.posts ?? []).map(toPost),
   };
 };
@@ -142,7 +144,7 @@ export function getSite(): Promise<Site> {
     const hero = works.find((w) => w.no === raw.heroWork?.number && w.cut)
       ?? newest.find((w) => w.kind === 'original' && w.cut) ?? newest[0];
     const player: Player = first(raw.player) === 'youtube' ? 'youtube' : 'tiktok';
-    return { hero, latest: works.slice(-3), description: raw.description ?? '', player };
+    return { hero, latest: works.filter((w) => w.lettered).slice(-3), description: raw.description ?? '', player };
   })();
   return siteCache;
 }

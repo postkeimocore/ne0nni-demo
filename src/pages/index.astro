@@ -14,7 +14,8 @@ import { ACCOUNTS } from '../lib/sns';
 const site = await getSite();
 const { latest } = site;
 const works = await getWorks();
-const tall = (w: (typeof latest)[number]) => w.key.height / w.key.width > 1.5;
+// the chapters show each work's lettered creative (2026-11-13, the user)
+const tall = (w: (typeof latest)[number]) => w.lettered!.height / w.lettered!.width > 1.5;
 // the hero's wall pattern: rings round the head (radii in the rings' own units)
 const RINGS = Array.from({ length: 10 }, (_, i) => 96 + i * 82);
 // the HOME chapters take turns: art left / art right / the cutout bleeding off the right edge
@@ -49,7 +50,7 @@ const jsonLd = [
     </div>
   </section>
 
-  <!-- WORKS: the newest three works as chapters, in order of number, threaded on one cable (4-2) -->
+  <!-- WORKS: the list of every work, then the newest three works with a lettered creative as chapters, in order of number, threaded on one cable (4-2) -->
   <section class="l-section l-mist l-container home-works" aria-labelledby="works-h" data-glints="day">
     <div class="home-works__head l-grid">
       <h2 class="t-display-2 home-works__title with-icon with-icon--display" id="works-h"><Icon topic="works" size="display" />Works</h2>
@@ -62,7 +63,7 @@ const jsonLd = [
       <span class="looks__start" data-cable-point="center" aria-hidden="true"></span>
       {latest.map((w, i) => {
         const look = LOOKS[i % LOOKS.length];
-        const useCut = look === 'c' && w.cut;
+        const art = w.lettered!;
         return (
           <article class:list={['look', `look--${look}`, tall(w) && 'is-tall']} aria-labelledby={`look-${w.id}`}>
             <Chapter no={label(w)} title={w.series.name} id={`look-${w.id}`} tag="h3">
@@ -70,11 +71,9 @@ const jsonLd = [
             </Chapter>
             <div class="look__body l-grid">
               <a class="look__art" href={pathOf(w)} tabindex="-1" aria-hidden="true" data-cable-point="center">
-                {useCut
-                  ? <Art img={w.cut!} sizes="(min-width: 1200px) 60vw, (min-width: 768px) 75vw, 100vw" decorative />
-                  : <div class="stack" data-stack style={`aspect-ratio:${w.key.width}/${w.key.height}`}>
-                      <Art img={w.key} sizes={tall(w) ? '(min-width: 1200px) 33vw, (min-width: 768px) 45vw, 100vw' : '(min-width: 1200px) 50vw, (min-width: 768px) 60vw, 100vw'} decorative />
-                    </div>}
+                <div class="stack" data-stack style={`aspect-ratio:${art.width}/${art.height}`}>
+                  <Art img={art} sizes={tall(w) ? '(min-width: 1200px) 33vw, (min-width: 768px) 45vw, 100vw' : '(min-width: 1200px) 50vw, (min-width: 768px) 60vw, 100vw'} decorative />
+                </div>
               </a>
               <div class="look__info" data-reveal="up">
                 <WorkData work={w} />

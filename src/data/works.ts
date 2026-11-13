@@ -19,7 +19,12 @@ import ig2 from '../assets/art/002-ig-feed.webp';
 import p2 from '../assets/art/002-short-poster.webp';
 import k3 from '../assets/art/003-key.webp';
 import c3 from '../assets/art/003-cut.webp';
-import f3 from '../assets/art/003-face.webp';
+import g3 from '../assets/art/003-gear.webp';
+import l3 from '../assets/art/003-lettered.webp';
+import k4 from '../assets/art/004-key.webp';
+import k5 from '../assets/art/005-key.webp';
+import c5 from '../assets/art/005-cut.webp';
+import f5 from '../assets/art/005-face.webp';
 
 const img = (src: ImageMetadata, alt: string) => ({ src, width: src.width, height: src.height, alt });
 const tiktok = (path: string) => ({ platform: 'tiktok' as const, url: `https://www.tiktok.com/@ne0nni/${path}` });
@@ -59,8 +64,10 @@ const music: Record<string, Track> = {
 export const gear: Gear[] = [
   { id: 'audio-technica-ath-hl7bt', brand: 'audio-technica', model: 'ATH-HL7BT', thumb: img(g1, 'audio-technica ATH-HL7BT') },
   { id: 'fiio-eh11', brand: 'FiiO', model: 'EH11', thumb: img(g2, 'FiiO EH11') },
+  // from the words on No.003's feed image (GEAR / BRAND audio-technica / MODEL ATH-R50x)
+  { id: 'audio-technica-ath-r50x', brand: 'audio-technica', model: 'ATH-R50x', thumb: img(g3, 'audio-technica ATH-R50x') },
 ];
-const [HL7BT, EH11] = gear;
+const [HL7BT, EH11, R50X] = gear;
 
 export const works: Work[] = [
   {
@@ -113,16 +120,44 @@ export const works: Work[] = [
         links: [tiktok('photo/7705420626323983637'), instagram('p/DfcSmkhmiPx')],
       },
     ],
+    lettered: img(ig2, 'HEADPHONES GIRL と NE0NNi* のロゴ、FiiO EH11 の文字と、首にヘッドホンをかけた女の子'),
   },
   {
+    // the 03 folder (2026-11-13). Character, music and posts not given yet (current.md)
     no: 3,
     id: '003',
     series: HG,
+    kind: 'original',
+    key: img(k3, 'グレーの背景に、黒いヘッドホンをつけた白いTシャツの女の子が、膝を立てて座り、両手で頬づえをつく'),
+    cut: img(c3, '黒いヘッドホンをつけた白いTシャツの女の子が、膝を立てて座り、両手で頬づえをつく'),
+    focus: '50% 4%',
+    music: [],
+    gear: [R50X],
+    posts: [],
+    lettered: img(l3, 'HEADPHONES GIRL と NE0NNi* のロゴ、audio-technica ATH-R50x の文字と、ヘッドホンをつけて頬づえをつく女の子'),
+  },
+  {
+    // the 04 folder (2026-11-13). Character, music, gear and posts not given yet (current.md)
+    no: 4,
+    id: '004',
+    series: HG,
+    kind: 'original',
+    key: img(k4, '紫がかったグレーの背景に、白いヘッドホンをつけた長い髪の女の子が、黒いトップスで目元にピースを添える'),
+    focus: '50% 0%',
+    music: [],
+    gear: [],
+    posts: [],
+  },
+  {
+    // was No.003 until 2026-11-13: the originals in the 03 / 04 folders took 3 and 4 (number to confirm, current.md)
+    no: 5,
+    id: '005',
+    series: HG,
     kind: 'tribute',
     tribute: { character: 'シャンプー', title: 'らんま1/2' },
-    key: img(k3, '紫の背景に、お団子髪とチャイナ服の女の子が両手でヘッドホンを押さえる'),
-    cut: img(c3, 'お団子髪とチャイナ服の女の子が、両手でヘッドホンを押さえる'),
-    face: img(f3, 'ヘッドホンを押さえて舌を出す、お団子髪の女の子の顔'),
+    key: img(k5, '紫の背景に、お団子髪とチャイナ服の女の子が両手でヘッドホンを押さえる'),
+    cut: img(c5, 'お団子髪とチャイナ服の女の子が、両手でヘッドホンを押さえる'),
+    face: img(f5, 'ヘッドホンを押さえて舌を出す、お団子髪の女の子の顔'),
     focus: '50% 18%',
     music: [],
     gear: [],
