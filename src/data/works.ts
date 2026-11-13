@@ -1,6 +1,7 @@
 /**
  * Content kept in the repository. Used while no CMS is connected (see src/lib/cms.ts).
  * Sources: the posts on TikTok / Instagram (music, gear), Notion「キャラクター設計」(Character A / B).
+ * The two characters are told apart by the hair: the bob is A, the long hair is B (the user, 2026-11-13).
  * Anything not confirmed is listed in current.md.
  */
 import type { Character, Gear, Series, Track, Work } from '../lib/types';
@@ -132,11 +133,12 @@ export const works: Work[] = [
     lettered: img(ig2, 'HEADPHONES GIRL と NE0NNi* のロゴ、FiiO EH11 の文字と、首にヘッドホンをかけた女の子'),
   },
   {
-    // the 03 folder (2026-11-13): IMG_8457.jpg, the room on a rainy night. Character not given yet (current.md)
+    // the 03 folder (2026-11-13): IMG_8457.jpg, the room on a rainy night. The bob: Character A
     no: 3,
     id: '003',
     series: HG,
     kind: 'original',
+    character: A,
     key: img(k3, '雨の夜の部屋で、黒いヘッドホンをつけた白いTシャツの女の子が、膝を立てて座り、両手で頬づえをつく'),
     cut: img(c3, '黒いヘッドホンをつけた白いTシャツの女の子が、膝を立てて座り、両手で頬づえをつく'),
     focus: '50% 4%',
@@ -153,11 +155,12 @@ export const works: Work[] = [
     lettered: img(l3, 'HEADPHONES GIRL と NE0NNi* のロゴ、audio-technica ATH-R50x の文字と、ヘッドホンをつけて頬づえをつく女の子'),
   },
   {
-    // the 04 folder (2026-11-13). Character and posts not given yet (current.md)
+    // the 04 folder (2026-11-13). The long hair: Character B. Not posted yet
     no: 4,
     id: '004',
     series: HG,
     kind: 'original',
+    character: B,
     key: img(k4, '紫がかったグレーの背景に、白いヘッドホンをつけた長い髪の女の子が、黒いトップスで目元にピースを添える'),
     focus: '50% 0%',
     music: [music.neon],
@@ -165,7 +168,7 @@ export const works: Work[] = [
     posts: [],
   },
   {
-    // was No.003 until 2026-11-13: the originals in the 03 / 04 folders took 3 and 4 (number to confirm, current.md)
+    // was No.003 until 2026-11-13: the originals in the 03 / 04 folders took 3 and 4 (the user: that's fine). Not posted yet
     no: 5,
     id: '005',
     series: HG,
