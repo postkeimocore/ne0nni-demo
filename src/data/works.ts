@@ -146,16 +146,16 @@ export const works: Work[] = [
     gear: [R50X],
     posts: [
       {
-        // no TikTok video given: the site plays the short from YouTube
+        // TikTok's share link (vt.tiktok.com) redirects to /photo/, but the post is the video (oEmbed: type video)
         kind: 'short',
         image: img(p3, '雨の夜の部屋で、膝を立てて座る白いTシャツの女の子のショート動画'),
-        links: [instagram('reel/DfhQD-RRVli'), youtube('Rup8M6yBbRQ')],
+        links: [tiktok('video/7706950847539744021'), instagram('reel/DfhQD-RRVli'), youtube('Rup8M6yBbRQ')],
       },
       {
-        // the feed image with the words (the TikTok link the user gave opens this photo post)
+        // the feed image with the words; on Instagram only so far
         kind: 'photo',
         image: img(l3, 'HEADPHONES GIRL と NE0NNi* のロゴ、audio-technica ATH-R50x の文字と、ヘッドホンをつけて頬づえをつく女の子の写真投稿'),
-        links: [tiktok('photo/7706950847539744021'), instagram('p/Dfm60zJEs4D')],
+        links: [instagram('p/Dfm60zJEs4D')],
       },
     ],
     lettered: img(l3, 'HEADPHONES GIRL と NE0NNi* のロゴ、audio-technica ATH-R50x の文字と、ヘッドホンをつけて頬づえをつく女の子'),
